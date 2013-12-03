@@ -20,3 +20,9 @@ The following frameworks are being considered for future proofs:
  - OneJS
 
 [Contact JP DeVries](mailto:jp@modx.com) to request a framework or inquire about contributing.
+
+## Resources
+In `_build/templates/default` you will find an `index.html` file with a sample layout of the required elements. Base styles are included in `assets/default/` if you choose to use them. 
+
+## See Also
+ * [Roadmap](Roadmap)

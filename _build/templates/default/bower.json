@@ -1,0 +1,46 @@
+{
+  "name": "neat-pages",
+  "version": "0.0.1",
+  "author": {
+    "name": "",
+    "url": ""
+  },
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  },
+  "dependencies": {
+    "bourbon": "~3.1.8",
+    "neat": "~1.4.0",
+    "html5-boilerplate": "~4.3.0"
+  },
+  "exportsOverride": {
+    "bourbon": {
+      "": "app/assets/stylesheets/"
+    },
+    "neat": {
+      "": "app/assets/stylesheets/"
+    },
+    "html5-boilerplate": {
+      "css": [
+        "css/main.css",
+        "css/normalize.css"
+      ],
+      "js": [
+        "js"
+      ],
+      "": [
+        "./.htaccess",
+        "./favicon.ico",
+        "./humans.txt",
+        "./index.html",
+        "./robots.txt",
+        "./apple-touch-icon-precomposed.png"
+      ]
+    }
+  }
+}

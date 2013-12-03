@@ -1,0 +1,84 @@
+@import "bourbon/bourbon";
+@import "grid-settings";
+@import "neat/neat";
+
+@import "html5-boilerplate/normalize";
+@import "html5-boilerplate/main";
+
+/* start global */
+$bgColor:white;
+$color:rgb(10,10,10);
+/* end global */
+
+/* start base */
+body {
+	font-family:Tahoma, Geneva, sans-serif;
+	color:$color;
+}
+
+img, textarea {
+	max-width:100%;
+}
+textarea {
+	width:100%;
+	padding:0.5em;
+}
+/* end base */
+
+/* start components */
+%list-nav {
+	list-style-type:none;
+}
+/* end components */
+
+/* start layout */
+nav {
+	ul {
+		@extend %list-nav;
+		@include outer-container();
+	}
+}
+
+form {
+	.resource-btns {
+		position:fixed;
+		top:0;
+		right:0;
+		left:0;
+		background:$bgColor;
+		height:2em;
+	}
+}
+
+#save {
+	@include span-columns(2);
+	float:right;
+    max-width:12em;
+}
+
+#main-content {
+	@include outer-container();
+	margin-top:4em;
+}
+
+.tab {
+	@include outer-container();
+}
+
+.tabs fieldset {
+	margin:1em 0;
+	padding:0;
+	&:first-of-type { @include span-columns(8); }
+	&:last-of-type { @include span-columns(4); }
+}
+
+.field {
+	@include outer-container();
+	label {
+		@include span-columns(2);
+	}
+	input {
+		@include span-columns(10);
+	}
+}
+/* end layout */
