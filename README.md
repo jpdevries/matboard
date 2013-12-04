@@ -5,7 +5,8 @@ WIP. A Conceptual Proof demonstrated with several different toolkits.
  
 ## Assignment
 ### Part 1
-Each proof should create a basic Admin page with a responsive save button and post data over AJAX. Create title, alias, and content inputs along with a save button that is only active when appropriate. When the save button is clicked the form data should be posted over AJAX.
+Each proof should create a basic Admin page with a responsive save button and post data over AJAX. Create title, alias, and content inputs along with a save button that is only active when appropriate. When the save button is clicked the form data should be posted over AJAX.  
+Whenever the value of the pagetitle changes update the `h1` to reflect the change.  
 If empty, the default value of the alias field should be set based off the title. If changes are pending and the window is closed, a confirm alert should be invoked.
 
 ## Proofs
