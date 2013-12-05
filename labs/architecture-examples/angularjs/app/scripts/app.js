@@ -1,19 +1,17 @@
-'use strict';
-
-angular.module('matboardApp', [
+angular.module('MatboardApplication', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'ngRoute',
+  'ui.router',
   'phonecatFilters'
 ])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
+  .config(function ($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise('/');
+
+    $stateProvider
+      .state('dashboard', {
+        url: '/',
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
       });
   });

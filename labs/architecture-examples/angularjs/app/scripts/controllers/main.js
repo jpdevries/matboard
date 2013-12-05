@@ -1,6 +1,4 @@
-'use strict';
-
-angular.module('matboardApp')
+angular.module('MatboardApplication')
   .controller('MainCtrl', function ($scope,$http,$filter) {
 	$scope.aliasEdited = false;
 	$scope.displayTitle = 'New Resource';
