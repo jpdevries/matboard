@@ -19,7 +19,7 @@ angular.module('matboardApp')
 	
 	var leavingPageText = "Your changes will be lost.";
     window.onbeforeunload = function(){
-        return leavingPageText;
+        return ($scope.resource.$dirty !== true) ? null : leavingPageText;
     }
 
     $scope.$on('$locationChangeStart', function(event, next, current) {

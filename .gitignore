@@ -3,3 +3,4 @@ bower_components
 .sass-cache
 _build/templates/default/scss/bourbon
 _build/templates/default/scss/neat
+npm-debug.log
