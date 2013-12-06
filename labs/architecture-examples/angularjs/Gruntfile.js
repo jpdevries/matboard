@@ -8,6 +8,7 @@
 // 'test/spec/**/*.js'
 
 module.exports = function (grunt) {
+  var serveConfig = grunt.file.isFile('serve.config.json') ? grunt.file.readJSON('serve.config.json') : false; 
 
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
@@ -57,10 +58,10 @@ module.exports = function (grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: 9000,
+        port: (serveConfig && serveConfig.port) ? serveConfig.port : 9000,
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost',
-        livereload: 35729
+        hostname: (serveConfig && serveConfig.hostname) ? serveConfig.hostname : 'localhost',
+        livereload: (serveConfig && serveConfig.livereload) ? serveConfig.livereload : 35729
       },
       livereload: {
         options: {
@@ -73,7 +74,7 @@ module.exports = function (grunt) {
       },
       test: {
         options: {
-          port: 9001,
+          port: (serveConfig && serveConfig.testPort) ? serveConfig.testPort : 9001,
           base: [
             '.tmp',
             'test',

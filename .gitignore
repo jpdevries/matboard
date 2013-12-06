@@ -4,3 +4,4 @@ bower_components
 _build/templates/default/scss/bourbon
 _build/templates/default/scss/neat
 npm-debug.log
+sample.serve.config.json

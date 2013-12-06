@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 				options: {
 					report: 'min',
 					keepSpecialComments: 0,
-					banner: '/*!\n*  <%= pkg.title %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n*/'
+					banner: '/*!\n*  <%= pkg.title %> - v<%= pkg.version %> - */'
 				},
 				files: {
 					'<%= dirs.theme %><%= dirs.assets %><%= dirs.css %>main.min.css': '<%= dirs.theme %><%= dirs.assets %><%= dirs.css %>main.css'
