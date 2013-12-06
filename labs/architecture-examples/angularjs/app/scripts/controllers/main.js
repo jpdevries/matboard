@@ -21,12 +21,6 @@ angular.module('Matboard.Application')
             console.log('error');
         });
     };
-
-    $scope.$on('$stateChangeStart', function(event, next, current) {
-        if(!confirm(leavingPageText + "\n\nAre you sure you want to leave this page?")) {
-            event.preventDefault();
-        }
-    });
 });
 
 /* notes:
