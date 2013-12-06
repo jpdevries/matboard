@@ -12,7 +12,15 @@ angular.module('Matboard.Application', [
     $stateProvider
       .state('dashboard', {
         url: '/',
+        data: {
+          pageTitle: 'New Resource'
+        },
         templateUrl: 'views/main.html',
         controller: 'ResourceController'
       });
+  })
+  .run(function ($rootScope, $document, $state) {
+    $rootScope.$on('$stateChangeSuccess', function () {
+        document.title = ($state.current.data != undefined ? $state.current.data.pageTitle + ' :: ' : '') + 'Matboard App';
+    });
   });

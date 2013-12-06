@@ -1,5 +1,5 @@
 angular.module('Matboard.Application')
-  .controller('ResourceController', function ($scope, $http, $filter) {
+  .controller('ResourceController', function ($scope, $http, $filter, $state) {
 	$scope.aliasEdited = false;
 	$scope.displayTitle = 'New Resource';
 
