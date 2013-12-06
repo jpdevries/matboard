@@ -1,26 +1,28 @@
-angular.module('MatboardApplication')
-  .controller('MainCtrl', function ($scope,$http,$filter) {
+angular.module('Matboard.Application')
+  .controller('ResourceController', function ($scope, $http, $filter) {
 	$scope.aliasEdited = false;
 	$scope.displayTitle = 'New Resource';
-	$scope.handleTitleChange = function(){
-		$scope.displayTitle = $scope.title;
-		if(!$scope.aliasEdited) $scope.alias = $filter('alias')($scope.title);
-	};
-	$scope.handleSave = function(){
-		$http({method:'POST', url:'views/main.html', data:{title:$scope.title, alias:$scope.alias, content:$scope.content}})
-		  .success(function(data, status, headers, config){
-			console.log('success');
-		  }).error(function(data, status, headers, config){
-			console.log('error');
-		});
-	};
-	
-	var leavingPageText = "Your changes will be lost.";
-    window.onbeforeunload = function(){
-        return leavingPageText;
-    }
 
-    $scope.$on('$locationChangeStart', function(event, next, current) {
+	$scope.handleTitleChange = function(title){
+		$scope.displayTitle = title;
+		if(! $scope.aliasEdited) {
+            $scope.page.alias = $filter('alias')(title);
+        }
+	};
+
+    $scope.savePage = function (page) {
+        $http({
+            method: 'POST',
+            url:'views/main.html', 
+            data: page
+        }).success(function(data, status, headers, config){
+            console.log('success');
+        }).error(function(data, status, headers, config){
+            console.log('error');
+        });
+    };
+
+    $scope.$on('$stateChangeStart', function(event, next, current) {
         if(!confirm(leavingPageText + "\n\nAre you sure you want to leave this page?")) {
             event.preventDefault();
         }

@@ -1,9 +1,10 @@
-angular.module('MatboardApplication', [
+angular.module('Matboard.Application', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
   'ui.router',
-  'phonecatFilters'
+  'Matboard.Filters',
+  'Matboard.Directives'
 ])
   .config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
@@ -12,6 +13,6 @@ angular.module('MatboardApplication', [
       .state('dashboard', {
         url: '/',
         templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
+        controller: 'ResourceController'
       });
   });

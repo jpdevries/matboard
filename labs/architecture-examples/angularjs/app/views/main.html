@@ -1,20 +1,20 @@
 <section id="main-content">
 	<header>
-		<h1 ng-bind="displayTitle">New Resource</h1>
+		<h1 data-ng-bind="displayTitle">New Resource</h1>
 	</header>
-	<form name="resource" action="" method="POST">
+	<form name="resource" data-ng-submit="savePage(page)" data-leaving-page="">
 		<div class="tabs">
 			<div class="tab">
 				<fieldset>
 					<div class="field">
 						<label>Title</label>
-						<input id="pagetitle" ng-value="New Post" ng-model="title" ng-change="handleTitleChange()" required  />
+						<input id="pagetitle" data-ng-model="page.title" data-ng-change="handleTitleChange(page.title)" required  />
 					</div>
 				</fieldset>
 				<fieldset>
 					<div class="field">
 						<label>Alias</label>
-						<input id="alias" ng-model="alias" ng-change="aliasEdited = true" required  />
+						<input id="alias" data-ng-model="page.alias" data-ng-change="aliasEdited = true" required  />
 					</div>
 				</fieldset>
 			</div>
@@ -22,13 +22,13 @@
 		<div id="content-wrapper">
 			<fieldset>
 				<label>Content</label>
-				<textarea id="content" rows="18" ng-model="content"></textarea>
+				<textarea id="content" rows="18" data-ng-model="page.content"></textarea>
 			</fieldset>
 		</div>
 		<nav class="resource-btns">
 			<ul>
 				<li>
-					<button id="save" type="submit" ng-click="handleSave()" ng-disabled="!resource.$dirty">Save</button><!-- disabling this button requires js for submit -->
+					<button id="save" type="submit" ng-disabled="!resource.$dirty">Save</button><!-- disabling this button requires js for submit -->
 				</li>
 			</ul>
 		</nav>
