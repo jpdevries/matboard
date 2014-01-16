@@ -15,7 +15,7 @@ Each proof should create a basic Admin page with a responsive save button and po
 
 ## Proofs
 The following proofs are in progress:
- - Angular
+ - ~~Angular~~ _(Turned in [v0.1.0](https://github.com/jpdevries/matboard/releases/tag/v0.1.0))_
  - Ember
  - Backbone
  - VanillaJS
