@@ -1,0 +1,7 @@
+/* TEAM */
+	Developer: JP DeVries
+	Contact:   jp@modx.com
+	URI:       http://devries.jp
+
+/* SITE */
+	Created:  2013-12-03

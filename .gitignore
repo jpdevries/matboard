@@ -5,3 +5,4 @@ _build/templates/default/scss/bourbon
 _build/templates/default/scss/neat
 npm-debug.log
 sample.serve.config.json
+.DS_Store

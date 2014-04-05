@@ -1,0 +1,32 @@
+{
+  "name": "matboard-default-themplate",
+  "title": "Matboard default themplate",
+  "description": "Base styles for conceptual proofs",
+  "version": "0.1.1",
+  "homepage": "",
+  "author": {
+    "name": "JP DeVries",
+    "email": "jp@modx.com",
+    "url": "http://devries.jp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpdevries/matboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jpdevries/matboard/issues"
+  },
+  "devDependencies": {
+    "grunt-bower-task": "~0.3.2",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-growl": "~0.1.5",
+    "grunt-contrib-cssmin": "~0.6.2",
+    "grunt-contrib-csslint": "~0.1.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-sass": "~0.5.0"
+  },
+  "keywords": []
+}

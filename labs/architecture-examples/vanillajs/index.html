@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Vanilla JS</title>
+		<meta name="description" content="Default Matboard Template">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="../../../assets/default/css/main.css">
+</head>
+<body>
+<div id="wrapper">
+	<section id="main-content">
+		<header>
+			<h1 id="header-title" data-value="pagetitle">New Resource</h1>
+		</header>		
+		<form id="resource" action="" method="POST">
+			<div class="tabs">			
+				<div class="tab">
+					<fieldset>
+					  <div class="field">
+					    <label>Published</label>
+					    <input type="checkbox" name="published" id="published" value="published">
+					  </div>
+						<div class="field">
+							<label>Title</label>
+							<input id="pagetitle" name="pagetitle" required>
+						</div>
+					</fieldset>
+					<fieldset>
+						<div class="field">
+							<label>Alias</label>
+							<input id="alias" name="alias">
+						</div>
+					</fieldset>
+				</div> <!-- /tab -->				
+			</div> <!-- /tabs -->
+			<div id="content-wrapper">
+				<fieldset>
+					<label>Content</label>
+					<textarea id="content" name="content" rows="18"></textarea>
+				</fieldset>
+			</div> <!-- /content-wrapper -->
+			<nav class="resource-btns">
+				<ul>
+					<li>
+						<button id="save" type="submit">Save</button>
+					</li>
+				</ul>
+			</nav>
+		</form>
+	</section> <!-- /main-content -->
+</div> <!-- /wrapper -->
+<script src="js/buoy.js"></script>
+<script src="js/serialize.js"></script>
+<script src="js/savebutton.js"></script>
+</body>
+</html>
