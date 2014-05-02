@@ -2,6 +2,10 @@ matboard
 ========
 
 WIP. A Conceptual Proof demonstrated with several different toolkits.
+
+## Discuss
+Join the converation in our public Gitter chat room.
+[![Gitter chat](https://badges.gitter.im/jpdevries/matboard.png)](https://gitter.im/jpdevries/matboard)
  
 ## Assignment
 ### Part 1
