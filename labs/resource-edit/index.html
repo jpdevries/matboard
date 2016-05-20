@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MetaBox</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <div id="resource-edit-form">
+    <h1>Title</h1>
+    <form action="#">
+      <div class="button-bar">
+        <div>
+          <button type="submit">Save</button>
+        </div>
+        <div>
+          <button formaction="/resource/duplicate">Duplicate</button>
+        </div>
+        <div>
+          <button>Delete</button>
+        </div>
+        <div>
+          <button formaction="/resource/preview" formtaget="_blank">View</button>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Document</legend>
+        <div class="field-group">
+          <div class="pagetitle-field">
+            <label for="pagetitle">Title</label>
+            <input type="text" name="pagetitle" required>
+          </div>
+
+          <div class="longtitle-field">
+            <label for="longtitle">Long Title</label>
+            <input type="text" name="longtitle">
+          </div>
+
+          <div class="description-field">
+            <label for="description">Description</label>
+            <textarea type="text" name="description"></textarea>
+          </div>
+
+          <div class="introtext-field">
+            <label for="introtext">Intro Text</label>
+            <textarea type="text" name="introtext"></textarea>
+          </div>
+
+        </div>
+        <div class="field-group">
+          <div class="field template-field">
+            <label for="template">Template</label>
+            <select name="template">
+              <option selected value="0">Base Template</option>
+              <option value="1">Blog Post</option>
+              <option value="2">Product</option>
+            </select>
+          </div>
+
+          <div class="alias-field">
+            <label for="alias">Alias</label>
+            <input type="text" name="alias">
+          </div>
+
+          <div class="menutitle-field">
+            <label for="menutitle">Menu Title</label>
+            <input type="text" name="menutitle">
+          </div>
+
+          <div class="link-attributes-field">
+            <label for="link-attributes">Intro Text</label>
+            <input type="text" name="link-attributes">
+          </div>
+
+          <div class="menuhide-field">
+            <label for="menuhide">Hide From Menus</label>
+            <input type="checkbox" name="menuhide">
+          </div>
+
+          <div class="published-field">
+            <label for="published">Published</label>
+            <input type="checkbox" name="published">
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Settings</legend>
+        <div class="field-group">
+          <div class="parent-resource-field">
+            <label for="parent-resource">Parent Resource</label>
+            <select name="parent-resource">
+              <option selected value="0"></option>
+              <option value="1">Blog (1)</option>
+              <option value="2">Shop (2)</option>
+            </select>
+          </div>
+          <div class="resource-type-field">
+            <label for="resource-type">Resource Type</label>
+            <select name="resource-type">
+              <option value="modResource">Resource</option>
+              <option value="modSymlink">Symlink</option>
+              <option value="modWebLink">WebLink</option>
+            </select>
+          </div>
+          <div class="field content-type-field">
+            <label for="content_type">Content Type</label>
+            <select name="content_type">
+              <optgroup label="Content">
+                <option value="html">HTML</option>
+                <option value="json">JSON</option>
+                <option value="pdf">PDF</option>
+                <option value="rss">RSS</option>
+                <option value="text">Text</option>
+                <option value="xml">XML</option>
+              </optgroup>
+              <optgroup label="Assets">
+                <option value="css">CSS</option>
+                <option value="js">JavaScript</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="field field-content_disposition">
+            <label for="content_disposition">Content Disposition</label>
+            <input type="radio" checked name="content_disposition">Inline<br>
+            <input type="radio" name="content_disposition">Attachment
+          </div>
+          <div>
+            <label for="menu_index">Menu Index</label>
+            <input type="number" name="menu_index" value="2" min="0" step="1">
+          </div>
+        </div>
+        <div class="field-group">
+          <fieldset className="checbox-field">
+            <legend>Booleans</legend>
+            <label for="container"><input name="container" type="checkbox" />&nbsp; Container</label>
+            <label for="searchable"><input name="searchable" type="checkbox" />&nbsp; Searchable</label>
+            <label for="richText"><input name="richText" type="checkbox" />&nbsp; Rich Text</label>
+            <label for="freezeURI"><input name="freezeURI" type="checkbox" />&nbsp; Freeze URI</label>
+            <label for="cacheable"><input name="cacheable" type="checkbox" />&nbsp; Cacheable</label>
+            <label for="emptyCache"><input name="emptyCache" type="checkbox" />&nbsp; Empty Cache</label>
+            <label for="deleted"><input name="deleted" type="checkbox" />&nbsp; Deleted</label>
+          </fieldset>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Publication</legend>
+        <div class="field-group">
+          <div class="field field-publishedon">
+            <label for="publishedon">Published On</label>
+            <input type="datetime" name="publishedon">
+          </div>
+          <div>
+            <label for="pubdate">Published Date</label>
+            <input type="datetime" name="pubdate">
+          </div>
+          <div>
+            <label for="unpubdate">Unpublish date</label>
+            <input type="datetime" name="unpubdate">
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Resource Groups</legend>
+        <p>Here you can select which Resource Group this Resource belongs&nbsp;to.</p>
+        <table class="resource-groups">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Access</th>
+            </tr>
+          </thead>
+          <tr>
+            <td>Group 1</td>
+            <td><label for="rsgrp-1-access"><input type="checkbox" name="rsgrp-1-access"></label></td>
+          </tr>
+        </table>
+      </fieldset>
+      <fieldset class="content">
+        <legend>Content</legend>
+        <label for="content">Content</label>
+        <textarea name="content" cols="30" rows="10"></textarea>
+      </fieldset>
+      <footer>
+        <div class="button-bar">
+          <div>
+            <button type="submit">Save</button>
+          </div>
+          <div>
+            <button formaction="/resource/duplicate">Duplicate</button>
+          </div>
+          <div>
+            <button>Delete</button>
+          </div>
+          <div>
+            <button formaction="/resource/preview" formtaget="_blank">View</button>
+          </div>
+        </div>
+      </footer>
+    </form>
+  </div>
+
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/redux/3.5.2/redux.min.js"></script>
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.min.js"></script>
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.min.js"></script>
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/react-redux/4.4.5/react-redux.min.js"></script>
+  <script defer src="assets/js/app.js"></script>
+
+</body>
+</html>

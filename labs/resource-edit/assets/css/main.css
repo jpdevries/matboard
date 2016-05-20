@@ -1,0 +1,56 @@
+html {
+  box-sizing: border-box; }
+
+*, *::after, *::before {
+  box-sizing: inherit; }
+
+textarea, input[type="text"], table {
+  width: 100%;
+  min-width: 100%; }
+
+/*
+http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
+*/
+label[for="content"] {
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  top: 0;
+  clip: rect(1px 1px 1px 1px);
+  /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px); }
+
+body textarea, body input[type="text"], body table {
+  width: 100%; }
+
+label {
+  display: block; }
+
+fieldset {
+  margin-bottom: 1em; }
+
+table th {
+  text-align: left; }
+
+.field-group > div {
+  margin-bottom: 1em; }
+
+.button-bar {
+  display: flex; }
+  .button-bar > div {
+    flex: 1 0 auto;
+    padding: 0 0.5em; }
+    .button-bar > div button {
+      width: 100%; }
+
+.button-bar:not(footer .button-bar) {
+  position: -webkit-sticky;
+  -webkit-position: sticky;
+  -moz-position: sticky;
+  position: sticky;
+  top: 0;
+  margin-bottom: 1em;
+  background: white;
+  padding: 0.5em;
+  border-bottom: 1px solid #080808; }

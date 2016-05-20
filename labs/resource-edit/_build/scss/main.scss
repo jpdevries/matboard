@@ -1,0 +1,68 @@
+@import "bourbon/bourbon";
+@import "neat/neat";
+
+@import "spec/tacular";
+
+$black:rgb(8,8,8);
+
+body {
+  textarea, input[type="text"], table {
+    width:100%;
+  }
+}
+
+label {
+  display:block;
+}
+
+fieldset {
+  margin-bottom:1em;
+}
+
+textarea, input[type="text"] {
+  @extend %very-greedy;
+}
+
+table {
+  @extend %very-greedy;
+  th {
+    text-align:left;
+  }
+}
+
+label[for="content"] {
+  @extend %accessibly-hidden;
+}
+
+.field-group {
+  > div {
+    margin-bottom:1em;
+  }
+}
+
+.button-bar {
+  display:flex;
+  > div {
+    flex:1 0 auto;
+    padding:0 0.5em;
+    button {
+      width:100%;
+    }
+  }
+
+}
+
+.button-bar {
+  &:not(footer .button-bar) {
+    position: -webkit-sticky;
+    -webkit-position: sticky;
+    -moz-position: sticky;
+    position:sticky;
+    top:0;
+    margin-bottom:1em;
+
+    background:white;
+    padding:0.5em;
+    border-bottom:1px solid $black;
+  }
+}
