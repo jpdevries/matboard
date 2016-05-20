@@ -22,6 +22,7 @@ module.exports = function(grunt) {
         "crawl": false,
         "customTests": [],
         "dest": "<%= dirs.theme %><%= dirs.assets %><%= dirs.js %>vendor/modernizr.js",
+        "enableJSClass":true,
         "tests": [
           "audio",
           "batteryapi",
@@ -105,6 +106,11 @@ module.exports = function(grunt) {
             src: 'neat/**/*',
             cwd: '<%= dirs.lib %>',
             dest: '<%= dirs.scss %>',
+            expand: true
+        },{
+            src: 'JSONarea/**/*',
+            cwd: '<%= dirs.lib %>',
+            dest: '<%= dirs.theme %><%= dirs.assets %><%= dirs.js %>vendor',
             expand: true
         }]
       }
@@ -195,5 +201,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-webpack');
 
-  grunt.registerTask('build',['bower','copy','modernizr','webpack','uglify','sass','growl:build']);
+  grunt.registerTask('build',['bower','copy','modernizr',/*'webpack','uglify',*/'sass','growl:build']);
 };

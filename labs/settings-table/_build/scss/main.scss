@@ -1,0 +1,153 @@
+@import "bourbon/bourbon";
+@import "neat/neat";
+
+@import "spec/tacular";
+
+html.js {
+  [js-hidden] {
+    display:none;
+  }
+}
+
+h1 {
+  @include media($gtMobile) {
+    //padding:0 1rem;
+  }
+}
+
+%settings-table {
+    background:rgb(242,242,242);
+    label {
+      display:block;
+    }
+    td,th {
+        padding:0.2em 0.4em;
+    }
+    thead {
+      font-weight:bold;
+        background:rgb(224,224,224);
+        > tr {
+            > th {
+                border:1px solid rgb(200,200,200);
+            }
+        }
+    }
+    tbody {
+        > tr {
+            > td {
+                border:1px solid rgb(200,200,200);
+            }
+            &:nth-of-type(4n-1) {
+                background:rgba(40,40,40,0.1);
+            }
+            &.open + .contextual-setting, &:focus + .contextual-setting {
+                display:table-row !important; /* display the setting form for open rows */
+            }
+            &:focus {
+                html.no-js {
+                    background:#F2F2C5; /* highlight focused setting for no-js users */
+                }
+            }
+        }
+    }
+    .contextual-setting {
+        html.js & {
+            background:#F2F2C5;
+        }
+        text-align:center;
+
+        input {
+          &[type="text"] {
+            @extend %very-greedy;
+            line-height:1.4em;
+          }
+        }
+        > td {
+          padding:2em;
+          p {
+            &:last-of-type {
+              margin-bottom:0;
+            }
+          }
+            > div {
+
+                h1,h2,h3,h4,h5,h6 {
+                    margin-top:0;
+                }
+            }
+        }
+    }
+}
+
+.settings-table {
+    @extend %settings-table;
+}
+
+.settings-grid {
+  display:flex;
+  flex-wrap:wrap;
+
+  align-content:center;
+
+  > * {
+    flex:1 1 24em;
+    padding-left:1rem;
+    padding-right:1rem;
+  }
+
+  table {
+    @extend %very-greedy;
+  }
+
+  h2 {
+    text-align:center;
+  }
+
+  form {
+    text-align:center;
+    table,footer {
+      margin-left:auto;
+      margin-right:auto;
+    }
+  }
+  footer p {
+    text-align:center;
+  }
+}
+
+form.search-settings {
+
+  @include media($gtMobile) {
+    display:flex;
+    //padding:0 1rem;
+  }
+  //max-width:36rem;
+
+  font-size:1.1em;
+  > label {
+    flex-grow:1;
+    max-width:50vw;
+    margin-right:.5em;
+  }
+  > label, > button {
+
+  }
+  button {
+    @include media($mobile) {
+      display:block;
+      margin-bottom:0.5em;
+    }
+  }
+  input,button {
+    font-size:inherit;
+  }
+}
+
+input[name="search-settings"] {
+  @extend %very-greedy;
+  margin-bottom:1em;
+}
+
+label[for="filter-by"] {
+  text-align:right;
+}
