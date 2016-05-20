@@ -1,0 +1,66 @@
+@import "bourbon/bourbon";
+@import "neat/neat";
+
+html.js {
+  [js-hidden] {
+    display:none;
+  }
+}
+
+%settings-table {
+    background:rgb(242,242,242);
+    label {
+      display:block;
+    }
+    td,th {
+        padding:0.2em 0.4em;
+    }
+    thead {
+      font-weight:bold;
+        background:rgb(224,224,224);
+        > tr {
+            > th {
+                border:1px solid rgb(200,200,200);
+            }
+        }
+    }
+    tbody {
+        > tr {
+            > td {
+                border:1px solid rgb(200,200,200);
+            }
+            &:nth-of-type(4n-1) {
+                background:rgba(40,40,40,0.1);
+            }
+            &.open + .contextual-setting, &:focus + .contextual-setting {
+                display:table-row !important; /* display the setting form for open rows */
+            }
+            &:focus {
+                html.no-js {
+                    background:#F2F2C5; /* highlight focused setting for no-js users */
+                }
+            }
+        }
+    }
+    .contextual-setting {
+        html.js & {
+            background:#F2F2C5;
+        }
+        text-align:center;
+
+        input {
+        }
+        > td {
+            > div {
+                padding:1em;
+                h1,h2,h3,h4,h5,h6 {
+                    margin-top:0;
+                }
+            }
+        }
+    }
+}
+
+.settings-table {
+    @extend %settings-table;
+}

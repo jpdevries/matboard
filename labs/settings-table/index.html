@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <title>Settings</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <script type="text/javascript" src="assets/js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    <div id="settings-table">
+      <form>
+        <table class="settings-table">
+          <thead>
+            <tr>
+              <th>Setting</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr tabindex="0">
+              <td>site_title</td>
+              <td>MODX Revolution</td>
+            </tr>
+            <tr class="contextual-setting" js-hidden>
+              <td colspan="2">
+                  <label><input tabindex="0" name="site_title" placeholder="Update site_title" /></label>
+                  <div>
+                    <button type="submit" js-hidden>Save</button>
+                  </div>
+              </td>
+            </tr>
+
+            <tr tabindex="0">
+              <td>media_source</td>
+              <td>Filesystem</td>
+            </tr>
+            <tr class="contextual-setting" js-hidden>
+              <td colspan="2">
+                <label for="media_source">MediaSource</label>
+                <select tabindex="0" name="media_source">
+                  <option checked value="0">Filesystem</option>
+                  <option value="1">Amazon S3</option>
+                  <option value="2">Assets</option>
+                </select>
+                <div>
+                  <button type="submit" js-hidden>Save</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr tabindex="0">
+              <td>clipsJSON</td>
+              <td>{...}</td>
+            </tr>
+            <tr class="contextual-setting" js-hidden>
+              <td colspan="2">
+                <label for="clipsjson">Clips JSON</label>
+                <textarea name="clipsjson" rows="8" cols="40">[{"title":"$ Dollar Sign","clip":"$"},
+{"title":"€ Euro Sign","clip":"€"},
+{"title":"¢ Cent Sign","clip":"¢"},
+{"title":"£ Pound Sign","clip":"£"},
+{"title":"¤ Currency Sign","clip":"¤"},
+{"title":"¥ Yen Sign","clip":"¥"},
+{"title":"ƒ Florin Sign","clip":"ƒ"}]</textarea>
+                <div>
+                  <button type="submit" js-hidden>Save</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+    <script src="./assets/js/vendor/JSONarea/JSONarea.min.js"></script>
+    <!--script>window.jQuery || document.write('<script src="js/vendor/jquery-1.12.2.min.js"><\/script>')</script-->
+
+    <script type="text/javascript">
+      $('.settings-table').each(function(){
+        $(this).on( (!Modernizr.touch) ? 'focusin' : 'click', 'tbody > tr:not(.contextual-setting)', function(e) {
+          $(this).toggleClass('open').siblings('.open').removeClass('open');
+        });
+      });
+    </script>
+
+    <script type="text/javascript">
+      var forEach = function (array, callback, scope) { // https://css-tricks.com/snippets/javascript/loop-queryselectorall-matches/
+        for (var i = 0; i < array.length; i++) {
+          callback.call(scope, i, array[i]);
+        }
+      };
+      // for any text area with json in the name, valid the input with JSONarea
+      var jsonAreas = document.querySelectorAll('textarea[name*="json"]'); // http://code.tutsplus.com/tutorials/the-30-css-selectors-you-must-memorize--net-16048
+      forEach(jsonAreas, function(index,textarea){
+        var jsonArea = JSONArea(textarea,{
+          sourceObjects:[] // optional array of objects for JSONArea to inherit from
+        });
+
+        // then here's how you use JSONArea's update event
+        jsonArea.getElement().addEventListener('update',function(e){
+          if(e.detail.isJSON) {
+            // do something
+            console.log('it is JSON');
+          } else {
+            // do something else
+            console.log('it is not JSON');
+          }
+        });
+
+      });
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "settings-table",
+  "version": "0.0.0",
+  "description": "",
+  "main": "gruntifle.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt-bower-task": "^0.4.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^1.0.1",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-growl": "^0.1.5",
+    "grunt-modernizr": "^1.0.2",
+    "grunt-sass": "^1.2.0",
+    "grunt-webpack": "^1.0.11",
+    "webpack": "^1.13.1"
+  }
+}

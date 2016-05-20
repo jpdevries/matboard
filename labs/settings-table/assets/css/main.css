@@ -1,0 +1,38 @@
+html {
+  box-sizing: border-box; }
+
+*, *::after, *::before {
+  box-sizing: inherit; }
+
+html.js [js-hidden] {
+  display: none; }
+
+.settings-table {
+  background: #f2f2f2; }
+  .settings-table label {
+    display: block; }
+  .settings-table td, .settings-table th {
+    padding: 0.2em 0.4em; }
+  .settings-table thead {
+    font-weight: bold;
+    background: #e0e0e0; }
+    .settings-table thead > tr > th {
+      border: 1px solid #c8c8c8; }
+  .settings-table tbody > tr > td {
+    border: 1px solid #c8c8c8; }
+  .settings-table tbody > tr:nth-of-type(4n-1) {
+    background: rgba(40, 40, 40, 0.1); }
+  .settings-table tbody > tr.open + .contextual-setting, .settings-table tbody > tr:focus + .contextual-setting {
+    display: table-row !important;
+    /* display the setting form for open rows */ }
+  .settings-table tbody > tr:focus html.no-js {
+    background: #F2F2C5;
+    /* highlight focused setting for no-js users */ }
+  .settings-table .contextual-setting {
+    text-align: center; }
+    html.js .settings-table .contextual-setting {
+      background: #F2F2C5; }
+    .settings-table .contextual-setting > td > div {
+      padding: 1em; }
+      .settings-table .contextual-setting > td > div h1, .settings-table .contextual-setting > td > div h2, .settings-table .contextual-setting > td > div h3, .settings-table .contextual-setting > td > div h4, .settings-table .contextual-setting > td > div h5, .settings-table .contextual-setting > td > div h6 {
+        margin-top: 0; }
