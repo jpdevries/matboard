@@ -496,7 +496,7 @@
     <script type="text/javascript">
       $('.settings-table').each(function(){
         $(this).on( 'focusin click', 'tbody > tr:not(.contextual-setting)', function(e) {
-          $(this).toggleClass('open').siblings('.open').removeClass('open');
+          $(this).addClass('open').siblings('.open').removeClass('open');
         });
       });
     </script>
