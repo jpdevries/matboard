@@ -10,13 +10,81 @@
   <body>
     <header>
       <h1>System Settings</h1>
+      <div class="create-setting-module">
+        <script>document.write('<button id="create-setting">Create Setting</button>')</script>
+        <form action="#" class="create-setting-form" js-hidden>
+          <fieldset>
+            <legend>Create Setting</legend>
+            <div>
+              <div>
+                <label for="setting-key">Key</label>
+                <input type="text" name="setting-key" required>
+              </div>
+              <div>
+                <label for="setting-name">Name</label>
+                <input type="text" name="setting-name" required>
+              </div>
+              <div>
+                <label for="setting-description">Description</label>
+                <textarea name="setting-description" rows="2"></textarea>
+              </div>
+            </div>
+            <div>
+              <div>
+                <label for="setting-field-type">Field Type</label>
+                <select name="setting-field-type">
+                  <option checked value="textfield">Textfield</option>
+                  <option value="textarea">Textarea</option>
+                  <option value="boolean">Yes/No</option>
+                  <option value="password">Password</option>
+                  <option value="category">Category</option>
+                  <option value="charset">Charset</option>
+                  <option value="charset">Charset</option>
+                  <option value="country">Country</option>
+                  <option value="context">Context</option>
+                  <option value="country">Country</option>
+                  <option value="context">Context</option>
+                  <option value="namespace">Namespace</option>
+                  <option value="template">Template</option>
+                  <option value="user">User</option>
+                  <option value="user-group">User Group</option>
+                  <option value="language">Language</option>
+                  <option value="source">Source</option>
+                  <option value="manager-theme">Manager Theme</option>
+                </select>
+              </div>
+              <div>
+                <label for="setting-namespace">Namespace</label>
+                <select name="setting-namespace" id="">
+                  <option checked value="core">core</option>
+                  <option value="ace">ace</option>
+                  <option value="contentblocks">contentblocks</option>
+                  <option value="redactor">redactor</option>
+                  <option value="commerce">commerce</option>
+                </select>
+              </div>
+              <div>
+                <label for="lexicon-entry">Area Lexicon Entry</label>
+                <input type="text" name="lexicon-entry">
+              </div>
+            </div>
+            <footer>
+              <div>
+                <label for="setting-value">Value</label>
+                <input type="text" name="setting-value" required>
+              </div>
+              <button type="submit">Create Setting</button>
+            </footer>
+          </fieldset>
+        </form>
+      </div>
       <div>
         <form action="#" class="search-settings">
           <label for="search-settings"><input name="search-settings" type="text" placeholder="Search for any System Setting. We'll try and find it."></label>
           <button type="submit">Search</button>
           <label for="filter-by">Filter by:</label>
           <select name="filter-by" id="filter-by">
-            <option value="">All</option>
+            <option checked value="">All</option>
             <option value="core">core</option>
             <option value="ace">ace</option>
             <option value="contentblocks">contentblocks</option>
@@ -48,9 +116,10 @@
               <tr class="contextual-setting" js-hidden>
                 <td colspan="2">
                     <div>
-                      <label><input type="text" tabindex="0" name="site_title" placeholder="Update site_title" /></label>
-                      <p>The title of your site.</p>
-                      <button type="submit" js-hidden>Save</button>
+                      <label><input type="text" tabindex="0" name="site_title" placeholder="MODX Revolution" /></label>
+                      <p>The title of your site</p>
+                      <button type="submit" class="save">Save</button>
+                      <button type="submit" formaction="delete/settting">Delete</button>
                     </div>
                 </td>
               </tr>
@@ -69,7 +138,8 @@
                   </select>
                   <div>
                     <p>The default media source for browsing and uploading files.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -90,7 +160,8 @@
   {"title":"ƒ Florin Sign","clip":"ƒ"}]</textarea>
                   <div>
                     <p>Set to properly formatted JSON for use with the Redactor Clips Plugin. Leave empty to disable the plugin.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -105,14 +176,16 @@
                   <input type="checkbox" name="use-cdn" checked>
                   <p>Content Delivery Networks leverage the browser cache by serving common libraries and frameworks from the network nearest you. Disabling this setting will serve assets from your local server instead.</p>
                   <div>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
           <footer js-hidden>
-            <button type="submit">Save</button>
+            <button type="submit" class="save">Save</button>
+            <button type="submit" formaction="delete/settting">Delete</button>
           </footer>
         </form>
         <footer>
@@ -139,10 +212,11 @@
               </tr>
               <tr class="contextual-setting" js-hidden>
                 <td colspan="2">
-                    <label><input type="text" tabindex="0" name="site_title" placeholder="Update site_title" /></label>
+                    <label><input type="text" tabindex="0" name="site_title" placeholder="MODX Revolution" /></label>
                     <div>
                       <p>The title of your site.</p>
-                      <button type="submit" js-hidden>Save</button>
+                      <button type="submit" class="save">Save</button>
+                      <button type="submit" formaction="delete/settting">Delete</button>
                     </div>
                 </td>
               </tr>
@@ -161,7 +235,8 @@
                   </select>
                   <div>
                     <p>The default media source for browsing and uploading files.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -182,7 +257,8 @@
   {"title":"ƒ Florin Sign","clip":"ƒ"}]</textarea>
                   <div>
                     <p>Set to properly formatted JSON for use with the Redactor Clips Plugin. Leave empty to disable the plugin.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -197,14 +273,16 @@
                   <input type="checkbox" name="use-cdn" checked>
                   <p>Content Delivery Networks leverage the browser cache by serving common libraries and frameworks from the network nearest you. Disabling this setting will serve assets from your local server instead.</p>
                   <div>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
           <footer js-hidden>
-            <button type="submit">Save</button>
+            <button type="submit" class="save">Save</button>
+            <button type="submit" formaction="delete/settting">Delete</button>
           </footer>
         </form>
         <footer>
@@ -231,10 +309,11 @@
               </tr>
               <tr class="contextual-setting" js-hidden>
                 <td colspan="2">
-                    <label><input type="text" tabindex="0" name="site_title" placeholder="Update site_title" /></label>
+                    <label><input type="text" tabindex="0" name="site_title" placeholder="MODX Revolution" /></label>
                     <div>
                       <p>The title of your site.</p>
-                      <button type="submit" js-hidden>Save</button>
+                      <button type="submit" class="save">Save</button>
+                      <button type="submit" formaction="delete/settting">Delete</button>
                     </div>
                 </td>
               </tr>
@@ -253,7 +332,8 @@
                   </select>
                   <div>
                     <p>The default media source for browsing and uploading files.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -274,7 +354,8 @@
   {"title":"ƒ Florin Sign","clip":"ƒ"}]</textarea>
                   <div>
                     <p>Set to properly formatted JSON for use with the Redactor Clips Plugin. Leave empty to disable the plugin.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -289,15 +370,13 @@
                   <input type="checkbox" name="use-cdn" checked>
                   <p>Content Delivery Networks leverage the browser cache by serving common libraries and frameworks from the network nearest you. Disabling this setting will serve assets from your local server instead.</p>
                   <div>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-          <footer js-hidden>
-            <button type="submit">Save</button>
-          </footer>
         </form>
         <footer>
           <p><a href="#">View all</a></p>
@@ -323,10 +402,11 @@
               </tr>
               <tr class="contextual-setting" js-hidden>
                 <td colspan="2">
-                    <label><input type="text" tabindex="0" name="site_title" placeholder="Update site_title" /></label>
+                    <label><input type="text" tabindex="0" name="site_title" placeholder="MODX Revolution" /></label>
                     <div>
                       <p>The title of your site.</p>
-                      <button type="submit" js-hidden>Save</button>
+                      <button type="submit" class="save">Save</button>
+                      <button type="submit" formaction="delete/settting">Delete</button>
                     </div>
                 </td>
               </tr>
@@ -345,7 +425,8 @@
                   </select>
                   <div>
                     <p>The default media source for browsing and uploading files.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -366,7 +447,8 @@
   {"title":"ƒ Florin Sign","clip":"ƒ"}]</textarea>
                   <div>
                     <p>Set to properly formatted JSON for use with the Redactor Clips Plugin. Leave empty to disable the plugin.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -381,15 +463,13 @@
                   <input type="checkbox" name="use-cdn" checked>
                   <p>Content Delivery Networks leverage the browser cache by serving common libraries and frameworks from the network nearest you. Disabling this setting will serve assets from your local server instead.</p>
                   <div>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-          <footer js-hidden>
-            <button type="submit">Save</button>
-          </footer>
         </form>
         <footer>
           <p><a href="#">View all</a></p>
@@ -415,10 +495,10 @@
               </tr>
               <tr class="contextual-setting" js-hidden>
                 <td colspan="2">
-                    <label><input type="text" tabindex="0" name="site_title" placeholder="Update site_title" /></label>
+                    <label><input type="text" tabindex="0" name="site_title" placeholder="MODX Revolution" /></label>
                     <div>
                       <p>The title of your site.</p>
-                      <button type="submit" js-hidden>Save</button>
+                      <button type="submit" class="save">Save</button>
                     </div>
                 </td>
               </tr>
@@ -437,7 +517,7 @@
                   </select>
                   <div>
                     <p>The default media source for browsing and uploading files.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
                   </div>
                 </td>
               </tr>
@@ -458,7 +538,8 @@
   {"title":"ƒ Florin Sign","clip":"ƒ"}]</textarea>
                   <div>
                     <p>Set to properly formatted JSON for use with the Redactor Clips Plugin. Leave empty to disable the plugin.</p>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -473,15 +554,13 @@
                   <input type="checkbox" name="use-cdn" checked>
                   <p>Content Delivery Networks leverage the browser cache by serving common libraries and frameworks from the network nearest you. Disabling this setting will serve assets from your local server instead.</p>
                   <div>
-                    <button type="submit" js-hidden>Save</button>
+                    <button type="submit" class="save">Save</button>
+                    <button type="submit" formaction="delete/settting">Delete</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-          <footer js-hidden>
-            <button type="submit">Save</button>
-          </footer>
         </form>
         <footer>
           <p><a href="#">View all</a></p>
@@ -502,6 +581,14 @@
     </script>
 
     <script type="text/javascript">
+      $("#create-setting").on('click',function(e){
+        $('.create-setting-form').removeAttr('js-hidden');
+        $('input[name="setting-key"]').focus();
+        $(this).remove();
+      });
+    </script>
+
+    <script type="text/javascript">
       var forEach = function (array, callback, scope) { // https://css-tricks.com/snippets/javascript/loop-queryselectorall-matches/
         for (var i = 0; i < array.length; i++) {
           callback.call(scope, i, array[i]);
@@ -514,14 +601,16 @@
           sourceObjects:[] // optional array of objects for JSONArea to inherit from
         });
 
+        var btn = $(textarea).closest('td').find('button.save');
+
         // then here's how you use JSONArea's update event
         jsonArea.getElement().addEventListener('update',function(e){
           if(e.detail.isJSON) {
             // do something
-            console.log('it is JSON');
+            btn.removeAttr('disabled');
           } else {
             // do something else
-            console.log('it is not JSON');
+            btn.attr('disabled','');
           }
         });
 

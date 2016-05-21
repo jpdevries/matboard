@@ -72,11 +72,6 @@ h1 {
         }
         > td {
           padding:2em;
-          p {
-            &:last-of-type {
-              margin-bottom:0;
-            }
-          }
             > div {
                 h1,h2,h3,h4,h5,h6 {
                     margin-top:0;
@@ -84,6 +79,44 @@ h1 {
             }
         }
     }
+}
+
+.create-setting-module {
+  margin-bottom:1em;
+}
+
+.create-setting-form {
+  margin-bottom:1em;
+  > fieldset {
+    > div {
+      @include media($gtMobile) {
+        display:flex;
+        flex-wrap:wrap;
+        > * {
+          flex:1 0 16em;
+          padding-right:.5em;
+          margin-bottom:.5em;
+        }
+      }
+    }
+  }
+  input, textarea {
+    @extend %very-greedy;
+  }
+  label {
+    display:block;
+  }
+  footer {
+    text-align:center;
+    > div {
+      text-align:left;
+      margin:1em 0;
+    }
+    button {
+      margin-left:auto;
+      margin-right:auto;
+    }
+  }
 }
 
 .settings-table {
