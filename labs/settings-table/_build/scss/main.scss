@@ -9,6 +9,13 @@ html.js {
   }
 }
 
+body {
+  margin:0;
+  > header {
+    padding:0 1em;
+  }
+}
+
 
 h1 {
   @include media($gtMobile) {
@@ -91,8 +98,10 @@ h1 {
 
   > * {
     flex:1 1 24em;
-    padding-left:1rem;
-    padding-right:1rem;
+    @include media($gtMobile) {
+      padding-left:1rem;
+      padding-right:1rem;
+    }
   }
 
   table {

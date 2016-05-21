@@ -14,6 +14,11 @@ http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
 html.js [js-hidden] {
   display: none; }
 
+body {
+  margin: 0; }
+  body > header {
+    padding: 0 1em; }
+
 .settings-table {
   background: #f2f2f2; }
   .settings-table label {
@@ -53,9 +58,11 @@ html.js [js-hidden] {
   flex-wrap: wrap;
   align-content: center; }
   .settings-grid > * {
-    flex: 1 1 24em;
-    padding-left: 1rem;
-    padding-right: 1rem; }
+    flex: 1 1 24em; }
+    @media screen and (min-width: 641px) {
+      .settings-grid > * {
+        padding-left: 1rem;
+        padding-right: 1rem; } }
   .settings-grid h2 {
     text-align: center; }
   .settings-grid form {
