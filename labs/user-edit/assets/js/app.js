@@ -1622,7 +1622,12 @@
 	            description: _this3.refs.settingDescription.value,
 	            fieldType: _this3.refs.settingFieldType.value,
 	            lexiconEntry: _this3.refs.settingLexiconEntry.value,
-	            value: _this3.refs.settingSettingValue.state.value !== undefined ? _this3.refs.settingSettingValue.state.value : _this3.refs.settingSettingValue.value
+	            value: function () {
+	              try {
+	                return _this3.refs.settingSettingValue.state.value;
+	              } catch (e) {}
+	              return _this3.refs.settingSettingValue.value;
+	            }()
 	          }));
 
 	          _this3.setState({ creatingSetting: false, disableCreateSettingButton: true }); // todo: async don't close until server confirms setting is added

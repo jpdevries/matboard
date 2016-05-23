@@ -337,7 +337,12 @@ var CreateUserSettingFieldset = React.createClass({
           description:this.refs.settingDescription.value,
           fieldType:this.refs.settingFieldType.value,
           lexiconEntry:this.refs.settingLexiconEntry.value,
-          value:(this.refs.settingSettingValue.state.value !== undefined) ? this.refs.settingSettingValue.state.value : this.refs.settingSettingValue.value
+          value:(() => {
+            try {
+              return this.refs.settingSettingValue.state.value;
+            } catch(e) {}
+            return this.refs.settingSettingValue.value;
+          })()
         }));
 
         this.setState({creatingSetting:false,disableCreateSettingButton:true}); // todo: async don't close until server confirms setting is added
