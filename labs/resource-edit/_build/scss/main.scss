@@ -6,7 +6,7 @@
 $black:rgb(8,8,8);
 
 body {
-  textarea, input[type="text"], table {
+  textarea, input[type="text"], input[type="url"], input[type="email"], table {
     width:100%;
   }
 }
@@ -34,10 +34,8 @@ label[for="content"] {
   @extend %accessibly-hidden;
 }
 
-.field-group {
-  > div {
-    margin-bottom:1em;
-  }
+div[class*="field-"] {
+  margin-bottom:1em;
 }
 
 .button-bar {

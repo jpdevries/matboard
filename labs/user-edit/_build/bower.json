@@ -1,0 +1,30 @@
+{
+  "name": "user-edit",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "JP DeVries <mail@devries.jp>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "exportsOverride": {
+    "bourbon": {
+      "": "app/assets/stylesheets/"
+    },
+    "neat": {
+      "": "app/assets/stylesheets/"
+    }
+  },
+  "dependencies": {
+    "bourbon": "^4.2.7",
+    "neat": "^1.7.4"
+  }
+}

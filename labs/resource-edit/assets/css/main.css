@@ -21,7 +21,7 @@ label[for="content"] {
   /* IE6, IE7 */
   clip: rect(1px, 1px, 1px, 1px); }
 
-body textarea, body input[type="text"], body table {
+body textarea, body input[type="text"], body input[type="url"], body input[type="email"], body table {
   width: 100%; }
 
 label {
@@ -33,7 +33,7 @@ fieldset {
 table th {
   text-align: left; }
 
-.field-group > div {
+div[class*="field-"] {
   margin-bottom: 1em; }
 
 .button-bar {

@@ -1,5 +1,3 @@
-
-
 var metabox = require('./metabox');
 
 document.addEventListener('DOMContentLoaded', function() {

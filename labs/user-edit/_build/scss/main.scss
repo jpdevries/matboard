@@ -1,0 +1,30 @@
+@import "bourbon/bourbon";
+@import "neat/neat";
+
+@import "spec/tacular";
+
+input[name="gender_other"], .selfless {
+  min-width:0 !important;
+  width:auto !important;
+}
+
+html.js {
+  [js-hidden] {
+    display:none;
+  }
+}
+
+select.language-select {
+  width:100%;
+}
+
+/*
+.phone-numbers {
+  @include media($gtMobile) {
+    display:flex;
+    > * {
+      flex:1 0 50%;
+    }
+  }
+}
+*/

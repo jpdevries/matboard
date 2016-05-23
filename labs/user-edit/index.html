@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <title>User Edit</title>
+  <link rel="stylesheet" href="../resource-edit/assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <script type="text/javascript" src="../settings-table/assets/js/vendor/modernizr.js"></script>
+</head>
+<body>
+  <div id="user-edit">
+    <h1>User: jpdevries</h1>
+    <form action="#" class="vcard">
+      <div class="button-bar">
+        <div>
+          <button type="submit">Save</button>
+        </div>
+        <div>
+          <button formaction="/resource/duplicate">Duplicate</button>
+        </div>
+        <div>
+          <button>Delete</button>
+        </div>
+      </div>
+      <fieldset>
+        <legend>General Information</legend>
+        <div class="n field-group">
+          <div class="field-username">
+            <label for="username">Username</label>
+            <input type="text" class="nickname" required>
+          </div>
+          <div class="field-given-name">
+            <label for="given-name">First Name</label>
+            <input type="text" class="given-name" />
+          </div>
+          <div class="field-family-name">
+            <label for="family-name">Last Name</label>
+            <input type="text" class="family-name" />
+          </div>
+          <div class="field-email">
+            <label for="email">Email</label>
+            <input type="email" class="email" required />
+          </div>
+
+          <div class="field-website">
+            <label for="website">Website</label>
+            <input type="url" name="website" class="url" />
+          </div>
+          <div class="field-gravatar">
+            <label for="gravatar">Gravatar</label>
+            <input type="text" name="gravatar" class="photo" />
+          </div>
+          <div class="field-bday">
+            <label for="bday">Date of birth</label>
+            <input type="date" name="bday" class="bday" />
+          </div>
+          <div class="field-gender">
+            <label for="gender">Gender</label><!-- http://itspronouncedmetrosexual.com/2012/06/how-can-i-make-the-gender-question-on-an-application-form-more-inclusive/ -->
+            <input type="radio" checked name="gender" value="">&nbsp;Unspecified<br />
+            <input type="radio" name="gender" value="man">&nbsp;Man<br />
+            <input type="radio" name="gender" value="woman">&nbsp;Woman<br />
+            <input type="radio" name="gender" value="trans">&nbsp;Trans<br />
+            <input type="radio" name="gender" value="">&nbsp;<input type="text" name="gender_other" placeholder="Other" /><br />
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Access</legend>
+        <div class="field-active">
+          <label for="active"><input type="checkbox" checked name="active" value="1">&nbsp;Active</label>
+        </div>
+        <div class="field-active">
+          <label for="sudo"><input type="checkbox" name="sudo" value="1">&nbsp;Sudo User</label>
+        </div>
+        <div class="field-active">
+          <label for="blocked"><input type="checkbox" name="blocked" value="1">&nbsp;Blocked</label>
+        </div>
+        <div class="field-group">
+          <fieldset class="field-new-password">
+            <legend>Password</legend>
+            <label for="new-password"><input type="checkbox" name="new-password">&nbsp;New Password</label>
+            <div js-hidden style="margin-top:1em">
+              <h4>Password Notification Method:</h4>
+              <label for="pw-notify"><input type="radio" val="pw-email" name="pw-notify">&nbsp; Send the new password by email.</label>
+              <label for="pw-notify"><input checked type="radio" val="pw-screen" name="pw-notify">&nbsp; Show the new password on screen.</label>
+
+              <h4>New Password Method:</h4>
+              <label for="new-pw"><input checked type="radio" val="modx-generate" name="new-pw">&nbsp; Let MODX generate a password.</label>
+              <label for="new-pw"><input type="radio" val="user-generate" name="new-pw">&nbsp; Let me specify a password.</label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="field-blocked-until">
+          <label for="blocked-until">Blocked Until</label>
+          <input type="date" name="blocked-until">
+        </div>
+        <div class="field-blocked-after">
+          <label for="blocked-after">Blocked After</label>
+          <input type="date" name="blocked-after">
+        </div>
+        <div class="field-num-logins">
+          <label for="blocked-num-logins">Number of Logins</label>
+          <input type="text" class="selfless" name="num-logins" value="140" readonly />
+        </div>
+        <div class="field-last-login">
+          <label for="last-login">Last Login</label>
+          <input type="date" name="last-login" readonly>
+        </div>
+        <div class="field-failed-logins">
+          <label for="failed-logins" class="failed-logins">Failed Logins</label>
+          <input type="text" name="failed-logins" readonly value="0">
+        </div>
+        <div class="field-class-key">
+          <label for="class-key">Class Key</label>
+          <select name="class-key">
+            <option value="modUser" checked>modUser</option>
+          </select>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend for="contact">Contact</legend>
+        <div class="phone-numbers">
+          <div class="field-mobile-phone">
+            <label for="mobile-phone">Mobile Phone Number</label>
+            <input type="phone" class="tel" />
+          </div>
+          <div class="field-mobile-fax">
+            <label for="fax">Fax</label>
+            <input type="phone" />
+          </div>
+        </div>
+        <div class="adr">
+          <div class="field-street-address">
+            <label for="street-address">Address</label>
+            <textarea type="address" rows="4" class="street-address" /></textarea>
+          </div>
+        </div>
+
+        <div class="field-locality">
+          <label for="locality">City</label>
+          <input type="text" class="locality" />
+        </div>
+        <div class="field-region">
+          <label for="region">State</label>
+          <input type="text" class="region" />
+        </div>
+        <div class="field-postal-code">
+          <label for="postal-code">Postal Code</label>
+          <input type="text" class="postal-code" />
+        </div>
+        <div class="field-country">
+          <label for="country">Country</label><!-- http://www.freeformatter.com/iso-country-list-html-select.html -->
+          <select name="country" class="country-name">
+            <option value="AF">Afghanistan</option>
+            <option value="AX">Åland Islands</option>
+            <option value="AL">Albania</option>
+            <option value="DZ">Algeria</option>
+            <option value="AS">American Samoa</option>
+            <option value="AD">Andorra</option>
+            <option value="AO">Angola</option>
+            <option value="AI">Anguilla</option>
+            <option value="AQ">Antarctica</option>
+            <option value="AG">Antigua and Barbuda</option>
+            <option value="AR">Argentina</option>
+            <option value="AM">Armenia</option>
+            <option value="AW">Aruba</option>
+            <option value="AU">Australia</option>
+            <option value="AT">Austria</option>
+            <option value="AZ">Azerbaijan</option>
+            <option value="BS">Bahamas</option>
+            <option value="BH">Bahrain</option>
+            <option value="BD">Bangladesh</option>
+            <option value="BB">Barbados</option>
+            <option value="BY">Belarus</option>
+            <option value="BE">Belgium</option>
+            <option value="BZ">Belize</option>
+            <option value="BJ">Benin</option>
+            <option value="BM">Bermuda</option>
+            <option value="BT">Bhutan</option>
+            <option value="BO">Bolivia, Plurinational State of</option>
+            <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
+            <option value="BA">Bosnia and Herzegovina</option>
+            <option value="BW">Botswana</option>
+            <option value="BV">Bouvet Island</option>
+            <option value="BR">Brazil</option>
+            <option value="IO">British Indian Ocean Territory</option>
+            <option value="BN">Brunei Darussalam</option>
+            <option value="BG">Bulgaria</option>
+            <option value="BF">Burkina Faso</option>
+            <option value="BI">Burundi</option>
+            <option value="KH">Cambodia</option>
+            <option value="CM">Cameroon</option>
+            <option value="CA">Canada</option>
+            <option value="CV">Cape Verde</option>
+            <option value="KY">Cayman Islands</option>
+            <option value="CF">Central African Republic</option>
+            <option value="TD">Chad</option>
+            <option value="CL">Chile</option>
+            <option value="CN">China</option>
+            <option value="CX">Christmas Island</option>
+            <option value="CC">Cocos (Keeling) Islands</option>
+            <option value="CO">Colombia</option>
+            <option value="KM">Comoros</option>
+            <option value="CG">Congo</option>
+            <option value="CD">Congo, the Democratic Republic of the</option>
+            <option value="CK">Cook Islands</option>
+            <option value="CR">Costa Rica</option>
+            <option value="CI">Côte d'Ivoire</option>
+            <option value="HR">Croatia</option>
+            <option value="CU">Cuba</option>
+            <option value="CW">Curaçao</option>
+            <option value="CY">Cyprus</option>
+            <option value="CZ">Czech Republic</option>
+            <option value="DK">Denmark</option>
+            <option value="DJ">Djibouti</option>
+            <option value="DM">Dominica</option>
+            <option value="DO">Dominican Republic</option>
+            <option value="EC">Ecuador</option>
+            <option value="EG">Egypt</option>
+            <option value="SV">El Salvador</option>
+            <option value="GQ">Equatorial Guinea</option>
+            <option value="ER">Eritrea</option>
+            <option value="EE">Estonia</option>
+            <option value="ET">Ethiopia</option>
+            <option value="FK">Falkland Islands (Malvinas)</option>
+            <option value="FO">Faroe Islands</option>
+            <option value="FJ">Fiji</option>
+            <option value="FI">Finland</option>
+            <option value="FR">France</option>
+            <option value="GF">French Guiana</option>
+            <option value="PF">French Polynesia</option>
+            <option value="TF">French Southern Territories</option>
+            <option value="GA">Gabon</option>
+            <option value="GM">Gambia</option>
+            <option value="GE">Georgia</option>
+            <option value="DE">Germany</option>
+            <option value="GH">Ghana</option>
+            <option value="GI">Gibraltar</option>
+            <option value="GR">Greece</option>
+            <option value="GL">Greenland</option>
+            <option value="GD">Grenada</option>
+            <option value="GP">Guadeloupe</option>
+            <option value="GU">Guam</option>
+            <option value="GT">Guatemala</option>
+            <option value="GG">Guernsey</option>
+            <option value="GN">Guinea</option>
+            <option value="GW">Guinea-Bissau</option>
+            <option value="GY">Guyana</option>
+            <option value="HT">Haiti</option>
+            <option value="HM">Heard Island and McDonald Islands</option>
+            <option value="VA">Holy See (Vatican City State)</option>
+            <option value="HN">Honduras</option>
+            <option value="HK">Hong Kong</option>
+            <option value="HU">Hungary</option>
+            <option value="IS">Iceland</option>
+            <option value="IN">India</option>
+            <option value="ID">Indonesia</option>
+            <option value="IR">Iran, Islamic Republic of</option>
+            <option value="IQ">Iraq</option>
+            <option value="IE">Ireland</option>
+            <option value="IM">Isle of Man</option>
+            <option value="IL">Israel</option>
+            <option value="IT">Italy</option>
+            <option value="JM">Jamaica</option>
+            <option value="JP">Japan</option>
+            <option value="JE">Jersey</option>
+            <option value="JO">Jordan</option>
+            <option value="KZ">Kazakhstan</option>
+            <option value="KE">Kenya</option>
+            <option value="KI">Kiribati</option>
+            <option value="KP">Korea, Democratic People's Republic of</option>
+            <option value="KR">Korea, Republic of</option>
+            <option value="KW">Kuwait</option>
+            <option value="KG">Kyrgyzstan</option>
+            <option value="LA">Lao People's Democratic Republic</option>
+            <option value="LV">Latvia</option>
+            <option value="LB">Lebanon</option>
+            <option value="LS">Lesotho</option>
+            <option value="LR">Liberia</option>
+            <option value="LY">Libya</option>
+            <option value="LI">Liechtenstein</option>
+            <option value="LT">Lithuania</option>
+            <option value="LU">Luxembourg</option>
+            <option value="MO">Macao</option>
+            <option value="MK">Macedonia, the former Yugoslav Republic of</option>
+            <option value="MG">Madagascar</option>
+            <option value="MW">Malawi</option>
+            <option value="MY">Malaysia</option>
+            <option value="MV">Maldives</option>
+            <option value="ML">Mali</option>
+            <option value="MT">Malta</option>
+            <option value="MH">Marshall Islands</option>
+            <option value="MQ">Martinique</option>
+            <option value="MR">Mauritania</option>
+            <option value="MU">Mauritius</option>
+            <option value="YT">Mayotte</option>
+            <option value="MX">Mexico</option>
+            <option value="FM">Micronesia, Federated States of</option>
+            <option value="MD">Moldova, Republic of</option>
+            <option value="MC">Monaco</option>
+            <option value="MN">Mongolia</option>
+            <option value="ME">Montenegro</option>
+            <option value="MS">Montserrat</option>
+            <option value="MA">Morocco</option>
+            <option value="MZ">Mozambique</option>
+            <option value="MM">Myanmar</option>
+            <option value="NA">Namibia</option>
+            <option value="NR">Nauru</option>
+            <option value="NP">Nepal</option>
+            <option value="NL">Netherlands</option>
+            <option value="NC">New Caledonia</option>
+            <option value="NZ">New Zealand</option>
+            <option value="NI">Nicaragua</option>
+            <option value="NE">Niger</option>
+            <option value="NG">Nigeria</option>
+            <option value="NU">Niue</option>
+            <option value="NF">Norfolk Island</option>
+            <option value="MP">Northern Mariana Islands</option>
+            <option value="NO">Norway</option>
+            <option value="OM">Oman</option>
+            <option value="PK">Pakistan</option>
+            <option value="PW">Palau</option>
+            <option value="PS">Palestinian Territory, Occupied</option>
+            <option value="PA">Panama</option>
+            <option value="PG">Papua New Guinea</option>
+            <option value="PY">Paraguay</option>
+            <option value="PE">Peru</option>
+            <option value="PH">Philippines</option>
+            <option value="PN">Pitcairn</option>
+            <option value="PL">Poland</option>
+            <option value="PT">Portugal</option>
+            <option value="PR">Puerto Rico</option>
+            <option value="QA">Qatar</option>
+            <option value="RE">Réunion</option>
+            <option value="RO">Romania</option>
+            <option value="RU">Russian Federation</option>
+            <option value="RW">Rwanda</option>
+            <option value="BL">Saint Barthélemy</option>
+            <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
+            <option value="KN">Saint Kitts and Nevis</option>
+            <option value="LC">Saint Lucia</option>
+            <option value="MF">Saint Martin (French part)</option>
+            <option value="PM">Saint Pierre and Miquelon</option>
+            <option value="VC">Saint Vincent and the Grenadines</option>
+            <option value="WS">Samoa</option>
+            <option value="SM">San Marino</option>
+            <option value="ST">Sao Tome and Principe</option>
+            <option value="SA">Saudi Arabia</option>
+            <option value="SN">Senegal</option>
+            <option value="RS">Serbia</option>
+            <option value="SC">Seychelles</option>
+            <option value="SL">Sierra Leone</option>
+            <option value="SG">Singapore</option>
+            <option value="SX">Sint Maarten (Dutch part)</option>
+            <option value="SK">Slovakia</option>
+            <option value="SI">Slovenia</option>
+            <option value="SB">Solomon Islands</option>
+            <option value="SO">Somalia</option>
+            <option value="ZA">South Africa</option>
+            <option value="GS">South Georgia and the South Sandwich Islands</option>
+            <option value="SS">South Sudan</option>
+            <option value="ES">Spain</option>
+            <option value="LK">Sri Lanka</option>
+            <option value="SD">Sudan</option>
+            <option value="SR">Suriname</option>
+            <option value="SJ">Svalbard and Jan Mayen</option>
+            <option value="SZ">Swaziland</option>
+            <option value="SE">Sweden</option>
+            <option value="CH">Switzerland</option>
+            <option value="SY">Syrian Arab Republic</option>
+            <option value="TW">Taiwan, Province of China</option>
+            <option value="TJ">Tajikistan</option>
+            <option value="TZ">Tanzania, United Republic of</option>
+            <option value="TH">Thailand</option>
+            <option value="TL">Timor-Leste</option>
+            <option value="TG">Togo</option>
+            <option value="TK">Tokelau</option>
+            <option value="TO">Tonga</option>
+            <option value="TT">Trinidad and Tobago</option>
+            <option value="TN">Tunisia</option>
+            <option value="TR">Turkey</option>
+            <option value="TM">Turkmenistan</option>
+            <option value="TC">Turks and Caicos Islands</option>
+            <option value="TV">Tuvalu</option>
+            <option value="UG">Uganda</option>
+            <option value="UA">Ukraine</option>
+            <option value="AE">United Arab Emirates</option>
+            <option value="GB">United Kingdom</option>
+            <option selected value="US">United States</option>
+            <option value="UM">United States Minor Outlying Islands</option>
+            <option value="UY">Uruguay</option>
+            <option value="UZ">Uzbekistan</option>
+            <option value="VU">Vanuatu</option>
+            <option value="VE">Venezuela, Bolivarian Republic of</option>
+            <option value="VN">Viet Nam</option>
+            <option value="VG">Virgin Islands, British</option>
+            <option value="VI">Virgin Islands, U.S.</option>
+            <option value="WF">Wallis and Futuna</option>
+            <option value="EH">Western Sahara</option>
+            <option value="YE">Yemen</option>
+            <option value="ZM">Zambia</option>
+            <option value="ZW">Zimbabwe</option>
+          </select>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>User Settings</legend>
+        <div>
+          <p>Here you can manage specifc settings for the user.</p>
+          <hr />
+          <script>document.write('<button id="create-new-setting" style="margin-bottom:1em">Create New Setting</button>')</script>
+          <fieldset js-hidden>
+            <legend>Create User Setting</legend>
+            <div>
+              <div>
+                <label for="setting-key">Key</label>
+                <input type="text" name="setting-key" required>
+              </div>
+              <div>
+                <label for="setting-name">Name</label>
+                <input type="text" name="setting-name" required>
+              </div>
+              <div>
+                <label for="setting-description">Description</label>
+                <textarea name="setting-description" rows="2"></textarea>
+              </div>
+            </div>
+            <div>
+              <div>
+                <label for="setting-field-type">Field Type</label>
+                <select name="setting-field-type">
+                  <option checked value="textfield">Textfield</option>
+                  <option value="textarea">Textarea</option>
+                  <option value="boolean">Yes/No</option>
+                  <option value="password">Password</option>
+                  <option value="category">Category</option>
+                  <option value="charset">Charset</option>
+                  <option value="charset">Charset</option>
+                  <option value="country">Country</option>
+                  <option value="context">Context</option>
+                  <option value="country">Country</option>
+                  <option value="context">Context</option>
+                  <option value="namespace">Namespace</option>
+                  <option value="template">Template</option>
+                  <option value="user">User</option>
+                  <option value="user-group">User Group</option>
+                  <option value="language">Language</option>
+                  <option value="source">Source</option>
+                  <option value="manager-theme">Manager Theme</option>
+                </select>
+              </div>
+              <div>
+                <label for="setting-namespace">Namespace</label>
+                <select name="setting-namespace" id="">
+                  <option checked value="core">core</option>
+                  <option value="ace">ace</option>
+                  <option value="contentblocks">contentblocks</option>
+                  <option value="redactor">redactor</option>
+                  <option value="commerce">commerce</option>
+                </select>
+              </div>
+              <div>
+                <label for="lexicon-entry">Area Lexicon Entry</label>
+                <input type="text" name="lexicon-entry">
+              </div>
+            </div>
+            <footer>
+              <div>
+                <label for="setting-value">Value</label>
+                <input type="text" name="setting-value" required>
+              </div>
+              <script>document.write('<button style="margin-top:1em" type="submit">Create Setting</button>')</script>
+            </footer>
+          </fieldset>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Key</th>
+                <th>Value</th>
+                <th>Last Modified</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td>theme</td>
+                <td>monkai</td>
+                <td>5/29/16</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Access Permissions</legend>
+        <div>
+          <p>Here you can select which User Groups this user belongs to. You can drag and drop each row to reorder the rank of each User Group. The User Group that has a rank of 0 will be declared the User's Primary Group, and will be the User Group that determines the User's Dashboard.</p>
+          <hr />
+        </div>
+
+        <script>document.write('<button id="add-user-to-group" style="margin-bottom:1em">Add User to Group</button>')</script>
+
+        <fieldset js-hidden>
+          <legend>Add User to Group</legend>
+          <div class="field-add-user-to-group">
+            <label for="add-user-to-group">User Group</label>
+            <select name="add-user-to-group">
+              <option value="0">Administrator</option>
+            </select>
+          </div>
+          <div class="field-add-user-role">
+            <label for="add-user-role">Use Role</label>
+            <select name="add-user-role">
+              <option value="0">Role</option>
+            </select></div>
+        </fieldset>
+
+        <table>
+          <thead>
+            <tr>
+              <th>User Group</th>
+              <th>Role</th>
+              <th>Rank</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Administrator</td>
+              <td>Super User</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+      </fieldset>
+      <fieldset>
+        <legend>Memo</legend>
+        <div>
+          <div class="field-comment">
+            <label for="field-comment">Comment</label>
+            <textarea name="comment" rows="3" class="note"></textarea>
+          </div>
+        </div>
+      </fieldset>
+      <footer>
+        <div class="button-bar">
+          <div>
+            <button type="submit">Save</button>
+          </div>
+          <div>
+            <button formaction="/resource/duplicate">Duplicate</button>
+          </div>
+          <div>
+            <button>Delete</button>
+          </div>
+        </div>
+      </footer>
+    </form>
+  </div>
+
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/redux/3.5.2/redux.min.js"></script>
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"></script>
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.min.js"></script>
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/react-redux/4.4.5/react-redux.min.js"></script>
+  <script defer src="assets/js/app.js"></script>
+
+</body>
+</html>
