@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <title>Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./../assets/css/main.css">
+    <script type="text/javascript" src="./../assets/js/vendor/modernizr.js"></script>
+  </head>
+  <body style="text-align:center">
+    <main style="max-width:28em;text-align:left;margin:0 auto">
+      <h1>Quick Create User</h1>
+      <div class="">
+        <form action="./../user-edit/index.html" class="create-user-form">
+          <fieldset style="margin-top:1em" js-not-hidden>
+            <legend>Quick Create User</legend>
+            <div class="n field-group">
+              <div class="field-username">
+                <label for="username">Username</label>
+                <input type="text" class="nickname" required>
+              </div>
+              <div class="field-given-name">
+                <label for="given-name">First Name</label>
+                <input type="text" class="given-name" />
+              </div>
+              <div class="field-family-name">
+                <label for="family-name">Last Name</label>
+                <input type="text" class="family-name" />
+              </div>
+              <div class="field-email">
+                <label for="email">Email</label>
+                <input type="email" class="email" required />
+              </div>
+            </div>
+            <div style="margin:1em 0" class="field-group user-group-field user-status-field">
+              <div class="field">
+                <input checked type="checkbox" name="user-active">
+                <label for="user-active">Active</label>
+              </div>
+              <div class="field">
+                <input type="checkbox" name="user-sudo">
+                <label for="user-sudo">Sudo</label>
+              </div>
+            </div>
+            <div style="text-align:center;margin:1em 0;">
+              <button type="submit">Create User</button>
+            </div>
+            <div class="field-group">
+              <fieldset class="field">
+                <legend>User Groups</legend>
+                <fieldset>
+                  <legend>Administrator</legend>
+                  <label for="user-group-editor-roles[]">Roles</label>
+                  <input type="checkbox" checked name="user-group-editor-roles[]" />&nbsp;Editor<br>
+                  <input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Super User<br>
+                  <!--select name="user-group-administrator">
+                    <option value=""></option>
+                    <option value="editor">Editor</option>
+                    <option value="editor">Super User</option>
+                  </select-->
+                </fieldset>
+                <fieldset>
+                  <legend>Editor</legend>
+                  <label for="user-group-editor-roles[]">Roles</label>
+                  <input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Editor<br>
+                  <input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Super User<br>
+                  <!--select name="user-group-administrator">
+                    <option value=""></option>
+                    <option value="editor">Editor</option>
+                    <option value="editor">Super User</option>
+                  </select-->
+                </fieldset>
+              </fieldset>
+            </div>
+            <footer style="margin-top:1em">
+
+              <button type="submit">Create User</button>
+            </footer>
+          </fieldset>
+        </form>
+
+        <!--a href="./../user-edit/index.html">
+          <button>Create User</button>
+        </a-->
+      </div>
+    </main>
+  </body>
+</html>
