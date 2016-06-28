@@ -26,7 +26,7 @@ While this initiative started as part of a MODX open source effort, I don't want
 ## Labs
 Labs are found in the `./labs/` directory. The `gh-pages`, `master`, and `develop` branch will be enhanced with whichever JS driver is most stable. Branches like `angular` will be used to host other iterations of the labs. Pull Requests are always&nbsp;welcome.
 
-Each lab has a Wiki page that contains finding, screenshots, and&nbsp;screencasts.
+Each lab has a Wiki page that contains finding, screenshots, &nbsp;screencasts as well as a link to a gh-pages&nbsp;demo.
 
 - [Resource Edit](https://github.com/jpdevries/matboard/wiki/Resource-Edit-Lab)
 - [Settings Table](https://github.com/jpdevries/matboard/wiki/Settings-Table-Lab)
