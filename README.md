@@ -31,6 +31,7 @@ Each lab has a Wiki page that contains finding, screenshots, &nbsp;screencasts a
 - [Resource Edit](https://github.com/jpdevries/matboard/wiki/Resource-Edit-Lab)
 - [Settings Table](https://github.com/jpdevries/matboard/wiki/Settings-Table-Lab)
 - [User Edit](https://github.com/jpdevries/matboard/wiki/User-Edit-Lab)
+- [Manage Users](https://github.com/jpdevries/matboard/wiki/Manage-Users-Lab)
 
 Labs can be discussed further on Gitter or [by opening an issue](https://github.com/jpdevries/matboard/issues/new).
 
