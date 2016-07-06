@@ -3,7 +3,7 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: './js/main.js',
-  output: { path: '../assets/js/', filename: 'app.js' },
+  output: { path: './assets/js/', filename: 'app.js' },
   externals: {
     "react": "React",
     "react-dom":"ReactDOM",
