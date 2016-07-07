@@ -3,6 +3,7 @@ fs = require('fs'),
 Twig = require("twig"),
 express = require('express'),
 formidable = require("formidable"),
+pg = require('pg'),
 app = express();
 
 // This section is optional and used to configure twig.
@@ -19,6 +20,30 @@ app.get('/', function(req, res){
     });
     res.write(data);
     res.end();
+  });
+});
+
+app.get('/users',function(req, res){
+  // instantiate a new client
+  // the client will read connection information from
+  // the same environment varaibles used by postgres cli tools
+  var client = new pg.Client();
+
+  // connect to our database
+  client.connect(function (err) {
+    if (err) throw err;
+
+    // execute a query on our database
+    client.query('SELECT modx_users.username, user_group, role, name, fullname, email, title FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.id;', function (err, result) {
+      if (err) throw err;
+
+      // disconnect the client
+      client.end(function (err) {
+        if (err) throw err;
+      });
+
+      res.json(result.rows);
+    });
   });
 });
 
