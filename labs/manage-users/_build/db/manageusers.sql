@@ -62,6 +62,7 @@ CREATE TABLE modx_user_attributes (
   fax varchar(100) NULL DEFAULT '',
   photo varchar(255) NULL DEFAULT '',
   comment text NULL,
+  title varchar(255) NULL DEFAULT '',
   website varchar(255) NULL DEFAULT '',
   extended text
 );
@@ -72,43 +73,56 @@ CREATE TABLE modx_user_attributes (
 INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
 VALUES (1, 'jpdevries', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone)
-VALUES (1,1,'John-Paul de Vries','mail@devries.jp','');
+INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone,title)
+VALUES (1,1,'John-Paul de Vries','mail@devries.jp','','Redactor Lead Developer');
 
 
 INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
 VALUES (2, 'markh', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone)
-VALUES (2,2,'Mark Hamstra','mark@modmore.com','');
+INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone,title)
+VALUES (2,2,'Mark Hamstra','mark@modmore.com','','modmore Founder');
 
 
 INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
 VALUES (3, 'christianseel', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone)
-VALUES (3,3,'Christian Seel','chris@modmore.com','');
+INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+VALUES (3,3,'Christian Seel','chris@modmore.com','','MGAB Vice-Chairman');
 
 
 INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
 VALUES (4, 'rthrash', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone)
-VALUES (4,4,'Ryan Thrash','ryan@modx.com','');
+INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+VALUES (4,4,'Ryan Thrash','ryan@modx.com','', 'MODX Co-Founder');
 
 
 INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
 VALUES (5, 'opengeek', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone)
-VALUES (5,5,'Jason Coward','jason@modx.com','');
+INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+VALUES (5,5,'Jason Coward','jason@modx.com','', 'Lead Architect');
 
 
 INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (6, 'marcjenkins', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
+VALUES (6, 'marcjenkins', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 0);
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone)
-VALUES (6,6,'Marc Jenkins','marc@modmore.com','');
+INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+VALUES (6,6,'Marc Jenkins','marc@modmore.com','','modmore Chief Editor');
+
+
+INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
+VALUES (7, 'isaacniebeling', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
+
+INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+VALUES (7,7,'Isaac Niebeling','isaac@modmore.com','','modmore Developer');
+
+INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
+VALUES (8, 'gpsietzema', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
+
+INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+VALUES (8,8,'Gauke Pieter Sietzema','gauke@sterc.com','','Sterc Co-Founder');
 
 INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (1, 1, 2, 0);
 INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (2, 1, 2, 0);
@@ -130,13 +144,20 @@ INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (3, 5, 
 
 INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (2, 6, 2, 0);
 
+INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (2, 7, 2, 0);
+
+INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (1, 8, 2, 0);
+INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (3, 8, 2, 0);
+INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (4, 8, 2, 0);
+
 INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES (1, 'Administrator', NULL, 0, 0, 1);
 INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES (2, 'modmore', NULL, 0, 0, 1);
 INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES (3, 'MGAB', NULL, 0, 0, 1);
+INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES (4, 'Sterc', NULL, 0, 0, 1);
 
 
 SELECT
-  modx_users.username, user_group, role, name, fullname, email
+  modx_users.username, user_group, role, name, fullname, email, title, active, sudo
 FROM
   modx_users
  INNER JOIN

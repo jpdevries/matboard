@@ -23,27 +23,19 @@ app.get('/', function(req, res){
   });
 });
 
-app.get('/users',function(req, res){
-  // instantiate a new client
-  // the client will read connection information from
-  // the same environment varaibles used by postgres cli tools
-  var client = new pg.Client();
 
-  // connect to our database
-  client.connect(function (err) {
-    if (err) throw err;
 
-    // execute a query on our database
-    client.query('SELECT modx_users.username, user_group, role, name, fullname, email, title FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.id;', function (err, result) {
-      if (err) throw err;
+app.get('/api/users',function(req, res){
+  getUserRows().then(function(result){
+    res.json(result);
+  },function(err){
+    console.log(err);
+  });
+});
 
-      // disconnect the client
-      client.end(function (err) {
-        if (err) throw err;
-      });
-
-      res.json(result.rows);
-    });
+app.get('/users', function(req, res){
+  res.render('index.twig', {
+    message : "Hello World"
   });
 });
 
@@ -52,6 +44,60 @@ app.post('/add/user', function(req, res){
 });
 
 app.use(express.static(__dirname));
+
+function getUserRows() {
+  return new Promise(function(resolve, reject) {
+    // instantiate a new client
+    // the client will read connection information from
+    // the same environment varaibles used by postgres cli tools
+    var client = new pg.Client();
+
+    // connect to our database
+    client.connect(function (err) {
+      if (err) throw err;
+
+      // execute a query on our database
+      client.query('SELECT modx_users.username, user_group, role, name, fullname, email, title, active, sudo FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.id;', function (err, result) {
+        if (err) throw err;
+
+        // disconnect the client
+        client.end(function (err) {
+          reject(err);
+          if (err) throw err;
+        });
+
+        var rows = Object.assign({}, result).rows;
+        var usernames = [...new Set(rows.map((row) => (
+          row.username
+        )))];
+
+        var userGroupNames = {};
+        rows = usernames.map((username) => {
+          var filtered = rows.filter((row) => (
+            row.username == username
+          ));
+
+          var userGroups = filtered.map((user) => {
+            if(!userGroupNames[user['user_group']]) userGroupNames[user['user_group']] = user['name'];
+            return user.user_group;
+          });
+
+          var newRow = filtered[0];
+          delete newRow['user_group'];
+          delete newRow['name'];
+
+          newRow.user_groups = userGroups;
+          return newRow;
+        });
+
+        resolve({
+          userGroups:userGroupNames,
+          users:rows
+        });
+      });
+    });
+  });
+}
 
 function processAllFieldsOfTheForm(req, res) {
     var form = new formidable.IncomingForm();
