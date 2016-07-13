@@ -13,18 +13,12 @@ app.set("twig options", {
 
 
 
-app.get('/', function(req, res){
-  getUserRows().then(function(result){
-    res.render('index.twig', result);
-  },function(err){
-    console.log(err);
-  });
-});
+
 
 
 app.post('/add/user', function(req, res){
   console.log('add user');
-  handleAddUserQuickly(req,res).then(function(result){
+  addUserQuickly(req,res).then(function(result){
     console.log(result);
   },function(){
 
@@ -86,6 +80,14 @@ app.post('/api/delete/user',function(req, res) {
     });
 
 
+  });
+});
+
+app.get('/', function(req, res){
+  getUserRows().then(function(result){
+    res.render('index.twig', result);
+  },function(err){
+    console.log(err);
   });
 });
 
@@ -201,7 +203,7 @@ function getUserRows() {
   });
 }
 
-/*function addUserQuickly() {
+function addUserQuickly() {
   return new Promise(function(resolve, reject) {
     // instantiate a new client
     // the client will read connection information from
@@ -215,17 +217,20 @@ function getUserRows() {
 
 
       // execute a query on our database
-      client.query('INSERT INTO "modx_users" (username, active, sudo)',function(err, result){
+      client.query('INSERT INTO "modx_users" (username, active, primary_group, sudo) VALUES (\'mennopieterson\', 1,5,1);',function(err, result){
         if (err) reject(err);
 
         // disconnect the client
         client.end(function (err) {
           if (err) reject(err);
         });
+
+        console.log(result);
+        resolve(result);
       });
     });
   });
-}*/
+}
 
 function handleAddUserQuickly(req, res) {
     var form = new formidable.IncomingForm();

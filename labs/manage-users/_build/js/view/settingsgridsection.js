@@ -235,7 +235,7 @@ var SettingsTableRowForm = function(props) {
             </div>
           </form>
           <footer className="subtle oblique balanced">
-            <p>{user.givenName} {user.familyName}’ last login was Jan 23, 2016 4:52pm from Leeuwarden,&nbsp;Nederlands</p>
+            <p>{user.givenName} {user.familyName}’ last login was Jan 23, 2016 4:52pm from Planet&nbsp;Earth</p>
           </footer>
       </td>
     </tr>

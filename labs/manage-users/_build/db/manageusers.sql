@@ -3,8 +3,15 @@ DROP TABLE IF EXISTS "modx_member_groups";
 DROP TABLE IF EXISTS "modx_membergroup_names";
 DROP TABLE IF EXISTS "modx_user_attributes";
 
+DROP SEQUENCE IF EXISTS user_id_sequence;
+
+CREATE SEQUENCE user_id_sequence
+  start 0
+  minvalue 0
+  increment 1;
+
 CREATE TABLE "modx_users"(
-  id SERIAL PRIMARY KEY,
+  user_id SERIAL PRIMARY KEY,
   username varchar(100) NOT NULL DEFAULT '',
   password varchar(100) NOT NULL DEFAULT '',
   cachepwd varchar(100) NOT NULL DEFAULT '',
@@ -67,100 +74,296 @@ CREATE TABLE modx_user_attributes (
   extended text
 );
 
+INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES
+(1, 'Administrator', NULL, 0, 0, 1),
+(2, 'modmore', NULL, 0, 0, 1),
+(3, 'MGAB', NULL, 0, 0, 1),
+(4, 'Sterc', NULL, 0, 0, 1),
+(5, 'Site Builders', NULL, 0, 0, 1);
 
 
-
-INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (1, 'jpdevries', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
-
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone,title)
-VALUES (1,1,'John-Paul de Vries','mail@devries.jp','','Redactor Lead Developer');
-
-
-INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (2, 'markh', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
-
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone,title)
-VALUES (2,2,'Mark Hamstra','mark@modmore.com','','modmore Founder');
-
-
-INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (3, 'christianseel', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
-
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
-VALUES (3,3,'Christian Seel','chris@modmore.com','','MGAB Vice-Chairman');
-
-
-INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (4, 'rthrash', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
-
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
-VALUES (4,4,'Ryan Thrash','ryan@modx.com','', 'MODX Co-Founder');
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'jpdevries', 1,1,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'John-Paul de Vries','mail@devries.jp','','Redactor Lead Developer' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 1, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 2, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 3, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
 
-INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (5, 'opengeek', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'markh', 1,1,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Mark Hamstra','mark@modmore.com','','modmore Founder' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 1, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 2, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 3, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
-VALUES (5,5,'Jason Coward','jason@modx.com','', 'Lead Architect');
+
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'christianseel', 1,1,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Christian Seel','chris@modmore.com','','MGAB Vice-Chairman' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 1, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 2, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 3, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
 
-INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (6, 'marcjenkins', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 0);
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'rthrash', 1,1,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Ryan Thrash','ryan@modx.com','','MODX Co-Founder' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 1, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 3, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
-VALUES (6,6,'Marc Jenkins','marc@modmore.com','','modmore Chief Editor');
+
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'opengeek', 1,1,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Jason Coward','jason@modx.com','','Lead Architect' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 1, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
+
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'marcjenkins', 1,2,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Marc Jenkins','marc@modmore.com','','modmore Chief Editor' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 2, new_user.user_id, 2, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
+
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'isaacniebeling', 1,2,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Isaac Niebeling','isaac@modmore.com','','modmore Developer' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 2, new_user.user_id, 2, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 2, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
+
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'gpsietzema', 1,4,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Gauke Pieter Sietzema','gauke@sterc.com','','Sterc Co-Founder' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 1, new_user.user_id, 2, 0 FROM new_user
+  UNION
+  SELECT 3, new_user.user_id, 2, 0 FROM new_user
+  UNION
+  SELECT 4, new_user.user_id, 2, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
 
-INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (7, 'isaacniebeling', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'mennopieterson', 1,5,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Menno Pieterson','info@anyscreensize.com','','Any Screen Size Co-Founder' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 5,new_user.user_id,2,0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
-VALUES (7,7,'Isaac Niebeling','isaac@modmore.com','','modmore Developer');
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'matdave', 1,3,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Mat Jones','matthew@ideabankmarketing.com','+1 308 379-6986','IdeaBank Marketing' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 3,new_user.user_id,2,0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_users" (id, username, password, cachepwd, class_key, active, remote_key, remote_data, hash_class, salt, primary_group, session_stale, sudo)
-VALUES (8, 'gpsietzema', 'password', '', 'modUser', 1, NULL, NULL, 'hashing.modPBKDF2', '02db646a0b2b5d062b0e113f821358e6', 1, 'a:2:{i:0;s:3:"mgr";i:1;s:3:"web";}', 1);
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'phillipharvey', 1,3,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Phillip Harvey','philip@activeingredients.com','+1 415 226 1514','Active Ingredients' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 3,new_user.user_id,2,0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
-VALUES (8,8,'Gauke Pieter Sietzema','gauke@sterc.com','','Sterc Co-Founder');
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'mindeffects', 1,3,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Oliver Haase-Lobinger','modx@mindeffects.de','+49 2234 3795450','Active Ingredients' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 3,new_user.user_id,2,0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (1, 1, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (2, 1, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (3, 1, 2, 0);
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'jako', 1,3,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Thomas Jakobi','thomas.jakobi@partout.info',' +49 1771663','MODX Integrator' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 3,new_user.user_id,2,0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (1, 2, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (2, 2, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (3, 2, 2, 0);
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'romain', 0,3,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Romain Tripault','romain@melting-media.com',' +33 632 684 877','MODX Integrator' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 3,new_user.user_id,2,0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (1, 3, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (2, 3, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (3, 3, 2, 0);
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'bezumkin', 1,3,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'Vasily Naumkin','bezumkin@ya.ru',' +33 632 684 877','MODX Vendor' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 3,new_user.user_id,2,0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (1, 4, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (3, 4, 2, 0);
 
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (1, 5, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (3, 5, 2, 0);
-
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (2, 6, 2, 0);
-
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (2, 7, 2, 0);
-
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (1, 8, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (3, 8, 2, 0);
-INSERT INTO "modx_member_groups" (user_group, member, role, rank) VALUES (4, 8, 2, 0);
-
-INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES (1, 'Administrator', NULL, 0, 0, 1);
-INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES (2, 'modmore', NULL, 0, 0, 1);
-INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES (3, 'MGAB', NULL, 0, 0, 1);
-INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard) VALUES (4, 'Sterc', NULL, 0, 0, 1);
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'theboxer', 1,3,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+  SELECT new_user.user_id,new_user.user_id,'John Peca','john@modx.com','','MODX Chief Manager' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 3,new_user.user_id,2,0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
 
 SELECT
-  modx_users.username, user_group, role, name, fullname, email, title, active, sudo
+  modx_users.username, user_id, user_group, role, name, fullname, email, title, active, sudo
 FROM
   modx_users
  INNER JOIN
-   modx_member_groups ON modx_member_groups.member = modx_users.id
+   modx_member_groups ON modx_member_groups.member = modx_users.user_id
 INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id
-INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.id;
+INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.user_id;

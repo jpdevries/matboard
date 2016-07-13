@@ -1134,7 +1134,7 @@
 	        { className: 'create-user-module' },
 	        React.createElement(
 	          'form',
-	          { action: '/add/user', className: 'create-setting-form', onSubmit: function onSubmit(event) {
+	          { action: '/add/user', method: 'post', className: 'create-setting-form', onSubmit: function onSubmit(event) {
 	              //event.preventDefault();
 
 	              store.dispatch(actions.addUser({ // todo: pull user groups out of the form
@@ -1653,7 +1653,7 @@
 	          user.givenName,
 	          ' ',
 	          user.familyName,
-	          '’ last login was Jan 23, 2016 4:52pm from Leeuwarden, Nederlands'
+	          '’ last login was Jan 23, 2016 4:52pm from Planet Earth'
 	        )
 	      )
 	    )

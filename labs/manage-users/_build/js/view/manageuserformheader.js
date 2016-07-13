@@ -78,7 +78,7 @@ var ManageUserFormHeader = React.createClass({
       <header>
         <h1>Manage Users</h1>
         <div className="create-user-module">
-          <form action="/add/user" className="create-setting-form" onSubmit={(event) => {
+          <form action="/add/user" method="post" className="create-setting-form" onSubmit={(event) => {
             //event.preventDefault();
 
             store.dispatch(actions.addUser({ // todo: pull user groups out of the form
