@@ -14,10 +14,9 @@
         <div class="create-setting-module">
           <form action="/add/user" method="post" class="create-setting-form">
             <div class="top-bar">
-              <script>document.write('<button js-hidden formaction="./quick-create/user.html">Quick Create User</button>')</script>
+              <script>document.write('<button js-hidden formaction="./quick-create/user.html" aria-haspopup="true">Quick Create User</button>')</script>
             </div>
             <button id="create-user" formaction="./../user-edit/index.html">Create User</button>
-
             <fieldset style="margin-top:1em" js-not-hidden>
               <legend>Quick Create User</legend>
               <div class="n field-group">
@@ -79,7 +78,7 @@
         <div>
           <h3>Search Users</h3>
           <form action="#" id="search" class="search-settings">
-            <label for="search-users" ><span a11y-hidden>Search: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User or User Group. We'll try and find it."></label>
+            <label for="search-users" ><span a11y-hidden>Search Users: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User or User Group. We'll try and find it."></label>
             <button type="submit">Search</button>
             <label for="filter-by">Filter by:</label>
             <select name="filter-by" id="filter-by">
@@ -259,6 +258,7 @@
       </div>
     </div>
 
+    <!-- NOTE: change these to load the .min in production. They are not only smaller filesize but have wildly different performance -->
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/redux/3.5.2/redux.js"></script>
     <script defer>try{ Redux } catch(e){ document.write('<script src="assets/js/vendor/redux.js"><\/script>') }</script>
 

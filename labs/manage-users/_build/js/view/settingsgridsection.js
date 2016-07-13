@@ -30,13 +30,15 @@ var SettingTableRowGroup = React.createClass({
 
 var SettingsGridSectionBulkActionsFieldset = function(props) {
   return (
-    <fieldset>
-      <legend>Bulk Actions</legend>
-      <button disabled={!props.emails.length} formAction="bulkactions/activate">Activate</button>
-      <button disabled={!props.emails.length} formAction="bulkactions/Suspend">Suspend</button>
-      <button disabled={!props.emails.length} formAction="bulkactions/delete">Delete</button>
-      <button disabled={!props.emails.length} formAction={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next'} formTarget="_blank">Email</button>
-    </fieldset>
+    <form action="/bulk/actions" method="post">
+      <fieldset>
+        <legend>Bulk Actions</legend>
+        <button disabled={!props.emails.length} formAction="bulkactions/activate">Activate</button>
+        <button disabled={!props.emails.length} formAction="bulkactions/Suspend">Suspend</button>
+        <button disabled={!props.emails.length} formAction="bulkactions/delete">Delete</button>
+        <button disabled={!props.emails.length} formAction={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next'} formTarget="_blank">Email</button>
+      </fieldset>
+    </form>
   );
 };
 
@@ -121,7 +123,7 @@ var SettingsGridSection = React.createClass({
         <header>
           <h2>{props.title}</h2>
         </header>
-        <form>
+        <div>
           {bulkActionsFieldset}
           <SettingsTable bulkActions={users.length >= minimumUsersBulkAction ? props.bulkActions : false} users={users} bulkToggledUsers={this.state.bulkToggledUsers} userGroup={props.userGroup} handleBulkToggle={(id,checked) => {
             this.setState({
@@ -140,7 +142,7 @@ var SettingsGridSection = React.createClass({
             });
           }} />
           {bulkActionsFieldset}
-        </form>
+        </div>
         <footer>
           <p><a href="#">View all {props.title} users</a></p>
         </footer>
@@ -193,7 +195,9 @@ var SettingsTableRowForm = function(props) {
   return (
     <tr {...props}>
       <td colSpan={props.colspan}>
-          <div>
+          <form action="/" method="post">
+            <input name="user_id" type="hidden" value={user.id} />
+            <input name="username" type="hidden" value={user.username} />
             <div className="friendly-labels">
               <label>Sudo: <input name="sudo" checked={user.sudo} type="checkbox" onChange={(event) => {
                 store.dispatch(actions.updateUser(user.id,{
@@ -217,7 +221,7 @@ var SettingsTableRowForm = function(props) {
             </div>
             <div>
               <button type="submit" formAction="duplicate/user" className="save">Duplicate</button>
-              <button type="submit" formAction="delete/user">Delete</button>
+              <button type="submit" formAction="/api/delete/user">Delete</button>
               <button type="submit" formAction={'mailto:' + user.email + '?subject=MODX%20Next'} formTarget="_blank">Email</button>
             </div>
             <div>
@@ -229,7 +233,7 @@ var SettingsTableRowForm = function(props) {
                 store.dispatch(actions.removeUserFromGroup(user.id,userGroup.id));
               }}>Remove from Group</button>
             </div>
-          </div>
+          </form>
           <footer className="subtle oblique balanced">
             <p>{user.givenName} {user.familyName}’ last login was Jan 23, 2016 4:52pm from Leeuwarden,&nbsp;Nederlands</p>
           </footer>

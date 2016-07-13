@@ -69,7 +69,7 @@ var ManageUserFormHeader = React.createClass({
     ) : false;
 
     var quickCreateUserBtn = this.state.quickCreateOpen ? false : (
-      <button formaction="./quick-create/user.html" onClick={(event) => (
+      <button formaction="/quick-create/user" onClick={(event) => (
         this.setState({quickCreateOpen:true})
       )}>Quick Create User</button>
     );
@@ -77,9 +77,9 @@ var ManageUserFormHeader = React.createClass({
     return (
       <header>
         <h1>Manage Users</h1>
-        <div className="create-setting-module">
-          <form action="./../user-edit/index.html" className="create-setting-form" onSubmit={(event) => {
-            event.preventDefault();
+        <div className="create-user-module">
+          <form action="/add/user" className="create-setting-form" onSubmit={(event) => {
+            //event.preventDefault();
 
             store.dispatch(actions.addUser({ // todo: pull user groups out of the form
               username:this.refs.quickCreateUsername.value,
@@ -88,7 +88,7 @@ var ManageUserFormHeader = React.createClass({
               email:this.refs.quickCreateEmail.value,
               active:this.refs.quickCreateUserActive.checked,
               sudo:this.refs.quickCreateUserSudo.checked,
-              userGroups:[0]
+              userGroups:[1]
             }));
 
             this.setState({quickCreateOpen:false});

@@ -2,8 +2,60 @@ var actions = require('./actions');
 var combineReducers = require('redux').combineReducers;
 var update = require('react-addons-update');
 
-var initialState = {
-  users:[{
+var initialUserGroups = (function(){
+  var userGroups = [];
+  var userGroupSections = document.querySelectorAll('section.user-group');
+  for(var i = 0; i < userGroupSections.length; i++) {
+    var userGroup = userGroupSections[i],
+    id = parseInt(userGroup.getAttribute('data-user-group-id')),
+    title = userGroup.querySelector('.name').innerHTML;
+    userGroups.push({
+      id:id,
+      title:title
+    });
+  }
+  return userGroups;
+})();
+
+console.log('initialUserGroups',initialUserGroups);
+
+var initialUsers = (function(){
+  var users = [],
+  userRows = document.querySelectorAll('tr.user-row');
+  var addedUsers = [];
+  for(var i = 0; i < userRows.length; i++) {
+    var userRow = userRows[i],
+    userGroups = userRow.getAttribute('data-user-groups').split(',').map((groupId) => (
+      parseInt(groupId)
+    )),
+    username = userRow.querySelector('.username').innerHTML,
+    email = userRow.getAttribute('data-email'),
+    id = userRow.getAttribute('data-user-id'),
+    contextualSettings = userRow.nextElementSibling,
+    givenName = contextualSettings.querySelector('.givenName').innerHTML,
+    sudo = contextualSettings.querySelector('input.sudo').checked,
+    active = contextualSettings.querySelector('input.active').checked,
+    jobTitle = contextualSettings.querySelector('.jobTitle').innerHTML;
+    //console.log(id,username,userGroups,email,givenName,jobTitle,sudo,active);
+    if(!addedUsers[id]) users.push({
+      id:id,
+      username:username,
+      givenName:givenName,
+      familyName:'',
+      email:email,
+      active:true,
+      sudo:true,
+      jobTitle:jobTitle,
+      userGroups:userGroups
+    });
+    addedUsers[id] = true;
+  }
+  return users;
+})();
+
+console.log(initialUsers);
+
+/*initialUsers = [{
     id:0,
     username:'jpdevries',
     givenName:'John-Paul',
@@ -23,14 +75,19 @@ var initialState = {
     sudo:true,
     jobTitle:'modmore Founder',
     userGroups:[0,1]
-  }],
-  userGroups:[{
+}];*/
+
+  /*initialUserGroups = [{
     id:0,
     title:'Administrators'
   },{
     id:1,
     title:'Editors'
-  }],
+  }];*/
+
+var initialState = {
+  users:initialUsers,
+  userGroups:initialUserGroups,
   quickCreate:{
     username:'jpdevries',
     givenName:'John-Paul',

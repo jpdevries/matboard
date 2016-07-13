@@ -2,6 +2,7 @@ module.exports = function(grunt) {
   var webpackConfig = require('./webpack.config.js');
   grunt.initConfig({
     dirs:{
+      build:'_build',
       theme:'./',
       lib:'./lib/',
       assets:'assets/',

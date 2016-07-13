@@ -13,7 +13,7 @@ var ManageUsers = function() {
     console.log(store.getState());
   });
 
-  store.dispatch(actions.addUserGroup({
+  /*store.dispatch(actions.addUserGroup({
     title:'modmore'
   }));
 
@@ -26,9 +26,9 @@ var ManageUsers = function() {
     sudo:true,
     jobTitle:'Marketing Director',
     userGroups:[1]
-  }));
+  }));*/
 
-  store.dispatch(actions.addUserToGroup(0,2));
+  //store.dispatch(actions.addUserToGroup(0,2));
 
   var ManageUsersFormController = connect(function(state, props) {
     return {
