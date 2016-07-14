@@ -78,9 +78,11 @@ var ManageUserFormHeader = React.createClass({
       <header>
         <h1>Manage Users</h1>
         <div className="create-user-module">
-          <form action="/add/user" method="post" className="create-setting-form" onSubmit={(event) => {
-            //event.preventDefault();
+          <form ref="createSettingForm" action="/add/user" method="post" className="create-setting-form" onSubmit={(event) => {
+            //console.log(this.refs.createSettingForm);
+            event.preventDefault();
 
+            // consider: https://www.npmjs.com/package/react-form-data
             store.dispatch(actions.addUser({ // todo: pull user groups out of the form
               username:this.refs.quickCreateUsername.value,
               givenName:this.refs.quickCreateGivenName.value,

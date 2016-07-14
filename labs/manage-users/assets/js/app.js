@@ -1134,20 +1134,21 @@
 	        { className: 'create-user-module' },
 	        React.createElement(
 	          'form',
-	          { action: '/add/user', method: 'post', className: 'create-setting-form', onSubmit: function onSubmit(event) {
-	              //event.preventDefault();
+	          { ref: 'createSettingForm', action: '/add/user', method: 'post', className: 'create-setting-form', onSubmit: function onSubmit(event) {
+	              var form = _this.state.form;
+	              console.log(_this.refs.createSettingForm);
+	              event.preventDefault();
 
-	              store.dispatch(actions.addUser({ // todo: pull user groups out of the form
-	                username: _this.refs.quickCreateUsername.value,
-	                givenName: _this.refs.quickCreateGivenName.value,
-	                familyName: _this.refs.quickCreateFamilyName.value,
-	                email: _this.refs.quickCreateEmail.value,
-	                active: _this.refs.quickCreateUserActive.checked,
-	                sudo: _this.refs.quickCreateUserSudo.checked,
-	                userGroups: [1]
+	              /*store.dispatch(actions.addUser({ // todo: pull user groups out of the form
+	                username:this.refs.quickCreateUsername.value,
+	                givenName:this.refs.quickCreateGivenName.value,
+	                familyName:this.refs.quickCreateFamilyName.value,
+	                email:this.refs.quickCreateEmail.value,
+	                active:this.refs.quickCreateUserActive.checked,
+	                sudo:this.refs.quickCreateUserSudo.checked,
+	                userGroups:[1]
 	              }));
-
-	              _this.setState({ quickCreateOpen: false });
+	               this.setState({quickCreateOpen:false});*/
 	            } },
 	          React.createElement(
 	            'div',

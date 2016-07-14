@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS "modx_users";
 DROP TABLE IF EXISTS "modx_member_groups";
 DROP TABLE IF EXISTS "modx_membergroup_names";
 DROP TABLE IF EXISTS "modx_user_attributes";
+DROP TABLE IF EXISTS "modx_users";
 
 DROP SEQUENCE IF EXISTS user_id_sequence;
 

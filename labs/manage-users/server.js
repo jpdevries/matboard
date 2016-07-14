@@ -12,15 +12,23 @@ app.set("twig options", {
 });
 
 
-
-
-
-
 app.post('/add/user', function(req, res){
-  console.log('add user');
-  addUserQuickly(req,res).then(function(result){
-    console.log(result);
-  },function(){
+  var form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+
+    res.writeHead(200, {
+      'content-type': 'text/html'
+    });
+
+    addUserQuickly(fields).then(function(result){
+      var username = result.username;
+      res.write('<h1>User ' + username + ' has been added with an id of ' + result.user_id + '.</h1>');
+      res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
+    },function(err){
+      res.write('<h1>Error adding user with username ' + fields.username  + '</h1>');
+      res.write('<p>Perhaps a user with that username already exists. <a href="#">Get help</a>.</p>');
+      res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
+    });
 
   });
 });
@@ -33,9 +41,6 @@ app.get('/api/users',function(req, res){
     console.log(err);
   });
 });
-
-
-
 
 
 app.post('/delete/user',function(req, res) {
@@ -203,8 +208,18 @@ function getUserRows() {
   });
 }
 
-function addUserQuickly() {
-  return new Promise(function(resolve, reject) {
+
+
+function addUserQuickly(fields) {
+  console.log(fields);
+  return new Promise(function(resolve, reject){
+    var username = fields.username,
+    givenname = fields['given-name'],
+    familyname = fields['family-name'],
+    email = fields.email;
+
+    var message = username + ' added';
+
     // instantiate a new client
     // the client will read connection information from
     // the same environment varaibles used by postgres cli tools
@@ -214,10 +229,30 @@ function addUserQuickly() {
     client.connect(function (err) {
       if (err) reject(err);
 
+      var query = `WITH "new_user" AS (
+        INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+        VALUES (nextval('user_id_sequence'),'${username}', 1,1,0) RETURNING *
+      ), "new_user_attributes" AS (
+        INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+        SELECT new_user.user_id,new_user.user_id,'${givenname}','${email}','','' FROM new_user
+        RETURNING *
+      ), "modx_member_group" AS (
+        INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+        SELECT 1, new_user.user_id, 1, 0 FROM new_user
+        UNION
+        SELECT 2, new_user.user_id, 1, 0 FROM new_user
+        UNION
+        SELECT 3, new_user.user_id, 1, 0 FROM new_user
+        UNION
+        SELECT 5, new_user.user_id, 1, 0 FROM new_user
+        RETURNING *
+      )
+      SELECT * FROM "new_user";`;
 
+      //console.log(query);
 
       // execute a query on our database
-      client.query('INSERT INTO "modx_users" (username, active, primary_group, sudo) VALUES (\'mennopieterson\', 1,5,1);',function(err, result){
+      client.query(query,function(err, result){
         if (err) reject(err);
 
         // disconnect the client
@@ -225,36 +260,16 @@ function addUserQuickly() {
           if (err) reject(err);
         });
 
-        console.log(result);
-        resolve(result);
+        try {
+          resolve(result.rows[0]);
+        } catch(e) {
+          reject(new Error('No results found'));
+        }
       });
     });
   });
 }
 
-function handleAddUserQuickly(req, res) {
-    var form = new formidable.IncomingForm();
-
-    form.parse(req, function (err, fields, files) {
-      console.log(fields);
-
-      var username = fields.username,
-      givenname = fields['given-name'],
-      familyname = fields['family-name'],
-      email = fields.email;
-
-      var message = username + ' added';
-
-      //Store the data from the fields in your data store.
-      //The data store could be a file or database or any other store based
-      //on your application.
-      res.writeHead(200, {
-        'content-type': 'text/html'
-      });
-      res.write('<h1>User Added</h1>');
-      res.end('<p>' + message + '</p>');
-    });
-}
 
 app.listen(process.env.PORT || 1186);
 
