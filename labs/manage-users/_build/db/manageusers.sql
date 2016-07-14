@@ -91,8 +91,6 @@ WITH "new_user" AS (
   RETURNING *
 ), "modx_member_group" AS (
   INSERT INTO "modx_member_groups" (user_group, member, role, rank)
-  SELECT 1, new_user.user_id, 1, 0 FROM new_user
-  UNION
   SELECT 2, new_user.user_id, 1, 0 FROM new_user
   UNION
   SELECT 3, new_user.user_id, 1, 0 FROM new_user
@@ -112,8 +110,6 @@ WITH "new_user" AS (
   RETURNING *
 ), "modx_member_group" AS (
   INSERT INTO "modx_member_groups" (user_group, member, role, rank)
-  SELECT 1, new_user.user_id, 1, 0 FROM new_user
-  UNION
   SELECT 2, new_user.user_id, 1, 0 FROM new_user
   UNION
   SELECT 3, new_user.user_id, 1, 0 FROM new_user
@@ -311,7 +307,7 @@ SELECT user_id FROM "new_user";
 
 WITH "new_user" AS (
   INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
-  VALUES (nextval('user_id_sequence'),'romain', 0,3,0) RETURNING *
+  VALUES (nextval('user_id_sequence'),'romain', 1,3,0) RETURNING *
 ), "new_user_attributes" AS (
   INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
   SELECT new_user.user_id,new_user.user_id,'Romain Tripault','romain@melting-media.com',' +33 632 684 877','MODX Integrator' FROM new_user

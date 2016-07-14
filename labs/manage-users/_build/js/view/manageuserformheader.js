@@ -93,7 +93,7 @@ var ManageUserFormHeader = React.createClass({
               userGroups:[1]
             }));
 
-            this.setState({quickCreateOpen:false});
+            //this.setState({quickCreateOpen:false});
           }}>
             <div className="top-bar">
               {quickCreateUserBtn}

@@ -21,6 +21,7 @@ app.post('/add/user', function(req, res){
     });
 
     addUserQuickly(fields).then(function(result){
+      console.log(result);
       var username = result.username;
       res.write('<h1>User ' + username + ' has been added with an id of ' + result.user_id + '.</h1>');
       res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
@@ -39,6 +40,20 @@ app.get('/api/users',function(req, res){
     res.json(result);
   },function(err){
     console.log(err);
+  });
+});
+
+app.post('/api/add/user',function(req, res){
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    console.log(fields);
+
+    addUserQuickly(fields).then(function(result){
+      res.json(true);
+    },function(err){
+      res.json(false);
+    });
   });
 });
 
@@ -63,7 +78,6 @@ app.post('/delete/user',function(req, res) {
     },function(){ // error
 
     });
-
 
   });
 });
@@ -218,6 +232,8 @@ function addUserQuickly(fields) {
     familyname = fields['family-name'],
     email = fields.email;
 
+    if(!username || !email) reject(new Error('Username and Email are required'));
+
     var message = username + ' added';
 
     // instantiate a new client
@@ -260,7 +276,10 @@ function addUserQuickly(fields) {
           if (err) reject(err);
         });
 
+
+
         try {
+          //console.log(result.rows);
           resolve(result.rows[0]);
         } catch(e) {
           reject(new Error('No results found'));

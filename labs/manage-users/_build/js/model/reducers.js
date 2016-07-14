@@ -131,7 +131,8 @@ var usersReducer = function(state, action) {
     }} });
     break;
 
-    case actions.ADD_USER:
+    case actions.ADD_USER_SUCCESS:
+    console.log(actions.ADD_USER_SUCCESS,action.user);
     if(action.user.id === undefined) {
       var nextIndex = 0;
       state.map((user,i) => {
