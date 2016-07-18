@@ -32,10 +32,12 @@ var ManageUsers = function() {
 
   var ManageUsersFormController = connect(function(state, props) {
     return {
+      quickCreate:state.quickCreate,
       users:state.users.sort((a,b) => ( // sort alphabetically
         (a.username > b.username) ? 1 : -1
       )),
-      userGroups:state.userGroups
+      userGroups:state.userGroups,
+      fieldsetRoles:state.fieldsetRoles
     }
   })(ManageUsersForm);
 

@@ -4,52 +4,57 @@ var update = require('react-addons-update');
 
 var initialUserGroups = (function(){
   var userGroups = [];
-  var userGroupSections = document.querySelectorAll('section.user-group');
-  for(var i = 0; i < userGroupSections.length; i++) {
-    var userGroup = userGroupSections[i],
-    id = parseInt(userGroup.getAttribute('data-user-group-id')),
-    title = userGroup.querySelector('.name').innerHTML;
-    userGroups.push({
-      id:id,
-      title:title
-    });
-  }
+  try {
+    var userGroupSections = document.querySelectorAll('section.user-group');
+    for(var i = 0; i < userGroupSections.length; i++) {
+      var userGroup = userGroupSections[i],
+      id = parseInt(userGroup.getAttribute('data-user-group-id')),
+      title = userGroup.querySelector('.name').innerHTML;
+      userGroups.push({
+        id:id,
+        title:title
+      });
+    }
+  } catch (e) {} 
   return userGroups;
 })();
 
 console.log('initialUserGroups',initialUserGroups);
 
 var initialUsers = (function(){
-  var users = [],
-  userRows = document.querySelectorAll('tr.user-row');
-  var addedUsers = [];
-  for(var i = 0; i < userRows.length; i++) {
-    var userRow = userRows[i],
-    userGroups = userRow.getAttribute('data-user-groups').split(',').map((groupId) => (
-      parseInt(groupId)
-    )),
-    username = userRow.querySelector('.username').innerHTML,
-    email = userRow.getAttribute('data-email'),
-    id = userRow.getAttribute('data-user-id'),
-    contextualSettings = userRow.nextElementSibling,
-    givenName = contextualSettings.querySelector('.givenName').innerHTML,
-    sudo = contextualSettings.querySelector('input.sudo').checked,
-    active = contextualSettings.querySelector('input.active').checked,
-    jobTitle = contextualSettings.querySelector('.jobTitle').innerHTML;
-    //console.log(id,username,userGroups,email,givenName,jobTitle,sudo,active);
-    if(!addedUsers[id]) users.push({
-      id:id,
-      username:username,
-      givenName:givenName,
-      familyName:'',
-      email:email,
-      active:true,
-      sudo:true,
-      jobTitle:jobTitle,
-      userGroups:userGroups
-    });
-    addedUsers[id] = true;
-  }
+  var users = [];
+  try {
+    var userRows = document.querySelectorAll('tr.user-row');
+    var addedUsers = [];
+    for(var i = 0; i < userRows.length; i++) {
+      var userRow = userRows[i],
+      userGroups = userRow.getAttribute('data-user-groups').split(',').map((groupId) => (
+        parseInt(groupId)
+      )),
+      username = userRow.querySelector('.username').innerHTML,
+      email = userRow.getAttribute('data-email'),
+      id = userRow.getAttribute('data-user-id'),
+      contextualSettings = userRow.nextElementSibling,
+      givenName = contextualSettings.querySelector('.givenName').innerHTML,
+      sudo = contextualSettings.querySelector('input.sudo').checked,
+      active = contextualSettings.querySelector('input.active').checked,
+      jobTitle = contextualSettings.querySelector('.jobTitle').innerHTML;
+      //console.log(id,username,userGroups,email,givenName,jobTitle,sudo,active);
+      if(!addedUsers[id]) users.push({
+        id:id,
+        username:username,
+        givenName:givenName,
+        familyName:'',
+        email:email,
+        active:true,
+        sudo:true,
+        jobTitle:jobTitle,
+        userGroups:userGroups
+      });
+      addedUsers[id] = true;
+    }
+
+  } catch(e) {}
   return users;
 })();
 
@@ -85,16 +90,93 @@ console.log(initialUsers);
     title:'Editors'
   }];*/
 
+var initialFieldsetRoles = [ // todo: move this to the store
+  {
+    key:'administrator',
+    title:'Administrator',
+    id:1,
+    roles:[{
+      title:'Super User',
+      id:1,
+      key:1
+    },{
+      title:'Editor',
+      id:2,
+      key:2
+    }]
+  },
+  {
+    key:'modmore',
+    title:'modmore',
+    id:2,
+    roles:[{
+      title:'Super User',
+      id:1,
+      key:1
+    },{
+      title:'Editor',
+      id:2,
+      key:2
+    }]
+  },
+  {
+    key:'mgab',
+    title:'MGAB',
+    id:3,
+    roles:[{
+      title:'Super User',
+      id:1,
+      key:1
+    },{
+      title:'Editor',
+      id:2,
+      key:2
+    }]
+  },
+  {
+    key:'sterc',
+    title:'Sterc',
+    id:4,
+    roles:[{
+      title:'Super User',
+      id:1,
+      key:1
+    },{
+      title:'Editor',
+      id:2,
+      key:2
+    }]
+  },
+  {
+    key:'sitebuilders',
+    title:'Site Builders',
+    id:5,
+    roles:[{
+      title:'Super User',
+      id:1,
+      key:1
+    },{
+      title:'Editor',
+      id:2,
+      key:2
+    }]
+  }
+];
+
 var initialState = {
   users:initialUsers,
   userGroups:initialUserGroups,
+  fieldsetRoles:initialFieldsetRoles,
   quickCreate:{
-    username:'jpdevries',
-    givenName:'John-Paul',
-    familyName:'de Vries',
-    email:'mail@devries.jp',
+    username:'',
+    givenName:'',
+    familyName:'',
+    email:'',
     active:true,
     sudo:true,
+    open:false,
+    updating:false,
+    id:undefined
   }
 };
 
@@ -108,9 +190,15 @@ var usersReducer = function(state, action) {
       if(user.id == action.id) index = i;
   });
 
+  console.log(index);
+
   switch(action.type) {
-    case actions.UPDATE_USER:
-    return update(state, {[index]: {$merge:action.user} })
+    case actions.UPDATE_USER_SUCCESS:
+    var newState =  update(state, {[index]: {$apply: (user) => {
+      return update(user,{$merge:action.user})
+    }} });
+    console.log(state,newState);
+    return newState;
     break;
 
     case actions.ADD_USER_TO_GROUP:
@@ -132,7 +220,6 @@ var usersReducer = function(state, action) {
     break;
 
     case actions.ADD_USER_SUCCESS:
-    console.log(actions.ADD_USER_SUCCESS,action.user);
     if(action.user.id === undefined) {
       var nextIndex = 0;
       state.map((user,i) => {
@@ -141,18 +228,33 @@ var usersReducer = function(state, action) {
       action.user.id = nextIndex + 1;
     }
     return update(state, {$push: [action.user]});
+
+    case actions.DELETE_USER_SUCCESS:
+    var newState = update(state, {$splice: [[index, 1]]});
+    console.log(newState);
+    return newState;
+
+    case actions.DELETE_USER_ERROR:
+    return state;
   }
   return state;
 }
 
 var quickCreateReducer = function(state, action) {
   state = state || initialState.quickCreate;
-  return state;
+
   switch(action.type) {
-    case actions.UPDATE_CONTENT:
-    return action.content;
+    case actions.UPDATE_QUICKCREATE:
+    console.log(actions.UPDATE_QUICKCREATE);
+    return update(state, {$merge:action.quickCreate});
     break;
   }
+  return state;
+}
+
+var fieldsetRolesReducer = function(state, action) {
+  state = state || initialState.fieldsetRoles;
+
   return state;
 }
 
@@ -178,7 +280,8 @@ var userGroupsReducer = function(state, action) {
 var manageUsersReducer = combineReducers({
   quickCreate:quickCreateReducer,
   users:usersReducer,
-  userGroups:userGroupsReducer
+  userGroups:userGroupsReducer,
+  fieldsetRoles:fieldsetRolesReducer
 });
 
 

@@ -3,6 +3,67 @@
 
 @import "spec/tacular";
 
+$white:white;
+
+%bright-padded-module {
+  background:$white;
+  padding:1rem;
+  margin-bottom:1em;
+  border:1px solid rgb(200,200,200);
+}
+
+/*%button-apperance {
+  appearance: button;
+}
+
+.button {
+  @extend %button-apperance;
+}*/
+
+button, .button {
+  display: inline-block;
+  appearance: none;
+  //margin: 10px 0;
+  padding: 0px;
+  //height: 50px;
+  border-width: 0;
+  background-color: Red;
+  color: White;
+  font-family: sans-serif;
+  font-weight: normal;
+  font-size: inherit;
+  text-decoration: none;
+  //line-height: 50px;
+  cursor: pointer;
+  font-size: 100%;
+}
+button {
+  //#width:0px;
+  overflow: visible;
+}
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+button, .button {
+  font-size:0.8rem;
+  appearance:none;
+  display:inline-block;
+  padding:0.2em 0.5em;
+  text-align:center;
+  border:1px solid rgb(120,120,120);
+  background:rgb(240,240,240);
+  color:rgb(60,60,60);
+  border-radius:0.2em;
+  text-decoration:none;
+  margin:0.2em;
+}
+
+fieldset {
+  border:1px solid rgb(200,200,200);
+}
+
 html.js {
   [js-hidden] {
     display:none;
@@ -12,13 +73,35 @@ html.js {
   }
 }
 
+body {
+  background:rgb(240,240,240);
+  padding-top:1rem;
+  color:rgb(8,8,8);
+}
+
 .top-bar {
   padding-left:1em;
   padding-left:1em;
 }
 
 #manage-users-form {
-  padding:0 0.5rem;
+  > div {
+
+  }
+  > div > header {
+    @extend %bright-padded-module;
+    h1 {
+      margin-top:0;
+    }
+  }
+}
+
+.settings-grid > section {
+  @extend %bright-padded-module;
+  //margin-right:1em;
+  &:last-of-type {
+    //margin-right:0;
+  }
 }
 
 .subtle {
@@ -57,19 +140,22 @@ h1 {
 }
 
 %settings-table {
-    background:rgb(242,242,242);
+    //background:rgb(242,242,242);
     label {
-      display:block;
+      //display:block;
     }
     td,th {
         padding:0.2em 0.4em;
     }
     thead {
       font-weight:bold;
-        background:rgb(224,224,224);
+        //background:rgb(224,224,224);
         > tr {
             > th {
                 border:1px solid rgb(200,200,200);
+                &:first-of-type {
+                  text-align:left;
+                }
             }
         }
     }
@@ -79,7 +165,7 @@ h1 {
                 border:1px solid rgb(200,200,200);
             }
             &:nth-of-type(even) {
-                background:rgba(40,40,40,0.1);
+                background:rgb(244,244,244);
             }
             &.open + .contextual-setting, &:focus + .contextual-setting {
                 display:table-row !important; /* display the setting form for open rows */
@@ -247,3 +333,10 @@ label[for="filter-by"] {
     text-align:center;
   }
 }
+
+/*$sterc:#de007a;
+#user-group-4 {
+  h1,h2,h3,h4,h5,h6 {
+    color:$sterc;
+  }
+}*/

@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html class="no-js">
-  <head>
-    <meta charset="utf-8">
-    <title>Settings</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <script type="text/javascript" src="assets/js/vendor/modernizr.js"></script>
-  </head>
+{% include 'header.twig' %}
   <body>
     <div id="manage-users-form">
       <header>
@@ -149,13 +141,13 @@
                         </div>
                         <script>document.write('<div><button class="save">Next User</button></div>')</script>
                         <div>
-                          <button type="submit" formaction="./quick-edit/user.html">Quick Edit</button>
-                          <button type="submit" formaction="./../user-edit/index.html">Edit</button>
+                          <a class="button" href="/update/user/{{ user.id }}">Quick Edit</a>
+                          <a class="button" href="/update/user/{{ user.id }}">Edit</a>
                         </div>
                         <div>
                           <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
-                          <button type="submit" formaction="/delete/user">Delete</button>
-                          <button type="submit" formaction="mailto:{{ user.email }}">Email</button>
+                          <button type="submit" formaction="/delete/user" formmethod="delete">Delete</button>
+                          <a class="button" href="mailto:{{ user.email }}">Email</a>
                         </div>
                         <div>
                           <button type="submit" class="save">Save</button>

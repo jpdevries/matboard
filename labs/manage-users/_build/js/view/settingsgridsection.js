@@ -3,6 +3,8 @@ var update = require('react-addons-update');
 var store = require('./../model/store');
 var actions = require('./../model/actions');
 
+var ReactFormData = require('react-form-data');
+
 // can't use this until a future version of React
 var SettingTableRowGroup = React.createClass({
   getInitialState:function(){
@@ -35,7 +37,7 @@ var SettingsGridSectionBulkActionsFieldset = function(props) {
         <legend>Bulk Actions</legend>
         <button disabled={!props.emails.length} formAction="bulkactions/activate">Activate</button>
         <button disabled={!props.emails.length} formAction="bulkactions/Suspend">Suspend</button>
-        <button disabled={!props.emails.length} formAction="bulkactions/delete">Delete</button>
+        <button disabled={!props.emails.length} formAction="bulkactions/delete" formMethod="delete">Delete</button>
         <button disabled={!props.emails.length} formAction={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next'} formTarget="_blank">Email</button>
       </fieldset>
     </form>
@@ -46,6 +48,11 @@ var SettingsTable = React.createClass({
   getInitialState:() => ({
     userFormsToShow:{}
   }),
+  handleQuickEdit:function(user,event){
+    event.preventDefault();
+    event.stopPropagation();
+    console.log('handleQuickEdit!!!',user);
+  },
   render:function(){
     var props = this.props;
 
@@ -59,7 +66,7 @@ var SettingsTable = React.createClass({
     var rows = props.users.map((user) => {
 
       return([
-        <SettingsTableRow user={user} className="contextual-setting" bulkToggle={props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false} bulkActions={props.bulkActions}
+        <SettingsTableRow user={user} bulkToggle={props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false} bulkActions={props.bulkActions}
           handleFocus={(event) => (
             this.setState({
               userFormsToShow:update({}, {[user.id]: {$set:true}})
@@ -70,7 +77,7 @@ var SettingsTable = React.createClass({
             } catch(e) {}
           }}
         />,
-        (this.state.userFormsToShow[user.id]) ? <SettingsTableRowForm user={user} userGroup={props.userGroup} colspan={props.bulkActions ? "3" : "2"} /> : undefined
+        (this.state.userFormsToShow[user.id]) ? <SettingsTableRowForm handleQuickEdit={this.handleQuickEdit.bind(null, user)} className="contextual-setting"  user={user} userGroup={props.userGroup} colspan={props.bulkActions ? "3" : "2"} /> : undefined
       ]);
 
     });
@@ -118,8 +125,8 @@ var SettingsGridSection = React.createClass({
 
     console.log(emails);
 
-    return (
-      <section id="core-settings">
+    return (users.length) ? (
+      <section id={"user-group-" + props.userGroup.id}>
         <header>
           <h2>{props.title}</h2>
         </header>
@@ -147,7 +154,7 @@ var SettingsGridSection = React.createClass({
           <p><a href="#">View all {props.title} users</a></p>
         </footer>
       </section>
-    );
+    ) : false;
   }
 });
 
@@ -188,58 +195,92 @@ var SettingsTableRow = function(props) {
   );
 };
 
-var SettingsTableRowForm = function(props) {
-  var user = props.user;
-  var userGroup = props.userGroup;
+var SettingsTableRowForm = React.createClass({
+  mixins: [ ReactFormData ],
+  getInitialState:() => ({
+    asyncAction:undefined
+  }),
+  render:function(){
+    var props = this.props;
+    var user = props.user;
+    var userGroup = props.userGroup;
 
-  return (
-    <tr {...props}>
-      <td colSpan={props.colspan}>
-          <form action="/" method="post">
-            <input name="user_id" type="hidden" value={user.id} />
-            <input name="username" type="hidden" value={user.username} />
-            <div className="friendly-labels">
-              <label>Sudo: <input name="sudo" checked={user.sudo} type="checkbox" onChange={(event) => {
-                store.dispatch(actions.updateUser(user.id,{
-                  sudo:event.target.checked
-                }))
-              }} /></label>
-              <label>Active: <input name="active" checked={user.active} type="checkbox" onChange={(event) => {
-                store.dispatch(actions.updateUser(user.id,{
-                  active:event.target.checked
-                }))
-              }} /></label>
-            </div>
-            <p className="subtle balanced oblique">{user.jobTitle}</p>
-            <div>
-              <button type="submit" className="save">Save</button>
-            </div>
-            <div><button className="save">Next User</button></div>
-            <div>
-              <button type="submit" formAction="./quick-edit/user.html">Quick Edit</button>
-              <button type="submit" formAction="./../user-edit/index.html">Edit</button>
-            </div>
-            <div>
-              <button type="submit" formAction="duplicate/user" className="save">Duplicate</button>
-              <button type="submit" formAction="/api/delete/user">Delete</button>
-              <button type="submit" formAction={'mailto:' + user.email + '?subject=MODX%20Next'} formTarget="_blank">Email</button>
-            </div>
-            <div>
-              <button type="submit" className="save">Save</button>
-            </div>
-            <div style={{marginTop:"1em"}}>
-              <button formAction="removefromgroup/user" onClick={(event) => {
-                event.preventDefault();
-                store.dispatch(actions.removeUserFromGroup(user.id,userGroup.id));
-              }}>Remove from Group</button>
-            </div>
-          </form>
-          <footer className="subtle oblique balanced">
-            <p>{user.givenName} {user.familyName}’ last login was Jan 23, 2016 4:52pm from Planet&nbsp;Earth</p>
-          </footer>
-      </td>
-    </tr>
-  );
-};
+    console.log('SettingsTableRowForm');
+    console.log(user);
+
+    return (
+      <tr {...props}>
+        <td colSpan={props.colspan}>
+            <form action={this.state.formAction} method={this.state.formMethod} onChange={this.updateFormData}>
+              <input name="user_id" type="hidden" value={user.id} />
+              <input name="username" type="hidden" value={user.username} />
+              <div className="friendly-labels">
+                <label>Sudo: <input name="sudo" checked={user.sudo} type="checkbox" onChange={(event) => {
+                  store.dispatch(actions.updateUser(user.id,{
+                    sudo:event.target.checked
+                  }))
+                }} /></label>
+                <label>Active: <input name="active" checked={user.active} type="checkbox" onChange={(event) => {
+                  store.dispatch(actions.updateUser(user.id,{
+                    active:event.target.checked
+                  }))
+                }} /></label>
+              </div>
+              <p className="subtle balanced oblique">{user.jobTitle}</p>
+              <div>
+                <button type="submit" className="save">Save</button>
+              </div>
+              <div><a className="button">Next User</a></div>
+              <div>
+                <a className="button" href="/update/user" onClick={(event) => {
+                  event.preventDefault();
+                  //event.stopPropagation();
+
+                  store.dispatch(actions.updateQuickCreate({
+                    username:user.username,
+                    givenName:user.givenName,
+                    familyName:user.familyName,
+                    email:user.email,
+                    active:user.active,
+                    sudo:user.sudo,
+                    open:true,
+                    updating:true,
+                    id:user.id
+                  }));
+                }}>Quick Edit</a>
+                <button type="submit" formAction="./../user-edit/index.html">Edit</button>
+              </div>
+              <div>
+                <button type="submit" formAction="duplicate/user" className="save">Duplicate</button>
+                <button type="submit" onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  store.dispatch(actions.deleteUser(
+                    Object.assign({},user,{
+                      user_id:user.id
+                    })
+                  ));
+                }} formMethod="delete" formAction="/delete/user" data-async-action="deleteuser">Delete</button>
+                <a className="button" href={'mailto:' + user.email + '?subject=MODX%20Next'}>Email</a>
+              </div>
+              <div>
+                <button type="submit" className="save">Save</button>
+              </div>
+              <div style={{marginTop:"1em"}}>
+                <button formAction="removefromgroup/user" onClick={(event) => {
+                  event.preventDefault();
+                  store.dispatch(actions.removeUserFromGroup(user.id,userGroup.id));
+                }}>Remove from Group</button>
+              </div>
+            </form>
+            <footer className="subtle oblique balanced">
+              <p>{user.givenName} {user.familyName}’ last login was Jan 23, 2016 4:52pm from Planet&nbsp;Earth</p>
+            </footer>
+        </td>
+      </tr>
+    );
+  }
+});
+
 
 module.exports = SettingsGridSection;

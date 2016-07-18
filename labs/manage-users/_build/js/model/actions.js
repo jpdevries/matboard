@@ -1,17 +1,15 @@
 require('isomorphic-fetch');
 
-var UPDATE_USER = 'updateuser';
-var updateUser = function(id,user) {
+var UPDATE_QUICKCREATE = 'update_quickcreate';
+var updateQuickCreate = function(quickCreate) {
   return {
-    type:UPDATE_USER,
-    id:id,
-    user:user
+    type:UPDATE_QUICKCREATE,
+    quickCreate:quickCreate,
   }
 }
 
-exports.UPDATE_USER = UPDATE_USER;
-exports.updateUser = updateUser;
-
+exports.UPDATE_QUICKCREATE = UPDATE_QUICKCREATE;
+exports.updateQuickCreate = updateQuickCreate;
 
 var ADD_USER_GROUP = 'addusergroup';
 var addUserGroup = function(userGroup) {
@@ -56,6 +54,59 @@ exports.REMOVE_USER_FROM_GROUP = REMOVE_USER_FROM_GROUP;
 exports.removeUserFromGroup = removeUserFromGroup;
 
 
+var UPDATE_USER = 'updateuser';
+var UPDATE_USER_SUCCESS = 'updateusersuccess';
+var UPDATE_USER_ERROR = 'updateusererror';
+var updateUserSuccess = function(id,user) {
+  return {
+    type:UPDATE_USER_SUCCESS,
+    user:user,
+    id:id
+  }
+}
+
+var updateUserError = function(id,user) {
+  return {
+    type:UPDATE_USER_ERROR,
+    user:user,
+    id:id
+  }
+}
+
+var updateUser = (id,user) => (
+  (dispatch) => (
+    fetch('/api/user/update', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(user)
+    }).then(function(response){
+      if(response.state < 200 || response.state >= 300) {
+        var error = new Error(response.statusText)
+        error.response = response
+        throw error;
+      }
+      return response;
+    }).then((response) => (
+      response.json()
+    )).then((data) => (
+      dispatch(
+        updateUserSuccess(id,user)
+      )
+    )).catch((error) => (
+      dispatch(
+        updateUserError(id,user)
+      )
+    ))
+  )
+);
+
+exports.UPDATE_USER = UPDATE_USER;
+exports.UPDATE_USER_SUCCESS = UPDATE_USER_SUCCESS;
+exports.UPDATE_USER_ERROR = UPDATE_USER_ERROR;
+exports.updateUser = updateUser;
 
 
 var ADD_USER = 'adduser';
@@ -63,7 +114,6 @@ var ADD_USER_SUCCESS = 'addusersuccess';
 var ADD_USER_ERROR = 'addusererror';
 
 var addUserSuccess = function(user) {
-  console.log(ADD_USER_SUCCESS, user);
   return {
     type:ADD_USER_SUCCESS,
     user:user
@@ -71,7 +121,6 @@ var addUserSuccess = function(user) {
 }
 
 var addUserError = function(user) {
-  console.log(ADD_USER_ERROR, user);
   return {
     type:ADD_USER_ERROR,
     user:user
@@ -80,7 +129,7 @@ var addUserError = function(user) {
 
 var addUser = (user) => (
   (dispatch) => (
-    fetch('/api/add/user', {
+    fetch('/api/user/add', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -111,3 +160,57 @@ var addUser = (user) => (
 exports.ADD_USER_SUCCESS = ADD_USER_SUCCESS;
 exports.ADD_USER_ERROR = ADD_USER_ERROR;
 exports.addUser = addUser;
+
+var DELETE_USER = 'deleteuser';
+var DELETE_USER_SUCCESS = 'deleteusersuccess';
+var DELETE_USER_ERROR = 'deleteusererror';
+
+var deleteUserSuccess = function(user) {
+  return {
+    type:DELETE_USER_SUCCESS,
+    user:user,
+    id:user.id
+  }
+}
+
+var deleteUserError = function(user) {
+  return {
+    type:ADD_USER_ERROR,
+    user:user,
+    id:user.id
+  }
+}
+
+var deleteUser = function(user) {
+  return function(dispatch) {
+    return fetch('/api/delete/user', {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(user)
+    }).then(function(response){
+      if(response.state < 200 || response.state >= 300) {
+        var error = new Error(response.statusText)
+        error.response = response
+        throw error;
+      }
+      return response;
+    }).then((response) => (
+      response.json()
+    )).then((data) => (
+      dispatch(
+        deleteUserSuccess(user)
+      )
+    )).catch((error) => (
+      dispatch(
+        deleteUserError(user)
+      )
+    ))
+  }
+};
+
+exports.DELETE_USER_SUCCESS = DELETE_USER_SUCCESS;
+exports.DELETE_USER_ERROR = DELETE_USER_ERROR;
+exports.deleteUser = deleteUser;
