@@ -14,6 +14,7 @@ reducer = require('./_build/js/model/reducers'),
 QuickCreateFieldset = require('./_build/js/view/quickcreatefieldset'),
 ReactDOM = require('react-dom/server'),
 store = require('./_build/js/model/store'),
+actions = require('./_build/js/model/actions'),
 app = express();
 
 
@@ -143,14 +144,38 @@ app.delete('/api/delete/user',function(req, res) {
 });
 
 app.get('/update/user/:userid', function(req, res){
-  res.render('updateuser.twig', {
-    react: ReactDOM.renderToStaticMarkup(
-      React.createElement(QuickCreateFieldset,{
-        fieldsetRoles:store.getState().fieldsetRoles,
-        quickCreate:store.getState().quickCreate
-      })
-    )
+  var userid = req.params.userid;
+
+  getUserRows(`WHERE user_id = ${userid}`).then(function(result){
+    console.log(result);
+    var user = result.users[0],
+    userGroups = result.userGroups;
+    console.log(user.user_groups);
+    store.dispatch(actions.updateQuickCreate({
+      username:user.username,
+      givenName:user.fullname,
+      familyName:'',
+      email:user.email,
+      active:user.active == 1,
+      sudo:user.sudo == 1,
+      open:true,
+      updating:true,
+      id:user.id
+    }));
+    res.render('updateuser.twig', {
+      user:user,
+      react: ReactDOM.renderToStaticMarkup(
+        React.createElement(QuickCreateFieldset,{
+          fieldsetRoles:store.getState().fieldsetRoles,
+          quickCreate:store.getState().quickCreate
+        })
+      )
+    });
+  },function(){
+
   });
+
+
 });
 
 /*
@@ -273,7 +298,7 @@ function quicklyUpdateUser(fields) {
   });
 }
 
-function getUserRows() {
+function getUserRows(where = '') {
   return new Promise(function(resolve, reject) {
     // instantiate a new client
     // the client will read connection information from
@@ -285,7 +310,9 @@ function getUserRows() {
       if (err) throw err;
 
       // execute a query on our database
-      client.query('SELECT modx_users.username, modx_users.user_id as id, user_group, role, name as groupname, fullname, email, title, active, sudo FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.user_id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.user_id;', function (err, result) {
+      client.query(`
+        SELECT modx_users.username, modx_users.user_id as id, user_group, role, name as groupname, fullname, email, title, active, sudo FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.user_id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.user_id ${where};
+        `, function (err, result) {
         if (err) reject(err);
 
         // disconnect the client

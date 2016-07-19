@@ -208,8 +208,10 @@ var ManageUserFormHeader = React.createClass({
                 } catch (e) {}
               }} />
             </label>
-            <button type="submit">Search</button>
-            <label for="filter-by">Filter by:</label>
+            <div>
+              <button type="submit">Search</button>
+            </div>
+            <label htmlFor="filter-by">Filter <span className="accessibly-hidden">Users</span> by<span className="accessibly-hidden"> User Group</span>:</label>
             <select name="filter-by" id="filter-by" onChange={(event) => {
               try {
                 props.handleFilterBy(parseInt(event.target.value));

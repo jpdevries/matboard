@@ -22,15 +22,17 @@ var ManageUsersForm = React.createClass({
 
     return (
       <div>
-        <ManageUserFormHeader fieldsetRoles={props.fieldsetRoles} quickCreate={props.quickCreate} handleFilterBy={(filterBy) => (
-          this.setState({
-            filterBy:isNaN(filterBy) ? undefined : filterBy
-          })
-        )} handleFilter={(filter) => (
-          this.setState({
-            filter:filter.length ? filter : undefined
-          })
-        )} />
+        <div id="manage-user-form__header">
+          <ManageUserFormHeader fieldsetRoles={props.fieldsetRoles} quickCreate={props.quickCreate} handleFilterBy={(filterBy) => (
+            this.setState({
+              filterBy:isNaN(filterBy) ? undefined : filterBy
+            })
+          )} handleFilter={(filter) => (
+            this.setState({
+              filter:filter.length ? filter : undefined
+            })
+          )} />
+        </div>
         <div className="settings-grid">
           {sections}
         </div>

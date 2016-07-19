@@ -127,32 +127,34 @@ var SettingsGridSection = React.createClass({
 
     return (users.length) ? (
       <section id={"user-group-" + props.userGroup.id}>
-        <header>
-          <h2>{props.title}</h2>
-        </header>
         <div>
-          {bulkActionsFieldset}
-          <SettingsTable bulkActions={users.length >= minimumUsersBulkAction ? props.bulkActions : false} users={users} bulkToggledUsers={this.state.bulkToggledUsers} userGroup={props.userGroup} handleBulkToggle={(id,checked) => {
-            this.setState({
-              bulkToggledUsers:update(this.state.bulkToggledUsers, {[id]: {$set:checked}})
-            });
-          }} handleBulkAllCheck={(allChecked) => {
-            console.log('handleBulkAllCheck',allChecked);
-            var all = {};
-            if(allChecked) {
-              users.map((user) => {
-                all[user.id] = true;
+          <header>
+            <h2>{props.title}</h2>
+          </header>
+          <div>
+            {bulkActionsFieldset}
+            <SettingsTable bulkActions={users.length >= minimumUsersBulkAction ? props.bulkActions : false} users={users} bulkToggledUsers={this.state.bulkToggledUsers} userGroup={props.userGroup} handleBulkToggle={(id,checked) => {
+              this.setState({
+                bulkToggledUsers:update(this.state.bulkToggledUsers, {[id]: {$set:checked}})
               });
-            }
-            this.setState({
-              bulkToggledUsers:all
-            });
-          }} />
-          {bulkActionsFieldset}
+            }} handleBulkAllCheck={(allChecked) => {
+              console.log('handleBulkAllCheck',allChecked);
+              var all = {};
+              if(allChecked) {
+                users.map((user) => {
+                  all[user.id] = true;
+                });
+              }
+              this.setState({
+                bulkToggledUsers:all
+              });
+            }} />
+            {bulkActionsFieldset}
+          </div>
+          <footer>
+            <p><a href="#">View all {props.title} users</a></p>
+          </footer>
         </div>
-        <footer>
-          <p><a href="#">View all {props.title} users</a></p>
-        </footer>
       </section>
     ) : false;
   }
@@ -232,7 +234,7 @@ var SettingsTableRowForm = React.createClass({
               </div>
               <div><a className="button">Next User</a></div>
               <div>
-                <a className="button" href="/update/user" onClick={(event) => {
+                <a className="button" href={"/update/user/" + user.id} onClick={(event) => {
                   event.preventDefault();
                   //event.stopPropagation();
 
@@ -248,7 +250,7 @@ var SettingsTableRowForm = React.createClass({
                     id:user.id
                   }));
                 }}>Quick Edit</a>
-                <button type="submit" formAction="./../user-edit/index.html">Edit</button>
+                <a className="button" href={"/update/user/" + user.id}>Edit</a>
               </div>
               <div>
                 <button type="submit" formAction="duplicate/user" className="save">Duplicate</button>

@@ -1,5 +1,6 @@
-var React = require('React'),
-actions = require('./../model/actions'),
+if(!React) var React = require("react"); // only require React if need be (server-side rendering)
+
+var actions = require('./../model/actions'),
 store = require('./../model/store');
 
 export default class QuickCreateFieldset extends React.Component {
@@ -21,6 +22,18 @@ export default class QuickCreateFieldset extends React.Component {
         </fieldset>
       ));
     });
+
+    var otherButtons = (props.quickCreate.updating) ? (
+      <div>
+        <div>
+          <button type="submit" formaction="/duplicate/user" formmethod="put">Duplicate User</button>
+          <button type="submit" formaction="/delete/user" formmethod="delete">Delete User</button>
+        </div>
+        <div>
+          <a className="button" href={"mailto:" + props.quickCreate.email + "?subject=MODX%20Next"}>Email User</a>
+        </div>
+      </div>
+    ) : false;
 
     return (
       <fieldset>
@@ -74,7 +87,9 @@ export default class QuickCreateFieldset extends React.Component {
               </div>
             </div>
             <div>
-              <button type="submit">Submit</button>
+              <div className="balanced">
+                <button className="comfortably" type="submit">{props.quickCreate.updating ? 'Update' : 'Create'} User</button>
+              </div>
             </div>
             <div className="field-group">
               <fieldset className="field">
@@ -84,7 +99,10 @@ export default class QuickCreateFieldset extends React.Component {
               </fieldset>
             </div>
             <footer>
-              <button type="submit">Submit</button>
+              <div>
+                <button type="submit">{props.quickCreate.updating ? 'Update' : 'Create'} User</button>
+              </div>
+              {otherButtons}
             </footer>
           </fieldset>
     );

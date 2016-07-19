@@ -115,7 +115,7 @@ SELECT user_id FROM "new_user";
 
 WITH "new_user" AS (
   INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
-  VALUES (nextval('user_id_sequence'),'christianseel', 1,1,0) RETURNING *
+  VALUES (nextval('user_id_sequence'),'christianseel', 1,1,1) RETURNING *
 ), "new_user_attributes" AS (
   INSERT INTO "modx_user_attributes" (id, internalkey, fullname, email, phone, title)
   SELECT new_user.user_id,new_user.user_id,'Christian Seel','chris@modmore.com','','MGAB Vice-Chairman' FROM new_user
@@ -375,5 +375,3 @@ FROM
    modx_member_groups ON modx_member_groups.member = modx_users.user_id
 INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id
 INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.user_id;
-
-SELECT * FROM "modx_user_attributes";
