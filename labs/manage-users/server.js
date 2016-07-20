@@ -17,13 +17,10 @@ store = require('./_build/js/model/store'),
 actions = require('./_build/js/model/actions'),
 app = express();
 
-
-
 // This section is optional and used to configure twig.
 app.set("twig options", {
     strict_variables: false
 });
-
 
 app.post('/add/user', function(req, res){
   var form = new formidable.IncomingForm();
@@ -34,7 +31,7 @@ app.post('/add/user', function(req, res){
     });
 
     addUserQuickly(fields).then(function(result){
-      console.log(result);
+      //console.log(result);
       var username = result.username;
       res.write('<h1>User ' + username + ' has been added with an id of ' + result.user_id + '.</h1>');
       res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
@@ -108,7 +105,7 @@ app.delete('/delete/user', function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
-    console.log(fields);
+    //console.log(fields);
 
     var message = 'YOLO';
 
@@ -147,7 +144,7 @@ app.delete('/api/user/delete',function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
-    console.log(fields);
+    //console.log(fields);
 
     deleteUserById(fields.user_id).then(function(result){
       res.json(true);
@@ -157,11 +154,30 @@ app.delete('/api/user/delete',function(req, res) {
   });
 });
 
+app.post('/users/activate', function(req, res) {
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    activateUsersById(fields['users[]'], true).then(function(result){
+      res.render('activatedusers.twig', {
+        activated:'Activated',
+        users:result.rows
+      });
+    },function(err,result){
+      res.render('unabletoactivateusers.twig', {
+        activate:'Activate',
+        activated:'Activated',
+        users:result.rows
+      });
+    });
+  });
+});
+
 app.post('/api/users/activate',function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
-    console.log(fields);
+    //console.log(fields);
 
     activateUsersById(fields.users, true).then(function(result){
       res.json(true);
@@ -171,11 +187,31 @@ app.post('/api/users/activate',function(req, res) {
   });
 });
 
+app.post('/users/deactivate', function(req, res) {
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    activateUsersById(fields['users[]'], false).then(function(result){
+      console.log(result.rows);
+      res.render('activatedusers.twig', {
+        activated:'Deactivated',
+        users:result.rows
+      });
+    },function(err,result){
+      res.render('unabletoactivateusers.twig', {
+        activate:'Deactivate',
+        activated:'Deactivated',
+        users:result.rows
+      });
+    });
+  });
+});
+
 app.post('/api/users/deactivate',function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
-    console.log(fields);
+    //console.log(fields);
 
     activateUsersById(fields.users, false).then(function(result){
       res.json(true);
@@ -189,10 +225,10 @@ app.get('/update/user/:userid', function(req, res){
   var userid = req.params.userid;
 
   getUserRows(`WHERE user_id = ${userid}`).then(function(result){
-    console.log(result);
+    //console.log(result);
     var user = result.users[0],
     userGroups = result.userGroups;
-    console.log(user.user_groups);
+    //console.log(user.user_groups);
     store.dispatch(actions.updateQuickCreate({
       username:user.username,
       givenName:user.fullname,
@@ -293,28 +329,36 @@ function activateUsersById(users,active = true) {
     var client = new pg.Client();
 
     usersList = users.join(', ');
-    console.log('usersList',usersList);
+    //console.log('usersList',usersList);
 
     // connect to our database
     client.connect(function (err) {
-      if (err) reject(err);
+      if (err) reject(err,users);
 
-      var query = `
+      /*var query = `
         UPDATE "modx_users" SET active = ${active} WHERE user_id IN (${usersList});
         `;
+        console.log(query);*/
+
+      var query = `
+      WITH "update_user" AS (
+        UPDATE "modx_users" SET active = ${active} WHERE user_id IN (${usersList})
+        RETURNING *
+      )
+      SELECT user_id,username,fullname FROM "update_user"
+        INNER JOIN modx_user_attributes ON modx_user_attributes.id = update_user.user_id;
+      `;
 
       // execute a query on our database
       client.query(query, function (err, result) {
-        if (err) reject(err);
+        if (err) reject(err,users);
 
         // disconnect the client
         client.end(function (err) {
-          if (err) reject(err);
+          if (err) reject(err,users);
         });
 
-        resolve({
-          users:users
-        });
+        resolve(result);
       });
     });
   });
@@ -358,7 +402,7 @@ function deleteUsersById(users) {
 }
 
 function quicklyUpdateUser(fields) {
-  console.log('quicklyUpdateUser',fields);
+  //console.log('quicklyUpdateUser',fields);
   return new Promise(function(resolve, reject) {
     // instantiate a new client
     // the client will read connection information from
@@ -466,7 +510,7 @@ function getUserRows(where = '') {
           userGroups.push(userGroupNamesHash[key]);
         }
 
-        console.log(rows);
+        //console.log(rows);
 
         resolve({
           userGroups:userGroups,
@@ -489,7 +533,7 @@ function getGroupSelects(userGroups, userrelation = 'new_user') {
 }
 
 function addUserQuickly(fields) {
-  console.log(fields);
+  //console.log(fields);
   return new Promise(function(resolve, reject){
     var username = fields.username,
     givenname = fields.givenName,

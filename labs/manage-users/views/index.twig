@@ -9,8 +9,7 @@
               <div class="top-bar">
                 <script>document.write('<button js-hidden formaction="./quick-create/user.html" aria-haspopup="true">Quick Create User</button>')</script>
               </div>
-              <button id="create-user" formaction="./../user-edit/index.html">Create User</button>
-
+              <a id="create-user" class="button" href="/user/create">Create User</a>
               <fieldset style="margin-top:1em" js-not-hidden>
                 <legend>Quick Create User</legend>
                 <div class="n field-group">
@@ -42,7 +41,9 @@
                   </div>
                 </div>
                 <div style="text-align:center;margin:1em 0;">
-                  <button type="submit">Submit</button>
+                  <div>
+                    <button type="submit">Submit</button>
+                  </div>
                 </div>
                 <div class="field-group">
                   <fieldset class="field">
@@ -103,23 +104,13 @@
               <h2 class="name">{{ userGroup.name }}</h2>
             </header>
             <div>
-              <button style="margin-bottom:2em">Create Editors User</button>
+              <div class="balanced"><button style="margin-bottom:2em">Create {{ userGroup.name }} User</button></div>
               {% if usersInGroup > 3 %}
-              <form action="/bulk/actions" method="post">
-                <fieldset>
-                  <legend>Bulk Actions</legend>
-                  <button type="submit" formaction="/api/users/deactivate" formmethod="post">Deactivate</button>
-                  <button formtarget="bulkactions/activate">Activate</button>
-                  <button formtarget="bulkactions/suspend">Suspend</button>
-                  <button formtarget="bulkactions/delete">Delete</button>
-                  <button formtarget="bulkactions/email">Email</button>
-                </fieldset>
-              </form>
+                {% include 'bulkactions.twig' with {'users' : users} %}
               {% endif %}
               <table class="settings-table">
                 <thead>
                   <tr>
-                    <th></th>
                     <th>User</th>
                     <th>Active</th>
                   </tr>
@@ -128,7 +119,6 @@
                   {% for user in users %}
                   {% if userGroup.id in user.user_groups %}
                   <tr tabindex="0" class="user-row" data-user-id="{{ user.id }}" data-email="{{ user.email }}" data-user-groups="{{ user.user_groups|join(',') }}">
-                    <td><label><input type="checkbox" name="bulk-jpdevries" /></label></td>
                     <td class="username">{{ user.username }}</td>
                     <td><label><span a11y-hidden>Active: </span><input {% if user.active == '1' %}checked {% endif %} type="checkbox"></label></td>
                   </tr>
@@ -169,16 +159,7 @@
                 </tbody>
               </table>
               {% if usersInGroup > 3 %}
-              <form action="/bulk/actions" method="post">
-                <fieldset>
-                  <legend>Bulk Actions</legend>
-                  <button type="submit" formaction="/api/users/deactivate" formmethod="post">Deactivate</button>
-                  <button formtarget="bulkactions/activate">Activate</button>
-                  <button formtarget="bulkactions/suspend">Suspend</button>
-                  <button formtarget="bulkactions/delete">Delete</button>
-                  <button formtarget="bulkactions/email">Email</button>
-                </fieldset>
-              </form>
+                {% include 'bulkactions.twig' with {'users':users,'userGroup':userGroup} %}
               {% endif %}
             </div>
             <footer>

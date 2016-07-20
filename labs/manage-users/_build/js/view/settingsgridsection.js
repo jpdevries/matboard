@@ -101,7 +101,7 @@ var SettingsGridSectionBulkActionsFieldset = React.createClass({
         {hiddenBulkToggleInputs}
         <fieldset>
           <legend>Bulk Actions</legend>
-          <button type="submit" disabled={!props.emails.length} formAction="/api/users/activate" formMethod="post" onClick={this.handleBulkButtonClick}>Activate</button>
+          <button type="submit" disabled={!props.emails.length} className="go" formAction="/api/users/activate" formMethod="post" onClick={this.handleBulkButtonClick}>Activate</button>
           <button type="submit" disabled={!props.emails.length} formAction="/api/users/deactivate" formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
           <button type="submit" disabled={!props.emails.length} formAction="/api/users/delete" formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
           <button disabled={!props.emails.length} formAction={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body='} formTarget="_blank">Email</button>
@@ -133,7 +133,7 @@ var SettingsTable = React.createClass({
     var rows = props.users.map((user) => {
 
       return([
-        <SettingsTableRow user={user} bulkToggle={props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false} bulkActions={props.bulkActions}
+        <SettingsTableRow user={user} userGroup={props.userGroup} bulkToggle={props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false} bulkActions={props.bulkActions}
           handleFocus={(event) => (
             this.setState({
               userFormsToShow:update({}, {[user.id]: {$set:true}})
@@ -231,12 +231,12 @@ var SettingsTableRow = function(props) {
   var user = props.user;
 
   var bulkActionsTd;
-  var bulkName = 'bulk-' + user.username;
-  if(props.bulkActions) bulkActionsTd = <td><label><input type="checkbox" name={bulkName} checked={props.bulkToggle} onChange={(event) => {
+  var bulkName = 'bulk-' + props.userGroup.id + '-' + user.username;
+  if(props.bulkActions) bulkActionsTd = <td><label htmlFor={bulkName} className="accessibly-hidden">Select {user.username}</label><input type="checkbox" name={bulkName} checked={props.bulkToggle} onChange={(event) => {
     try {
       props.handleBulkToggle(user.id,event.target.checked)
     } catch(e) {}
-  }} /></label></td>;
+  }} /></td>;
 
   return (
     <tr tabIndex="0" onFocus={(event) => {
@@ -250,13 +250,13 @@ var SettingsTableRow = function(props) {
     }}>
       {bulkActionsTd}
       <td>{user.username}</td>
-      <td>
+      <td className="shy balanced checkbox">
         <label>
-          <span a11y-hidden>Active: </span>
+          <span className="accessibly-hidden">Active: </span>
           <input checked={user.active} type="checkbox" onChange={(event) => (
-            store.dispatch(actions.updateUser(user.id,{
+            store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
               active:event.target.checked
-            }))
+            }})))
           )} />
         </label>
       </td>
@@ -285,20 +285,18 @@ var SettingsTableRowForm = React.createClass({
               <input name="username" type="hidden" value={user.username} />
               <div className="friendly-labels">
                 <label>Sudo: <input name="sudo" checked={user.sudo} type="checkbox" onChange={(event) => {
-                  store.dispatch(actions.updateUser(user.id,{
+                  store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
                     sudo:event.target.checked
-                  }))
+                  }})))
                 }} /></label>
                 <label>Active: <input name="active" checked={user.active} type="checkbox" onChange={(event) => {
-                  store.dispatch(actions.updateUser(user.id,{
+                  store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
                     active:event.target.checked
-                  }))
+                  }})))
                 }} /></label>
               </div>
               <p className="subtle balanced oblique">{user.jobTitle}</p>
-              <div>
-                <button type="submit" className="save">Save</button>
-              </div>
+
               <div><a className="button">Next User</a></div>
               <div>
                 <a className="button" href={"/update/user/" + user.id} onClick={(event) => {
@@ -325,16 +323,14 @@ var SettingsTableRowForm = React.createClass({
                   event.preventDefault();
                   event.stopPropagation();
                   store.dispatch(actions.deleteUser(
-                    Object.assign({},user,{
+                    update(user,{$merge:{
                       user_id:user.id
-                    })
+                    }})
                   ));
                 }} formMethod="delete" formAction="/delete/user" data-async-action="deleteuser">Delete</button>
                 <a className="button" href={'mailto:' + user.email + '?subject=MODX%20Next'}>Email</a>
               </div>
-              <div>
-                <button type="submit" className="save">Save</button>
-              </div>
+
               <div style={{marginTop:"1em"}}>
                 <button formAction="removefromgroup/user" onClick={(event) => {
                   event.preventDefault();

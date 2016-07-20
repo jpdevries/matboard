@@ -2656,7 +2656,7 @@
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, formAction: '/api/users/activate', formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', disabled: !props.emails.length, className: 'go', formAction: '/api/users/activate', formMethod: 'post', onClick: this.handleBulkButtonClick },
 	          'Activate'
 	        ),
 	        React.createElement(
@@ -2710,7 +2710,7 @@
 
 	    var rows = props.users.map(function (user) {
 
-	      return [React.createElement(SettingsTableRow, { user: user, bulkToggle: props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false, bulkActions: props.bulkActions,
+	      return [React.createElement(SettingsTableRow, { user: user, userGroup: props.userGroup, bulkToggle: props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false, bulkActions: props.bulkActions,
 	        handleFocus: function handleFocus(event) {
 	          return _this3.setState({
 	            userFormsToShow: update({}, _defineProperty({}, user.id, { $set: true }))
@@ -2847,19 +2847,21 @@
 	  var user = props.user;
 
 	  var bulkActionsTd;
-	  var bulkName = 'bulk-' + user.username;
+	  var bulkName = 'bulk-' + props.userGroup.id + '-' + user.username;
 	  if (props.bulkActions) bulkActionsTd = React.createElement(
 	    'td',
 	    null,
 	    React.createElement(
 	      'label',
-	      null,
-	      React.createElement('input', { type: 'checkbox', name: bulkName, checked: props.bulkToggle, onChange: function onChange(event) {
-	          try {
-	            props.handleBulkToggle(user.id, event.target.checked);
-	          } catch (e) {}
-	        } })
-	    )
+	      { htmlFor: bulkName, className: 'accessibly-hidden' },
+	      'Select ',
+	      user.username
+	    ),
+	    React.createElement('input', { type: 'checkbox', name: bulkName, checked: props.bulkToggle, onChange: function onChange(event) {
+	        try {
+	          props.handleBulkToggle(user.id, event.target.checked);
+	        } catch (e) {}
+	      } })
 	  );
 
 	  return React.createElement(
@@ -2881,19 +2883,19 @@
 	    ),
 	    React.createElement(
 	      'td',
-	      null,
+	      { className: 'shy balanced checkbox' },
 	      React.createElement(
 	        'label',
 	        null,
 	        React.createElement(
 	          'span',
-	          { 'a11y-hidden': true },
+	          { className: 'accessibly-hidden' },
 	          'Active: '
 	        ),
 	        React.createElement('input', { checked: user.active, type: 'checkbox', onChange: function onChange(event) {
-	            return store.dispatch(actions.updateUser(user.id, {
-	              active: event.target.checked
-	            }));
+	            return store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
+	                active: event.target.checked
+	              } })));
 	          } })
 	      )
 	    )
@@ -2936,9 +2938,9 @@
 	              null,
 	              'Sudo: ',
 	              React.createElement('input', { name: 'sudo', checked: user.sudo, type: 'checkbox', onChange: function onChange(event) {
-	                  store.dispatch(actions.updateUser(user.id, {
-	                    sudo: event.target.checked
-	                  }));
+	                  store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
+	                      sudo: event.target.checked
+	                    } })));
 	                } })
 	            ),
 	            React.createElement(
@@ -2946,9 +2948,9 @@
 	              null,
 	              'Active: ',
 	              React.createElement('input', { name: 'active', checked: user.active, type: 'checkbox', onChange: function onChange(event) {
-	                  store.dispatch(actions.updateUser(user.id, {
-	                    active: event.target.checked
-	                  }));
+	                  store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
+	                      active: event.target.checked
+	                    } })));
 	                } })
 	            )
 	          ),
@@ -2956,15 +2958,6 @@
 	            'p',
 	            { className: 'subtle balanced oblique' },
 	            user.jobTitle
-	          ),
-	          React.createElement(
-	            'div',
-	            null,
-	            React.createElement(
-	              'button',
-	              { type: 'submit', className: 'save' },
-	              'Save'
-	            )
 	          ),
 	          React.createElement(
 	            'div',
@@ -3017,9 +3010,9 @@
 	              { type: 'submit', onClick: function onClick(event) {
 	                  event.preventDefault();
 	                  event.stopPropagation();
-	                  store.dispatch(actions.deleteUser(Object.assign({}, user, {
-	                    user_id: user.id
-	                  })));
+	                  store.dispatch(actions.deleteUser(update(user, { $merge: {
+	                      user_id: user.id
+	                    } })));
 	                }, formMethod: 'delete', formAction: '/delete/user', 'data-async-action': 'deleteuser' },
 	              'Delete'
 	            ),
@@ -3027,15 +3020,6 @@
 	              'a',
 	              { className: 'button', href: 'mailto:' + user.email + '?subject=MODX%20Next' },
 	              'Email'
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            null,
-	            React.createElement(
-	              'button',
-	              { type: 'submit', className: 'save' },
-	              'Save'
 	            )
 	          ),
 	          React.createElement(

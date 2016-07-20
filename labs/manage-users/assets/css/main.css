@@ -1,2 +1,279 @@
-html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}.create-setting-form input[type=email],.create-setting-form input[type=password],.create-setting-form input[type=text],.create-setting-form textarea,.create-user-form input[type=email],.create-user-form input[type=password],.create-user-form input[type=text],.create-user-form textarea,.settings-grid table,.settings-table .contextual-setting input[type=text],input[name=search-settings],input[name=search-users]{width:100%;min-width:100%}.accessibly-hidden,html.js [a11y-hidden]{position:absolute;height:1px;width:1px;overflow:hidden;top:0;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px)}#manage-users-form #manage-user-form__header header,.bright.padded,.settings-grid>section>div{background:#fff;padding:16px;padding:1rem;margin-bottom:1em;border:1px solid #c8c8c8}.button,button{display:inline-block;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding:0;border-width:0;background-color:red;color:#fff;font-family:sans-serif;font-weight:400;font-size:inherit;text-decoration:none;cursor:pointer;font-size:100%}button{overflow:visible}button::-moz-focus-inner{border:0;padding:0}.button,button{font-size:12.8px;font-size:.8rem;-webkit-appearance:none;-moz-appearance:none;appearance:none;display:inline-block;padding:3.2px 8px;padding:.2rem .5rem;text-align:center;border:1px solid #787878;background:#f0f0f0;color:#3c3c3c;border-radius:.2rem;text-decoration:none;margin:3.2px;margin:.2rem;transition:all .24s ease}.button:focus,.button:hover,button:focus,button:hover{color:#00e;border-color:#00e}.button:active,.button[formmethod=delete]:focus,.button[formmethod=delete]:hover,button:active,button[formmethod=delete]:focus,button[formmethod=delete]:hover{color:red;border-color:red}fieldset{border:1px solid #c8c8c8}html.js [js-hidden]{display:none}body{background:#f0f0f0;padding-top:16px;padding-top:1rem;color:#080808}.top-bar button{margin-right:1em}.horizontally-padded{padding-left:16px;padding-left:1rem;padding-right:16px;padding-right:1rem}#manage-users-form #manage-user-form__header header h1{margin-top:0}.subtle{color:#333;font-size:.8em}.oblique{font-style:italic}body{margin:0;font-family:sans-serif}body>header{padding:0 1em}.friendly-labels{display:-ms-flexbox;display:flex;-ms-flex-pack:center;justify-content:center}.friendly-labels>*{margin-right:1em}.friendly-labels>:last-of-type{margin-right:0}.settings-table td,.settings-table th{padding:.2em .4em}.settings-table thead{font-weight:700}.settings-table thead>tr>th{border:1px solid #c8c8c8}.settings-table thead>tr>th:first-of-type{text-align:left}.settings-table tbody>tr>td{border:1px solid #c8c8c8}.settings-table tbody>tr:nth-of-type(even){background:#f4f4f4}.settings-table tbody>tr.open+.contextual-setting,.settings-table tbody>tr:focus+.contextual-setting{display:table-row!important}.settings-table tbody>tr:focus html.no-js{background:#f2f2c5}.settings-table tbody tr td:first-of-type,.settings-table thead th:first-of-type{width:1em}.settings-table .contextual-setting{text-align:center}html.js .settings-table .contextual-setting{background:#f2f2c5}.settings-table .contextual-setting input[type=text]{line-height:1.4em}.settings-table .contextual-setting>td{padding:2em}.settings-table .contextual-setting>td>div h1,.settings-table .contextual-setting>td>div h2,.settings-table .contextual-setting>td>div h3,.settings-table .contextual-setting>td>div h4,.settings-table .contextual-setting>td>div h5,.settings-table .contextual-setting>td>div h6{margin-top:0}.create-setting-module,.create-user-module{margin-bottom:1em}.balanced{text-align:center}.comfortably{padding-left:2em;padding-right:2em}.create-setting-form footer,.create-user-form footer{text-align:center}.create-setting-form footer>div button,.create-user-form footer>div button{margin-right:1em}.create-setting-form footer>div button:last-of-type,.create-user-form footer>div button:last-of-type{margin-right:0}.create-setting-form footer button,.create-user-form footer button{margin-left:auto;margin-right:auto}.create-setting-form label,.create-user-form label{display:block}.create-setting-form{margin-bottom:1em}@media screen and (min-width:641px){.create-setting-form>fieldset>div{display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap}.create-setting-form>fieldset>div>*{-ms-flex:1 0 16em;flex:1 0 16em;padding-right:.5em;margin-bottom:.5em}}#manage-user-form__header{padding-left:8px;padding-left:.5rem;padding-right:8px;padding-right:.5rem}@media screen and (min-width:641px){#manage-user-form__header{padding-left:1rem;padding-right:1rem}}.settings-grid{display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;-ms-flex-line-pack:center;align-content:center;-ms-flex-pack:center;justify-content:center;padding-left:8px;padding-left:.5rem;padding-right:8px;padding-right:.5rem}.settings-grid>*{-ms-flex:1 1 24em;flex:1 1 24em;max-width:40em}@media screen and (min-width:641px){.settings-grid>*{display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column;padding-left:.5rem;padding-right:.5rem}.settings-grid>*>*{-ms-flex:1 0 auto;flex:1 0 auto}}.settings-grid form,.settings-grid h2{text-align:center}.settings-grid form footer,.settings-grid form table{margin-left:auto;margin-right:auto}.settings-grid footer p{text-align:center}form.search-settings,form.search-users{font-size:1.1em}@media screen and (min-width:641px){form.search-settings,form.search-users{display:-ms-flexbox;display:flex}}form.search-settings>label,form.search-users>label{-ms-flex-positive:1;flex-grow:1;max-width:50vw;margin-right:.5em}form.search-settings #filter-by,form.search-settings>label[for=filter-by],form.search-users #filter-by,form.search-users>label[for=filter-by]{text-align:right;margin-top:25.6px;margin-top:1.6rem}form.search-settings>div,form.search-users>div{padding-top:1em}@media screen and (max-width:640px){form.search-settings button,form.search-users button{display:block;margin-bottom:.5em}}form.search-settings button,form.search-settings input,form.search-users button,form.search-users input{font-size:inherit}input[name=search-settings],input[name=search-users]{margin-bottom:1em}label[for=filter-by]{text-align:right}.user-group-field label{display:inline-block}.user-group-field{display:-ms-flexbox;display:flex;-ms-flex-pack:center;justify-content:center}.user-group-field>*{-ms-flex:1 0 auto;flex:1 0 auto;text-align:center}
-/*# sourceMappingURL=main.css.map */
+html {
+  box-sizing: border-box; }
+
+*, *::after, *::before {
+  box-sizing: inherit; }
+
+table .contextual-setting input[type="text"], .create-setting-form input[type="text"], .create-setting-form input[type="email"], .create-setting-form input[type="password"], .create-setting-form textarea, .create-user-form input[type="text"], .create-user-form input[type="email"], .create-user-form input[type="password"], .create-user-form textarea, .settings-grid table, input[name="search-settings"], input[name="search-users"] {
+  width: 100%;
+  min-width: 100%; }
+
+/*
+http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
+*/
+.accessibly-hidden, html.js [a11y-hidden] {
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  top: 0;
+  clip: rect(1px 1px 1px 1px);
+  /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px); }
+
+.bright.padded, #manage-users-form #manage-user-form__header header, .settings-grid > section > div {
+  background: white;
+  padding: 1rem;
+  margin-bottom: 1em;
+  border: 1px solid #c8c8c8; }
+
+.shy.checkbox {
+  width: 1em; }
+
+/*%button-apperance {
+  appearance: button;
+}
+
+.button {
+  @extend %button-apperance;
+}*/
+button, .button {
+  display: inline-block;
+  appearance: none;
+  padding: 0px;
+  border-width: 0;
+  background-color: Red;
+  color: White;
+  font-family: sans-serif;
+  font-weight: normal;
+  font-size: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 100%; }
+
+button {
+  overflow: visible; }
+
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0; }
+
+button, .button {
+  font-size: 0.8rem;
+  appearance: none;
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  text-align: center;
+  border: 1px solid #787878;
+  background: #f0f0f0;
+  color: #3c3c3c;
+  border-radius: 0.2rem;
+  text-decoration: none;
+  margin: 0.2rem;
+  transition: all 240ms ease; }
+  button:hover, button:focus, .button:hover, .button:focus {
+    color: #0000ee;
+    border-color: #0000ee; }
+  button:active, .button:active {
+    color: red;
+    border-color: red; }
+  button[formmethod="delete"]:hover, button[formmethod="delete"]:focus, .button[formmethod="delete"]:hover, .button[formmethod="delete"]:focus {
+    color: red;
+    border-color: red; }
+
+fieldset {
+  border: 1px solid #c8c8c8; }
+
+html.js [js-hidden] {
+  display: none; }
+
+body {
+  background: #f0f0f0;
+  padding-top: 1rem;
+  color: #080808; }
+
+.top-bar button {
+  margin-right: 1em; }
+
+.horizontally-padded {
+  padding-left: 1rem;
+  padding-right: 1rem; }
+
+#manage-users-form #manage-user-form__header header h1 {
+  margin-top: 0; }
+
+.subtle {
+  color: #333333;
+  font-size: .8em; }
+
+.oblique {
+  font-style: italic; }
+
+.balanced {
+  text-align: center; }
+
+body {
+  margin: 0;
+  font-family: sans-serif; }
+  body > header {
+    padding: 0 1em; }
+
+.friendly-labels {
+  display: flex;
+  justify-content: center; }
+  .friendly-labels > * {
+    margin-right: 1em; }
+    .friendly-labels > *:last-of-type {
+      margin-right: 0; }
+
+table td, table th {
+  padding: 0.2em 0.4em; }
+
+table thead {
+  font-weight: bold; }
+  table thead > tr > th {
+    border: 1px solid #c8c8c8; }
+    table thead > tr > th:first-of-type {
+      text-align: left; }
+
+table tbody > tr > td {
+  border: 1px solid #c8c8c8; }
+
+table tbody > tr:nth-of-type(even) {
+  background: #f4f4f4; }
+
+table tbody > tr.open + .contextual-setting, table tbody > tr:focus + .contextual-setting {
+  display: table-row !important;
+  /* display the setting form for open rows */ }
+
+table tbody > tr:focus html.no-js {
+  background: #F2F2C5;
+  /* highlight focused setting for no-js users */ }
+
+table thead th:first-of-type, table tbody tr td:first-of-type {
+  width: 1em; }
+
+table .contextual-setting {
+  text-align: center; }
+  html.js table .contextual-setting {
+    background: #F2F2C5; }
+  table .contextual-setting input[type="text"] {
+    line-height: 1.4em; }
+  table .contextual-setting > td {
+    padding: 2em; }
+    table .contextual-setting > td > div h1, table .contextual-setting > td > div h2, table .contextual-setting > td > div h3, table .contextual-setting > td > div h4, table .contextual-setting > td > div h5, table .contextual-setting > td > div h6 {
+      margin-top: 0; }
+
+.create-setting-module, .create-user-module {
+  margin-bottom: 1em; }
+
+.balanced {
+  text-align: center; }
+
+.comfortably {
+  padding-left: 2em;
+  padding-right: 2em; }
+
+.create-setting-form footer, .create-user-form footer {
+  text-align: center; }
+  .create-setting-form footer > div button, .create-user-form footer > div button {
+    margin-right: 1em; }
+    .create-setting-form footer > div button:last-of-type, .create-user-form footer > div button:last-of-type {
+      margin-right: 0; }
+  .create-setting-form footer button, .create-user-form footer button {
+    margin-left: auto;
+    margin-right: auto; }
+
+.create-setting-form label, .create-user-form label {
+  display: block; }
+
+.create-setting-form {
+  margin-bottom: 1em; }
+  @media screen and (min-width: 641px) {
+    .create-setting-form > fieldset > div {
+      display: flex;
+      flex-wrap: wrap; }
+      .create-setting-form > fieldset > div > * {
+        flex: 1 0 16em;
+        padding-right: .5em;
+        margin-bottom: .5em; } }
+
+#manage-user-form__header {
+  padding-left: .5rem;
+  padding-right: .5rem; }
+  @media screen and (min-width: 641px) {
+    #manage-user-form__header {
+      padding-left: 1rem;
+      padding-right: 1rem; } }
+
+.settings-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  padding-left: .5rem;
+  padding-right: .5rem; }
+  .settings-grid > * {
+    flex: 1 1 24em;
+    max-width: 40em; }
+    @media screen and (min-width: 641px) {
+      .settings-grid > * {
+        display: flex;
+        flex-direction: column;
+        padding-left: .5rem;
+        padding-right: .5rem; }
+        .settings-grid > * > * {
+          flex: 1 0 auto; } }
+  .settings-grid h2 {
+    text-align: center; }
+  .settings-grid form {
+    text-align: center; }
+    .settings-grid form table, .settings-grid form footer {
+      margin-left: auto;
+      margin-right: auto; }
+  .settings-grid footer p {
+    text-align: center; }
+
+form.search-settings, form.search-users {
+  font-size: 1.1em; }
+  @media screen and (min-width: 641px) {
+    form.search-settings, form.search-users {
+      display: flex; } }
+  form.search-settings > label, form.search-users > label {
+    flex-grow: 1;
+    max-width: 50vw;
+    margin-right: .5em; }
+  form.search-settings > label[for="filter-by"], form.search-settings #filter-by, form.search-users > label[for="filter-by"], form.search-users #filter-by {
+    text-align: right;
+    margin-top: 1.6rem; }
+  form.search-settings > div, form.search-users > div {
+    padding-top: 1em; }
+  @media screen and (max-width: 640px) {
+    form.search-settings button, form.search-users button {
+      display: block;
+      margin-bottom: 0.5em; } }
+  form.search-settings input, form.search-settings button, form.search-users input, form.search-users button {
+    font-size: inherit; }
+
+input[name="search-settings"], input[name="search-users"] {
+  margin-bottom: 1em; }
+
+label[for="filter-by"] {
+  text-align: right; }
+
+.user-group-field label {
+  display: inline-block; }
+
+.user-group-field {
+  display: flex;
+  justify-content: center; }
+  .user-group-field > * {
+    flex: 1 0 auto;
+    text-align: center; }
+
+/*$sterc:#de007a;
+#user-group-4 {
+  h1,h2,h3,h4,h5,h6 {
+    color:$sterc;
+  }
+}*/

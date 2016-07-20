@@ -6,6 +6,7 @@
 $white:white;
 $link:rgb(0, 0, 238); // default link blue
 $active:rgb(255,0,0); // default link red
+$go:#55AE3D; // MODX green
 
 %bright-padded-module {
   background:$white;
@@ -16,6 +17,10 @@ $active:rgb(255,0,0); // default link red
 
 .accessibly-hidden {
   @extend %accessibly-hidden;
+}
+
+.shy.checkbox {
+  width:1em;
 }
 
 /*%button-apperance {
@@ -304,7 +309,7 @@ h1 {
   }
 }
 
-.settings-table {
+table { // .settings-table
     @extend %settings-table;
 }
 
