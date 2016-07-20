@@ -46,10 +46,42 @@
 
 	'use strict';
 
+	if (!Array.prototype.includes) {
+	  Array.prototype.includes = function (searchElement /*, fromIndex*/) {
+	    'use strict';
+
+	    var O = Object(this);
+	    var len = parseInt(O.length, 10) || 0;
+	    if (len === 0) {
+	      return false;
+	    }
+	    var n = parseInt(arguments[1], 10) || 0;
+	    var k;
+	    if (n >= 0) {
+	      k = n;
+	    } else {
+	      k = len + n;
+	      if (k < 0) {
+	        k = 0;
+	      }
+	    }
+	    var currentElement;
+	    while (k < len) {
+	      currentElement = O[k];
+	      if (searchElement === currentElement || searchElement !== searchElement && currentElement !== currentElement) {
+	        // NaN !== NaN
+	        return true;
+	      }
+	      k++;
+	    }
+	    return false;
+	  };
+	}
+
 	var manageUsers = __webpack_require__(1);
 
 	document.addEventListener('DOMContentLoaded', function () {
-	    var app = new manageUsers.ManageUsers();
+	  var app = new manageUsers.ManageUsers();
 	});
 
 /***/ },
@@ -297,7 +329,7 @@
 
 	var deleteUser = function deleteUser(user) {
 	  return function (dispatch) {
-	    return fetch('/api/delete/user', {
+	    return fetch('/api/user/delete', {
 	      method: 'DELETE',
 	      headers: {
 	        'Accept': 'application/json',
@@ -324,6 +356,159 @@
 	exports.DELETE_USER_SUCCESS = DELETE_USER_SUCCESS;
 	exports.DELETE_USER_ERROR = DELETE_USER_ERROR;
 	exports.deleteUser = deleteUser;
+
+	var DELETE_USERS = 'deleteusers';
+	var DELETE_USERS_SUCCESS = 'deleteuserssuccess';
+	var DELETE_USERS_ERROR = 'deleteuserserror';
+
+	var deleteUsersSuccess = function deleteUsersSuccess(users) {
+	  return {
+	    type: DELETE_USERS_SUCCESS,
+	    users: users
+	  };
+	};
+
+	var deleteUsersError = function deleteUsersError(users) {
+	  return {
+	    type: DELETE_USERS_ERROR,
+	    users: users
+	  };
+	};
+
+	var deleteUsers = function deleteUsers(users) {
+	  console.log('deleteUsers', users);
+	  return function (dispatch) {
+	    return fetch('/api/users/delete', {
+	      method: 'DELETE',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({
+	        users: users
+	      })
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(deleteUsersSuccess(users));
+	    }).catch(function (error) {
+	      return dispatch(deleteUsersError(users));
+	    });
+	  };
+	};
+
+	exports.DELETE_USERS_SUCCESS = DELETE_USERS_SUCCESS;
+	exports.DELETE_USERS_ERROR = DELETE_USERS_ERROR;
+	exports.deleteUsers = deleteUsers;
+
+	var ACTIVATE_USERS = 'activateusers';
+	var ACTIVATE_USERS_SUCCESS = 'activateuserssuccess';
+	var ACTIVATE_USERS_ERROR = 'activateuserserror';
+
+	var activateUsersSuccess = function activateUsersSuccess(users) {
+	  return {
+	    type: ACTIVATE_USERS_SUCCESS,
+	    users: users
+	  };
+	};
+
+	var activateUsersError = function activateUsersError(users) {
+	  return {
+	    type: ACTIVATE_USERS_ERROR,
+	    users: users
+	  };
+	};
+
+	var activateUsers = function activateUsers(users) {
+	  console.log('activate', users);
+	  return function (dispatch) {
+	    return fetch('/api/users/activate', {
+	      method: 'post',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({
+	        users: users
+	      })
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(activateUsersSuccess(users));
+	    }).catch(function (error) {
+	      return dispatch(activateUsersError(users));
+	    });
+	  };
+	};
+
+	exports.ACTIVATE_USERS_SUCCESS = ACTIVATE_USERS_SUCCESS;
+	exports.ACTIVATE_USERS_ERROR = ACTIVATE_USERS_ERROR;
+	exports.activateUsers = activateUsers;
+
+	var DEACTIVATE_USERS = 'deactivateusers';
+	var DEACTIVATE_USERS_SUCCESS = 'deactivateuserssuccess';
+	var DEACTIVATE_USERS_ERROR = 'deactivateuserserror';
+
+	var deactivateUsersSuccess = function deactivateUsersSuccess(users) {
+	  return {
+	    type: DEACTIVATE_USERS_SUCCESS,
+	    users: users
+	  };
+	};
+
+	var deactivateUsersError = function deactivateUsersError(users) {
+	  return {
+	    type: DEACTIVATE_USERS_ERROR,
+	    users: users
+	  };
+	};
+
+	var deactivateUsers = function deactivateUsers(users) {
+	  console.log('activate', users);
+	  return function (dispatch) {
+	    return fetch('/api/users/deactivate', {
+	      method: 'post',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({
+	        users: users
+	      })
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(deactivateUsersSuccess(users));
+	    }).catch(function (error) {
+	      return dispatch(deactivateUsersError(users));
+	    });
+	  };
+	};
+
+	exports.DEACTIVATE_USERS_SUCCESS = DEACTIVATE_USERS_SUCCESS;
+	exports.DEACTIVATE_USERS_ERROR = DEACTIVATE_USERS_ERROR;
+	exports.deactivateUsers = deactivateUsers;
 
 /***/ },
 /* 5 */
@@ -877,8 +1062,8 @@
 	        givenName: givenName,
 	        familyName: '',
 	        email: email,
-	        active: true,
-	        sudo: true,
+	        active: active,
+	        sudo: sudo,
 	        jobTitle: jobTitle,
 	        userGroups: userGroups
 	      });
@@ -1061,8 +1246,30 @@
 
 	    case actions.DELETE_USER_ERROR:
 	      return state;
+
+	    case actions.DELETE_USERS_SUCCESS:
+	      return update(state, { $set: state.map(function (user, i) {
+	          return !action.users.includes(user.id.toString()) ? user : undefined;
+	        }).filter(function (user) {
+	          return user !== undefined;
+	        })
+	      });
+
+	    case actions.ACTIVATE_USERS_SUCCESS:
+	      return update(state, { $set: state.map(function (user, i) {
+	          return action.users.includes(user.id.toString()) ? update(user, { $merge: { active: true } }) : user;
+	        })
+	      });
+
+	    case actions.DEACTIVATE_USERS_SUCCESS:
+	      return update(state, { $set: state.map(function (user, i) {
+	          return action.users.includes(user.id.toString()) ? update(user, { $merge: { active: false } }) : user;
+	        })
+	      });
+
+	    default:
+	      return state;
 	  }
-	  return state;
 	};
 
 	var quickCreateReducer = function quickCreateReducer(state, action) {
@@ -2368,41 +2575,109 @@
 	  }
 	});
 
-	var SettingsGridSectionBulkActionsFieldset = function SettingsGridSectionBulkActionsFieldset(props) {
-	  return React.createElement(
-	    'form',
-	    { action: '/bulk/actions', method: 'post' },
-	    React.createElement(
-	      'fieldset',
-	      null,
+	var SettingsGridSectionBulkActionsFieldset = React.createClass({
+	  displayName: 'SettingsGridSectionBulkActionsFieldset',
+
+	  mixins: [ReactFormData],
+	  getInitalState: function getInitalState() {
+	    return {
+	      formAction: '',
+	      formMethod: 'push'
+	    };
+	  },
+	  handleBulkButtonClick: function handleBulkButtonClick(event) {
+	    console.log({
+	      formAction: event.target.getAttribute('formaction'),
+	      formMethod: event.target.getAttribute('formmethod')
+	    });
+	    this.setState({
+	      formAction: event.target.getAttribute('formaction'),
+	      formMethod: event.target.getAttribute('formmethod')
+	    });
+	  },
+	  render: function render() {
+	    var _this2 = this;
+
+	    var props = this.props;
+	    var bulkToggledUsers = props.bulkToggledUsers;
+
+	    var hiddenBulkToggleInputs = [],
+	        bulkSelectedUsers = [];
+	    Object.keys(bulkToggledUsers).forEach(function (key) {
+	      if (bulkToggledUsers[key]) {
+	        bulkSelectedUsers.push(key.toString());
+	        hiddenBulkToggleInputs.push(React.createElement('input', { key: key, type: 'hidden', name: 'bulk-toggle-users[]', value: key }));
+	      }
+	    });
+
+	    return React.createElement(
+	      'form',
+	      { action: '/bulk/actions', method: 'post', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
+
+	          /*try {
+	            var formData = new FormData(event.target);
+	            for(var pair of formData.entries()) {
+	              console.log(pair);
+	            }
+	          } catch (e) {
+	             console.log(this.formData);
+	            for (var key in this.formData) {
+	              console.log(key);
+	            }
+	          }*/
+
+	          try {
+	            switch (_this2.state.formAction) {
+	              case '/api/users/activate':
+	                event.preventDefault();
+	                store.dispatch(actions.activateUsers(bulkSelectedUsers));
+	                break;
+
+	              case '/api/users/deactivate':
+	                event.preventDefault();
+	                store.dispatch(actions.deactivateUsers(bulkSelectedUsers));
+	                break;
+
+	              case '/api/users/delete':
+	                event.preventDefault();
+	                store.dispatch(actions.deleteUsers(bulkSelectedUsers));
+	                break;
+	            }
+	          } catch (e) {}
+	        } },
+	      hiddenBulkToggleInputs,
 	      React.createElement(
-	        'legend',
+	        'fieldset',
 	        null,
-	        'Bulk Actions'
-	      ),
-	      React.createElement(
-	        'button',
-	        { disabled: !props.emails.length, formAction: 'bulkactions/activate' },
-	        'Activate'
-	      ),
-	      React.createElement(
-	        'button',
-	        { disabled: !props.emails.length, formAction: 'bulkactions/Suspend' },
-	        'Suspend'
-	      ),
-	      React.createElement(
-	        'button',
-	        { disabled: !props.emails.length, formAction: 'bulkactions/delete', formMethod: 'delete' },
-	        'Delete'
-	      ),
-	      React.createElement(
-	        'button',
-	        { disabled: !props.emails.length, formAction: 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next', formTarget: '_blank' },
-	        'Email'
+	        React.createElement(
+	          'legend',
+	          null,
+	          'Bulk Actions'
+	        ),
+	        React.createElement(
+	          'button',
+	          { type: 'submit', disabled: !props.emails.length, formAction: '/api/users/activate', formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          'Activate'
+	        ),
+	        React.createElement(
+	          'button',
+	          { type: 'submit', disabled: !props.emails.length, formAction: '/api/users/deactivate', formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          'Suspend'
+	        ),
+	        React.createElement(
+	          'button',
+	          { type: 'submit', disabled: !props.emails.length, formAction: '/api/users/delete', formMethod: 'delete', onClick: this.handleBulkButtonClick },
+	          'Delete'
+	        ),
+	        React.createElement(
+	          'button',
+	          { disabled: !props.emails.length, formAction: 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body=', formTarget: '_blank' },
+	          'Email'
+	        )
 	      )
-	    )
-	  );
-	};
+	    );
+	  }
+	});
 
 	var SettingsTable = React.createClass({
 	  displayName: 'SettingsTable',
@@ -2418,7 +2693,7 @@
 	    console.log('handleQuickEdit!!!', user);
 	  },
 	  render: function render() {
-	    var _this2 = this;
+	    var _this3 = this;
 
 	    var props = this.props;
 
@@ -2428,7 +2703,7 @@
 	      null,
 	      React.createElement('input', { type: 'checkbox', onChange: function onChange(event) {
 	          try {
-	            _this2.props.handleBulkAllCheck(event.target.checked);
+	            _this3.props.handleBulkAllCheck(event.target.checked);
 	          } catch (e) {}
 	        } })
 	    );
@@ -2437,7 +2712,7 @@
 
 	      return [React.createElement(SettingsTableRow, { user: user, bulkToggle: props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false, bulkActions: props.bulkActions,
 	        handleFocus: function handleFocus(event) {
-	          return _this2.setState({
+	          return _this3.setState({
 	            userFormsToShow: update({}, _defineProperty({}, user.id, { $set: true }))
 	          });
 	        }, handleBulkToggle: function handleBulkToggle(id, checked) {
@@ -2445,7 +2720,7 @@
 	            props.handleBulkToggle(id, checked);
 	          } catch (e) {}
 	        }
-	      }), _this2.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { handleQuickEdit: _this2.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
+	      }), _this3.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { handleQuickEdit: _this3.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
 	    });
 
 	    return React.createElement(
@@ -2488,14 +2763,14 @@
 	    };
 	  },
 	  render: function render() {
-	    var _this3 = this;
+	    var _this4 = this;
 
 	    var props = this.props;
 	    var users = props.users;
 	    var minimumUsersBulkAction = props.minimumUsersBulkAction !== undefined ? props.minimumUsersBulkAction : 3;
 
 	    var emails = users.map(function (user) {
-	      return _this3.state.bulkToggledUsers[user.id] ? user.email : undefined;
+	      return _this4.state.bulkToggledUsers[user.id] ? user.email : undefined;
 	    }).filter(function (email) {
 	      return email;
 	    });
@@ -2507,7 +2782,7 @@
 	      });
 	    }
 
-	    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { emails: emails }) : undefined;
+	    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails }) : false;
 
 	    console.log(emails);
 
@@ -2531,8 +2806,8 @@
 	          null,
 	          bulkActionsFieldset,
 	          React.createElement(SettingsTable, { bulkActions: users.length >= minimumUsersBulkAction ? props.bulkActions : false, users: users, bulkToggledUsers: this.state.bulkToggledUsers, userGroup: props.userGroup, handleBulkToggle: function handleBulkToggle(id, checked) {
-	              _this3.setState({
-	                bulkToggledUsers: update(_this3.state.bulkToggledUsers, _defineProperty({}, id, { $set: checked }))
+	              _this4.setState({
+	                bulkToggledUsers: update(_this4.state.bulkToggledUsers, _defineProperty({}, id, { $set: checked }))
 	              });
 	            }, handleBulkAllCheck: function handleBulkAllCheck(allChecked) {
 	              console.log('handleBulkAllCheck', allChecked);
@@ -2542,7 +2817,7 @@
 	                  all[user.id] = true;
 	                });
 	              }
-	              _this3.setState({
+	              _this4.setState({
 	                bulkToggledUsers: all
 	              });
 	            } }),

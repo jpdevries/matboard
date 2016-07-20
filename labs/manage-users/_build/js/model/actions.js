@@ -183,7 +183,7 @@ var deleteUserError = function(user) {
 
 var deleteUser = function(user) {
   return function(dispatch) {
-    return fetch('/api/delete/user', {
+    return fetch('/api/user/delete', {
       method: 'DELETE',
       headers: {
         'Accept': 'application/json',
@@ -214,3 +214,190 @@ var deleteUser = function(user) {
 exports.DELETE_USER_SUCCESS = DELETE_USER_SUCCESS;
 exports.DELETE_USER_ERROR = DELETE_USER_ERROR;
 exports.deleteUser = deleteUser;
+
+var DELETE_USERS = 'deleteusers';
+var DELETE_USERS_SUCCESS = 'deleteuserssuccess';
+var DELETE_USERS_ERROR = 'deleteuserserror';
+
+var deleteUsersSuccess = function(users) {
+  return {
+    type:DELETE_USERS_SUCCESS,
+    users:users
+  }
+}
+
+var deleteUsersError = function(users) {
+  return {
+    type:DELETE_USERS_ERROR,
+    users:users
+  }
+}
+
+var deleteUsers = function(users) {
+  console.log('deleteUsers',users);
+  return function(dispatch) {
+    return fetch('/api/users/delete', {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        users:users
+      })
+    }).then(function(response){
+      if(response.state < 200 || response.state >= 300) {
+        var error = new Error(response.statusText)
+        error.response = response
+        throw error;
+      }
+      return response;
+    }).then((response) => (
+      response.json()
+    )).then((data) => (
+      dispatch(
+        deleteUsersSuccess(users)
+      )
+    )).catch((error) => (
+      dispatch(
+        deleteUsersError(users)
+      )
+    ))
+  }
+};
+
+exports.DELETE_USERS_SUCCESS = DELETE_USERS_SUCCESS;
+exports.DELETE_USERS_ERROR = DELETE_USERS_ERROR;
+exports.deleteUsers = deleteUsers;
+
+
+
+
+
+
+
+
+
+
+
+var ACTIVATE_USERS = 'activateusers';
+var ACTIVATE_USERS_SUCCESS = 'activateuserssuccess';
+var ACTIVATE_USERS_ERROR = 'activateuserserror';
+
+var activateUsersSuccess = function(users) {
+  return {
+    type:ACTIVATE_USERS_SUCCESS,
+    users:users
+  }
+}
+
+var activateUsersError = function(users) {
+  return {
+    type:ACTIVATE_USERS_ERROR,
+    users:users
+  }
+}
+
+var activateUsers = function(users) {
+  console.log('activate',users);
+  return function(dispatch) {
+    return fetch('/api/users/activate', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        users:users
+      })
+    }).then(function(response){
+      if(response.state < 200 || response.state >= 300) {
+        var error = new Error(response.statusText)
+        error.response = response
+        throw error;
+      }
+      return response;
+    }).then((response) => (
+      response.json()
+    )).then((data) => (
+      dispatch(
+        activateUsersSuccess(users)
+      )
+    )).catch((error) => (
+      dispatch(
+        activateUsersError(users)
+      )
+    ))
+  }
+};
+
+exports.ACTIVATE_USERS_SUCCESS = ACTIVATE_USERS_SUCCESS;
+exports.ACTIVATE_USERS_ERROR = ACTIVATE_USERS_ERROR;
+exports.activateUsers = activateUsers;
+
+
+
+
+
+
+
+
+
+
+
+
+
+var DEACTIVATE_USERS = 'deactivateusers';
+var DEACTIVATE_USERS_SUCCESS = 'deactivateuserssuccess';
+var DEACTIVATE_USERS_ERROR = 'deactivateuserserror';
+
+var deactivateUsersSuccess = function(users) {
+  return {
+    type:DEACTIVATE_USERS_SUCCESS,
+    users:users
+  }
+}
+
+var deactivateUsersError = function(users) {
+  return {
+    type:DEACTIVATE_USERS_ERROR,
+    users:users
+  }
+}
+
+var deactivateUsers = function(users) {
+  console.log('activate',users);
+  return function(dispatch) {
+    return fetch('/api/users/deactivate', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        users:users
+      })
+    }).then(function(response){
+      if(response.state < 200 || response.state >= 300) {
+        var error = new Error(response.statusText)
+        error.response = response
+        throw error;
+      }
+      return response;
+    }).then((response) => (
+      response.json()
+    )).then((data) => (
+      dispatch(
+        deactivateUsersSuccess(users)
+      )
+    )).catch((error) => (
+      dispatch(
+        deactivateUsersError(users)
+      )
+    ))
+  }
+};
+
+exports.DEACTIVATE_USERS_SUCCESS = DEACTIVATE_USERS_SUCCESS;
+exports.DEACTIVATE_USERS_ERROR = DEACTIVATE_USERS_ERROR;
+exports.deactivateUsers = deactivateUsers;

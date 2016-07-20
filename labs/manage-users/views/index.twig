@@ -108,6 +108,7 @@
               <form action="/bulk/actions" method="post">
                 <fieldset>
                   <legend>Bulk Actions</legend>
+                  <button type="submit" formaction="/api/users/deactivate" formmethod="post">Deactivate</button>
                   <button formtarget="bulkactions/activate">Activate</button>
                   <button formtarget="bulkactions/suspend">Suspend</button>
                   <button formtarget="bulkactions/delete">Delete</button>
@@ -129,7 +130,7 @@
                   <tr tabindex="0" class="user-row" data-user-id="{{ user.id }}" data-email="{{ user.email }}" data-user-groups="{{ user.user_groups|join(',') }}">
                     <td><label><input type="checkbox" name="bulk-jpdevries" /></label></td>
                     <td class="username">{{ user.username }}</td>
-                    <td><label><span a11y-hidden>Active: </span><input checked type="checkbox"></label></td>
+                    <td><label><span a11y-hidden>Active: </span><input {% if user.active == '1' %}checked {% endif %} type="checkbox"></label></td>
                   </tr>
                   <tr class="contextual-setting" js-hidden>
                     <td colspan="3">
@@ -137,8 +138,8 @@
                           <input name="user_id" type="hidden" value="{{ user.id }}" />
                           <input name="username" type="hidden" value="{{ user.username }}" />
                           <div class="friendly-labels">
-                            <label for="{{ user.username }}-{{ userGroup.id }}-sudo">Sudo: <input class="sudo" name="{{ user.username }}-{{ userGroup.id }}-sudo" {% if user.sudo %}checked {% endif %}type="checkbox" /></label>
-                            <label for="{{ user.username }}-{{ userGroup.id }}-active">Active: <input class="active" name="{{ user.username }}-{{ userGroup.id }}-active" {% if user.active %}checked {% endif %}type="checkbox" /></label>
+                            <label for="{{ user.username }}-{{ userGroup.id }}-sudo">Sudo: <input class="sudo" name="{{ user.username }}-{{ userGroup.id }}-sudo" {% if user.sudo == '1' %}checked {% endif %}type="checkbox" /></label>
+                            <label for="{{ user.username }}-{{ userGroup.id }}-active">Active: <input class="active" name="{{ user.username }}-{{ userGroup.id }}-active" {% if user.active == '1' %}checked {% endif %}type="checkbox" /></label>
                           </div>
                           <p class="subtle balanced oblique jobTitle">{{ user.title }}</p>
                           <div>
@@ -171,6 +172,7 @@
               <form action="/bulk/actions" method="post">
                 <fieldset>
                   <legend>Bulk Actions</legend>
+                  <button type="submit" formaction="/api/users/deactivate" formmethod="post">Deactivate</button>
                   <button formtarget="bulkactions/activate">Activate</button>
                   <button formtarget="bulkactions/suspend">Suspend</button>
                   <button formtarget="bulkactions/delete">Delete</button>

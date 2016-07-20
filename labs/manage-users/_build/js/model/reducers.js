@@ -15,7 +15,7 @@ var initialUserGroups = (function(){
         title:title
       });
     }
-  } catch (e) {} 
+  } catch (e) {}
   return userGroups;
 })();
 
@@ -46,8 +46,8 @@ var initialUsers = (function(){
         givenName:givenName,
         familyName:'',
         email:email,
-        active:true,
-        sudo:true,
+        active:active,
+        sudo:sudo,
         jobTitle:jobTitle,
         userGroups:userGroups
       });
@@ -236,8 +236,31 @@ var usersReducer = function(state, action) {
 
     case actions.DELETE_USER_ERROR:
     return state;
+
+    case actions.DELETE_USERS_SUCCESS:
+    return update(state, {$set:
+      state.map((user,i) => (
+        (!action.users.includes(user.id.toString())) ? user : undefined
+      )).filter((user) => (user !== undefined))
+    });
+
+    case actions.ACTIVATE_USERS_SUCCESS:
+    return update(state, {$set:
+      state.map((user,i) => (
+        (action.users.includes(user.id.toString())) ? update(user,{$merge:{active:true}}) : user
+      ))
+    });
+
+    case actions.DEACTIVATE_USERS_SUCCESS:
+    return update(state, {$set:
+      state.map((user,i) => (
+        (action.users.includes(user.id.toString())) ? update(user,{$merge:{active:false}}) : user
+      ))
+    });
+
+    default:
+    return state;
   }
-  return state;
 }
 
 var quickCreateReducer = function(state, action) {

@@ -128,14 +128,56 @@ app.delete('/delete/user', function(req, res) {
   });
 });
 
+app.delete('/api/users/delete',function(req, res) {
+  var form = new formidable.IncomingForm();
 
-app.delete('/api/delete/user',function(req, res) {
+  form.parse(req, function (err, fields, files) {
+    //console.log(fields);
+
+    deleteUsersById(fields.users).then(function(result){
+      res.json(true);
+    },function(){ // error
+      res.json(false);
+    });
+  });
+});
+
+
+app.delete('/api/user/delete',function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
     console.log(fields);
 
     deleteUserById(fields.user_id).then(function(result){
+      res.json(true);
+    },function(){ // error
+      res.json(false);
+    });
+  });
+});
+
+app.post('/api/users/activate',function(req, res) {
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    console.log(fields);
+
+    activateUsersById(fields.users, true).then(function(result){
+      res.json(true);
+    },function(){ // error
+      res.json(false);
+    });
+  });
+});
+
+app.post('/api/users/deactivate',function(req, res) {
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    console.log(fields);
+
+    activateUsersById(fields.users, false).then(function(result){
       res.json(true);
     },function(){ // error
       res.json(false);
@@ -235,6 +277,80 @@ function deleteUserById(user_id) {
 
         resolve({
           user_id:user_id
+        });
+      });
+    });
+  });
+}
+
+function activateUsersById(users,active = true) {
+  console.log('activateUsersById',users);
+  active = active ? 1 : 0;
+  return new Promise(function(resolve, reject) {
+    // instantiate a new client
+    // the client will read connection information from
+    // the same environment varaibles used by postgres cli tools
+    var client = new pg.Client();
+
+    usersList = users.join(', ');
+    console.log('usersList',usersList);
+
+    // connect to our database
+    client.connect(function (err) {
+      if (err) reject(err);
+
+      var query = `
+        UPDATE "modx_users" SET active = ${active} WHERE user_id IN (${usersList});
+        `;
+
+      // execute a query on our database
+      client.query(query, function (err, result) {
+        if (err) reject(err);
+
+        // disconnect the client
+        client.end(function (err) {
+          if (err) reject(err);
+        });
+
+        resolve({
+          users:users
+        });
+      });
+    });
+  });
+}
+
+function deleteUsersById(users) {
+  console.log('deleteUsersById',users);
+  return new Promise(function(resolve, reject) {
+    // instantiate a new client
+    // the client will read connection information from
+    // the same environment varaibles used by postgres cli tools
+    var client = new pg.Client();
+
+    usersList = users.join(', ');
+    console.log('usersList',usersList);
+
+    // connect to our database
+    client.connect(function (err) {
+      if (err) reject(err);
+
+      var query = `
+        DELETE FROM "modx_users" WHERE user_id IN (${usersList});
+        `;
+        console.log(query);
+
+      // execute a query on our database
+      client.query(query, function (err, result) {
+        if (err) reject(err);
+
+        // disconnect the client
+        client.end(function (err) {
+          if (err) reject(err);
+        });
+
+        resolve({
+          users:users
         });
       });
     });
@@ -349,6 +465,8 @@ function getUserRows(where = '') {
         for(var key in userGroupNamesHash) {
           userGroups.push(userGroupNamesHash[key]);
         }
+
+        console.log(rows);
 
         resolve({
           userGroups:userGroups,

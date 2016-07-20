@@ -6,8 +6,8 @@ DROP TABLE IF EXISTS "modx_users";
 DROP SEQUENCE IF EXISTS user_id_sequence;
 
 CREATE SEQUENCE user_id_sequence
-  start 0
-  minvalue 0
+  start 1
+  minvalue 1
   increment 1;
 
 CREATE TABLE "modx_users"(
@@ -30,13 +30,13 @@ CREATE TABLE "modx_users"(
 CREATE TABLE "modx_member_groups" (
   id SERIAL PRIMARY KEY,
   user_group integer NOT NULL DEFAULT '0',
-  member integer NOT NULL DEFAULT '0' references modx_users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+  member integer NOT NULL DEFAULT '0' references modx_users(user_id) ON DELETE CASCADE,
   role integer NOT NULL DEFAULT '1',
   rank integer NOT NULL DEFAULT '0'
 );
 
 CREATE TABLE "modx_membergroup_names" (
-  id SERIAL PRIMARY KEY  references modx_member_groups(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  id SERIAL PRIMARY KEY,
   name varchar(255) NOT NULL DEFAULT '',
   description text,
   parent integer NOT NULL DEFAULT '0',
@@ -46,7 +46,7 @@ CREATE TABLE "modx_membergroup_names" (
 
 CREATE TABLE modx_user_attributes (
   id SERIAL PRIMARY KEY,
-  internalkey integer NOT NULL references modx_users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+  internalkey integer NOT NULL references modx_users(user_id) ON DELETE CASCADE,
   fullname varchar(100) NOT NULL DEFAULT '',
   email varchar(100) NOT NULL DEFAULT '',
   phone varchar(100) NULL DEFAULT '',

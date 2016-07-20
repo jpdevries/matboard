@@ -30,19 +30,86 @@ var SettingTableRowGroup = React.createClass({
   }
 });
 
-var SettingsGridSectionBulkActionsFieldset = function(props) {
-  return (
-    <form action="/bulk/actions" method="post">
-      <fieldset>
-        <legend>Bulk Actions</legend>
-        <button disabled={!props.emails.length} formAction="bulkactions/activate">Activate</button>
-        <button disabled={!props.emails.length} formAction="bulkactions/Suspend">Suspend</button>
-        <button disabled={!props.emails.length} formAction="bulkactions/delete" formMethod="delete">Delete</button>
-        <button disabled={!props.emails.length} formAction={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next'} formTarget="_blank">Email</button>
-      </fieldset>
-    </form>
-  );
-};
+var SettingsGridSectionBulkActionsFieldset = React.createClass({
+  mixins: [ ReactFormData ],
+  getInitalState:() => ({
+    formAction:'',
+    formMethod:'push'
+  }),
+  handleBulkButtonClick:function(event) {
+    console.log({
+      formAction:event.target.getAttribute('formaction'),
+      formMethod:event.target.getAttribute('formmethod')
+    });
+    this.setState({
+      formAction:event.target.getAttribute('formaction'),
+      formMethod:event.target.getAttribute('formmethod')
+    })
+  },
+  render:function(){
+    var props = this.props;
+    var bulkToggledUsers = props.bulkToggledUsers;
+
+    var hiddenBulkToggleInputs = [],
+    bulkSelectedUsers = [];
+    Object.keys(bulkToggledUsers).forEach(function(key) {
+      if(bulkToggledUsers[key]) {
+        bulkSelectedUsers.push(key.toString());
+        hiddenBulkToggleInputs.push((
+          <input key={key} type="hidden" name="bulk-toggle-users[]" value={key} />
+        ));
+      }
+   });
+
+    return (
+      <form action="/bulk/actions" method="post" onChange={this.updateFormData} onSubmit={(event) => {
+
+
+        /*try {
+          var formData = new FormData(event.target);
+          for(var pair of formData.entries()) {
+            console.log(pair);
+          }
+        } catch (e) {
+
+          console.log(this.formData);
+          for (var key in this.formData) {
+            console.log(key);
+          }
+        }*/
+
+        try {
+          switch(this.state.formAction) {
+            case '/api/users/activate':
+            event.preventDefault();
+            store.dispatch(actions.activateUsers(bulkSelectedUsers));
+            break;
+
+            case '/api/users/deactivate':
+            event.preventDefault();
+            store.dispatch(actions.deactivateUsers(bulkSelectedUsers));
+            break;
+
+            case '/api/users/delete':
+            event.preventDefault();
+            store.dispatch(actions.deleteUsers(bulkSelectedUsers));
+            break;
+          }
+        } catch (e) { }
+
+      }}>
+        {hiddenBulkToggleInputs}
+        <fieldset>
+          <legend>Bulk Actions</legend>
+          <button type="submit" disabled={!props.emails.length} formAction="/api/users/activate" formMethod="post" onClick={this.handleBulkButtonClick}>Activate</button>
+          <button type="submit" disabled={!props.emails.length} formAction="/api/users/deactivate" formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
+          <button type="submit" disabled={!props.emails.length} formAction="/api/users/delete" formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
+          <button disabled={!props.emails.length} formAction={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body='} formTarget="_blank">Email</button>
+        </fieldset>
+      </form>
+    );
+  }
+});
 
 var SettingsTable = React.createClass({
   getInitialState:() => ({
@@ -121,7 +188,7 @@ var SettingsGridSection = React.createClass({
       });
     }
 
-    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset emails={emails} /> : undefined;
+    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} /> : false;
 
     console.log(emails);
 

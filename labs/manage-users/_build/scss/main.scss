@@ -4,6 +4,8 @@
 @import "spec/tacular";
 
 $white:white;
+$link:rgb(0, 0, 238); // default link blue
+$active:rgb(255,0,0); // default link red
 
 %bright-padded-module {
   background:$white;
@@ -62,6 +64,21 @@ button, .button {
   border-radius:0.2rem;
   text-decoration:none;
   margin:0.2rem;
+  transition:all 240ms ease;
+  &:hover,&:focus {
+    color:$link;
+    border-color:$link;
+  }
+  &:active {
+    color:$active;
+    border-color:$active;
+  }
+  &[formmethod="delete"] {
+    &:hover,&:focus {
+      color:$active;
+      border-color:$active;
+    }
+  }
 }
 
 fieldset {
@@ -296,12 +313,14 @@ h1 {
   flex-wrap:wrap;
 
   align-content:center;
+  justify-content:center;
 
   padding-left:.5rem;
   padding-right:.5rem;
 
   > * {
     flex:1 1 24em;
+    max-width:40em;
 
     @include media($gtMobile) {
       display:flex;
