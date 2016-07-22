@@ -12,7 +12,8 @@ var initialUserGroups = (function(){
       title = userGroup.querySelector('.name').innerHTML;
       userGroups.push({
         id:id,
-        title:title
+        title:title,
+        name:title
       });
     }
   } catch (e) {}

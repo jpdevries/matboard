@@ -194,6 +194,7 @@ var SettingsGridSection = React.createClass({
     }
 
     var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} usernames={usernames} /> : false;
+    var viewAll = (users.length >= minimumUsersBulkAction) ? (<p><a href="#">View all {props.title} users</a></p>) : false;
 
     return (users.length) ? (
       <section id={"user-group-" + props.userGroup.id}>
@@ -224,7 +225,7 @@ var SettingsGridSection = React.createClass({
             {bulkActionsFieldset}
           </div>
           <footer>
-            <p><a href="#">View all {props.title} users</a></p>
+            {viewAll}
           </footer>
         </div>
       </section>
@@ -339,7 +340,7 @@ var SettingsTableRowForm = React.createClass({
                 <a className="button" href={'mailto:' + user.email + '?subject=MODX%20Next'}>Email</a>
               </div>
               <div>
-                <a className="button" href={"https://modxcommunity.slack.com/messages/@" + user.username + "/details/"} target="_blank">Slack DM</a>
+                <a className="button" href={"https://modxcommunity.slack.com/messages/@" + user.username} target="_blank">Slack DM</a>
               </div>
 
               <div style={{marginTop:"1em"}}>

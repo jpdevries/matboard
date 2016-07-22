@@ -29,7 +29,7 @@ var CreateSettingsForm = React.createClass({
     ) : false;
 
     return(
-      <form ref="createSettingForm" action={props.quickCreate.updating ? "/update/user" : "/add/user"} method="post" className="create-setting-form" onChange={this.updateFormData} onSubmit={(event) => {
+      <form ref="createSettingForm" action={props.quickCreate.updating ? "/update/user/" + props.quickCreate.id : "/add/user"} method="post" className="create-setting-form" onChange={this.updateFormData} onSubmit={(event) => {
         event.preventDefault();
 
         var user = {};

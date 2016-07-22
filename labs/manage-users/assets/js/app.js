@@ -1052,7 +1052,8 @@
 	          title = userGroup.querySelector('.name').innerHTML;
 	      userGroups.push({
 	        id: id,
-	        title: title
+	        title: title,
+	        name: title
 	      });
 	    }
 	  } catch (e) {}
@@ -1929,7 +1930,7 @@
 
 	    return React.createElement(
 	      'form',
-	      { ref: 'createSettingForm', action: props.quickCreate.updating ? "/update/user" : "/add/user", method: 'post', className: 'create-setting-form', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
+	      { ref: 'createSettingForm', action: props.quickCreate.updating ? "/update/user/" + props.quickCreate.id : "/add/user", method: 'post', className: 'create-setting-form', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
 	          event.preventDefault();
 
 	          var user = {};
@@ -2250,7 +2251,7 @@
 	      var userRoles = props.quickCreate.roles; // an object containing what roles the user is in per group
 
 	      console.log('userGroups', userGroups);
-
+	      console.log('userRoles', userRoles);
 	      try {
 	        userGroups.map(function (group, index) {
 	          var rolesMarkup = [];
@@ -2265,8 +2266,8 @@
 	            }();
 	            rolesMarkup.push(React.createElement(
 	              'label',
-	              { key: index, htmlFor: 'user-group-' + group.key + '-roles[]' },
-	              React.createElement('input', { type: 'checkbox', checked: roleChecked, ref: 'userGroupEditorRoles', name: 'user-group-' + group.key + '-roles[]', value: group.id + '|' + role.id }),
+	              { key: index, htmlFor: 'user-group-' + group.id + '-roles[]' },
+	              React.createElement('input', { type: 'checkbox', checked: roleChecked, ref: 'userGroupEditorRoles', name: 'user-group-' + group.id + '-roles[]', value: group.id + '|' + role.id }),
 	              ' ',
 	              role.name
 	            ));
@@ -2277,7 +2278,7 @@
 	            React.createElement(
 	              'legend',
 	              null,
-	              group.title
+	              group.title || group.name
 	            ),
 	            rolesMarkup
 	          ));
@@ -2740,6 +2741,17 @@
 	    }
 
 	    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails, usernames: usernames }) : false;
+	    var viewAll = users.length >= minimumUsersBulkAction ? React.createElement(
+	      'p',
+	      null,
+	      React.createElement(
+	        'a',
+	        { href: '#' },
+	        'View all ',
+	        props.title,
+	        ' users'
+	      )
+	    ) : false;
 
 	    return users.length ? React.createElement(
 	      'section',
@@ -2789,17 +2801,7 @@
 	        React.createElement(
 	          'footer',
 	          null,
-	          React.createElement(
-	            'p',
-	            null,
-	            React.createElement(
-	              'a',
-	              { href: '#' },
-	              'View all ',
-	              props.title,
-	              ' users'
-	            )
-	          )
+	          viewAll
 	        )
 	      )
 	    ) : false;
@@ -2993,7 +2995,7 @@
 	            null,
 	            React.createElement(
 	              'a',
-	              { className: 'button', href: "https://modxcommunity.slack.com/messages/@" + user.username + "/details/", target: '_blank' },
+	              { className: 'button', href: "https://modxcommunity.slack.com/messages/@" + user.username, target: '_blank' },
 	              'Slack DM'
 	            )
 	          ),

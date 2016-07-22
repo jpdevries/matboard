@@ -36,6 +36,7 @@ app.post('/add/user', function(req, res){
       res.write('<h1>User ' + username + ' has been added with an id of ' + result.user_id + '.</h1>');
       res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
     },function(err){
+      console.log(err);
       res.write('<h1>Error adding user with username ' + fields.username  + '</h1>');
       res.write('<p>Perhaps a user with that username already exists. <a href="#">Get help</a>.</p>');
       res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
@@ -47,9 +48,6 @@ app.post('/add/user', function(req, res){
 app.post('/update/user', function(req, res){
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
-
-
-
     quicklyUpdateUser(fields).then(function(result){
       console.log(result);
       var username = result.fields.username;
@@ -70,7 +68,6 @@ app.post('/update/user', function(req, res){
 
   });
 });
-
 
 app.get('/api/users',function(req, res){
   getUserRows().then(function(result){
@@ -122,7 +119,6 @@ app.post('/api/user/update',function(req, res){
     });
   });
 });
-
 
 app.post('/user/delete', function(req, res) {
   var form = new formidable.IncomingForm();
@@ -178,7 +174,6 @@ app.delete('/api/users/delete',function(req, res) {
     });
   });
 });
-
 
 app.delete('/api/user/delete',function(req, res) {
   var form = new formidable.IncomingForm();
@@ -266,19 +261,58 @@ app.get('/add/user', function(req, res){
     store.dispatch(actions.setRoles(roles));
     return roles;
   }).then(function(roles){
+    return new Promise(function(resolve,reject){
+      getUserGroups().then(function(userGroups){
+        resolve({
+          roles:roles,
+          userGroups:userGroups
+        })
+      })
+    });
+  }).then(function(data){
+    store.dispatch(actions.setUserGroups(data.userGroups));
+    store.dispatch(actions.updateQuickCreate({
+      sudo:false
+    }));
+    return data;
+  }).then(function(data){
     res.render('createuser.twig', {
       react: ReactDOM.renderToStaticMarkup(
         React.createElement(QuickCreateFieldset,{
           fieldsetRoles:store.getState().fieldsetRoles,
           quickCreate:store.getState().quickCreate,
-          roles:store.getState().roles
+          roles:store.getState().roles,
+          userGroups:store.getState().userGroups
         })
       )
     });
   });
 });
 
-app.get('/update/user/:userid', function(req, res){
+app.post('/update/user/:userid', function(req, res) {
+  var userid = req.params.userid,
+  form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    quicklyUpdateUser(fields).then(function(result){
+      console.log(result);
+      var username = result.fields.username;
+      return userid;
+    },function(err){
+      res.writeHead(200, {
+        'content-type': 'text/html'
+      });
+      res.write('<h1>Error updating user with username ' + result.fields.username  + '</h1>');
+      res.write('<p>Perhaps a user with that username already exists. <a href="#">Get help</a>.</p>');
+      res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
+    }).then(function(userid){
+      renderUpdateUserPage(req, res, true);
+    });
+
+  });
+});
+
+function renderUpdateUserPage(req, res, updated = false) {
   var userid = req.params.userid;
 
   getUserRows(`WHERE user_id = ${userid}`).then((userRows) => (
@@ -338,9 +372,10 @@ app.get('/update/user/:userid', function(req, res){
 
     res.render('updateuser.twig', {
       user:user,
+      updated:updated,
       react:ReactDOM.renderToStaticMarkup(
         React.createElement(QuickCreateFieldset,{
-          fieldsetRoles:store.getState().fieldsetRoles,
+          //fieldsetRoles:store.getState().fieldsetRoles,
           quickCreate:store.getState().quickCreate,
           roles:store.getState().roles,
           userGroups:store.getState().userGroups
@@ -349,7 +384,10 @@ app.get('/update/user/:userid', function(req, res){
     });
 
   });
+}
 
+app.get('/update/user/:userid', function(req, res) {
+  renderUpdateUserPage(req, res);
 });
 
 app.get('/', function(req, res){
@@ -509,7 +547,7 @@ function quicklyUpdateUser(fields) {
     givenname = fields.givenName || fields['given-name'], // #janky
     familyname = fields.familyName || fields['family-name'],
     email = fields.email,
-    groupSelects = (fields.userGroups !== undefined) ? getGroupSelects(fields.userGroups,'update_user') : undefined,
+    groupRoleSelects = (fields.userGroups !== undefined) ? getGroupRoleSelects(prepGroupRoles(fields)) : '',
     active = (fields.active) ? 1 : 0,
     sudo = (fields.sudo) ? 1 : 0;
 
@@ -521,7 +559,7 @@ function quicklyUpdateUser(fields) {
       DELETE FROM "modx_member_groups" WHERE "member" = ${user_id}
     ), "modx_member_groups" AS (
       INSERT INTO "modx_member_groups" (user_group, member, role, rank)
-      ${groupSelects}
+      ${groupRoleSelects}
       RETURNING *
     )` : '';
 
@@ -569,7 +607,7 @@ function getUserGroups() {
 
       // execute a query on our database
       client.query(`
-        SELECT * FROM "modx_user_group_roles";
+        SELECT * FROM "modx_membergroup_names";
         `, function (err, results) {
         if (err) reject(err);
 
@@ -664,26 +702,89 @@ function getUserRows(where = '') {
   });
 }
 
-function getGroupSelects(userGroups, userrelation = 'new_user') {
-  var groupSelects = [];
-  userGroups.map(function(userGroup,index){
-    var role = 1;
-    groupSelects.push(...[`SELECT ${userGroup}, ${userrelation}.user_id, ${role}, 0 FROM ${userrelation}`,'UNION'])
-  });
+function getGroupSelects(userGroups, userrelation = 'new_user') { // depreciated todo: remove
+  try {
+    var groupSelects = [];
+    userGroups.map(function(userGroup,index){
+      var role = 1;
+      groupSelects.push(...[`SELECT ${userGroup}, ${userrelation}.user_id, ${role}, 0 FROM ${userrelation}`,'UNION'])
+    });
 
-  groupSelects.pop();
-  return groupSelects.join('\n');
+    groupSelects.pop();
+    return groupSelects.join('\n');
+  } catch (e) {
+    return '';
+  }
+}
+
+function getGroupRoleSelects(userGroupRoles, userrelation = 'new_user') {
+  try {
+    var groupSelects = [];
+    userGroupRoles.map(function(groupRoles,index) {
+      var userGroup = groupRoles.groupid,
+      roles = groupRoles.roles;
+      roles.map(function(role) {
+        groupSelects.push(...[`SELECT ${userGroup}, ${userrelation}.user_id, ${role}, 0 FROM ${userrelation}`,'UNION']);
+      });
+    });
+
+    groupSelects.pop();
+    return groupSelects.join('\n');
+
+    return groupSelects;
+  } catch (e) { return []; }
+}
+
+function prepGroupRoles(fields){ // pretty nasty but turns the form data into an array of objects representing user group ids and respective roles of the user
+  var obj = {};
+  for(var k in fields) {
+    var split = k.split('-');
+    if(split[0] == 'user' && split[1] == 'group' && split[3] == 'roles[]') {
+      var roles = fields[k];
+      if(!Array.isArray(roles)) roles = [roles];
+
+      roles.map(function(role,index){
+        split = role.split('|');
+        var group = split[0];
+        var role = parseInt(split[1]);
+
+        if(!obj[group]) obj[group] = [];
+        obj[group].push(role);
+      });
+
+    }
+  }
+
+  var groups = [];
+  for(k in obj) {
+    groups.push({
+      groupid:k,
+      roles:obj[k]
+    });
+  }
+
+  return groups;
 }
 
 function addUserQuickly(fields) {
-  //console.log(fields);
+  console.log('addUserQuickly',fields);
   return new Promise(function(resolve, reject){
     var username = fields.username,
     givenname = fields.givenName,
     familyname = fields.familyName,
     email = fields.email,
-    groupSelects = getGroupSelects(fields.userGroups);
+    groupRoleSelects = getGroupRoleSelects(prepGroupRoles(fields)),
+    groupSelectsBlock = '';
 
+    if(groupRoleSelects) {
+      groupSelectsBlock = `, "modx_member_group" AS (
+        INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+        ${groupRoleSelects}
+        RETURNING *
+      )`;
+    }
+
+    if(!username || !email) console.log('Username and Email are required');
     if(!username || !email) reject(new Error('Username and Email are required'));
 
     var message = username + ' added';
@@ -704,11 +805,7 @@ function addUserQuickly(fields) {
         INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
         SELECT new_user.user_id,new_user.user_id,'${givenname} ${familyname}','${email}','','' FROM new_user
         RETURNING *
-      ), "modx_member_group" AS (
-        INSERT INTO "modx_member_groups" (user_group, member, role, rank)
-        ${groupSelects}
-        RETURNING *
-      )
+      ) ${groupSelectsBlock}
       SELECT * FROM "new_user";`;
 
       // execute a query on our database

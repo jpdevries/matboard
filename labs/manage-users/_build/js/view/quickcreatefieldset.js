@@ -13,7 +13,7 @@ export default class QuickCreateFieldset extends React.Component {
     var userRoles = props.quickCreate.roles; // an object containing what roles the user is in per group
 
     console.log('userGroups',userGroups);
-
+    console.log('userRoles',userRoles);
     try {
       userGroups.map(function(group,index){
         var rolesMarkup = [];
@@ -27,12 +27,12 @@ export default class QuickCreateFieldset extends React.Component {
             }
           })();
           rolesMarkup.push(
-            <label key={index} htmlFor={'user-group-' + group.key + '-roles[]'}><input type="checkbox" checked={roleChecked} ref="userGroupEditorRoles" name={'user-group-' + group.key + '-roles[]'} value={group.id + '|' + role.id} />&nbsp;{role.name}</label>
+            <label key={index} htmlFor={'user-group-' + (group.id) + '-roles[]'}><input type="checkbox" checked={roleChecked} ref="userGroupEditorRoles" name={'user-group-' + (group.id) + '-roles[]'} value={group.id + '|' + role.id} />&nbsp;{role.name}</label>
           );
         });
         userGroupsMarkup.push((
           <fieldset key={index}>
-            <legend>{group.title}</legend>
+            <legend>{group.title || group.name}</legend>
             {rolesMarkup}
           </fieldset>
         ));
