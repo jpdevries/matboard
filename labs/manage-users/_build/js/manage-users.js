@@ -37,6 +37,7 @@ var ManageUsers = function() {
         (a.username > b.username) ? 1 : -1
       )),
       userGroups:state.userGroups,
+      roles:state.roles,
       fieldsetRoles:state.fieldsetRoles
     }
   })(ManageUsersForm);

@@ -82,6 +82,7 @@
 
 	document.addEventListener('DOMContentLoaded', function () {
 	  var app = new manageUsers.ManageUsers();
+	  document.querySelector('html').classList.add('react');
 	});
 
 /***/ },
@@ -129,6 +130,7 @@
 	        );
 	      }),
 	      userGroups: state.userGroups,
+	      roles: state.roles,
 	      fieldsetRoles: state.fieldsetRoles
 	    };
 	  })(ManageUsersForm);
@@ -509,6 +511,28 @@
 	exports.DEACTIVATE_USERS_SUCCESS = DEACTIVATE_USERS_SUCCESS;
 	exports.DEACTIVATE_USERS_ERROR = DEACTIVATE_USERS_ERROR;
 	exports.deactivateUsers = deactivateUsers;
+
+	var SET_ROLES = 'setroles';
+	var setRoles = function setRoles(roles) {
+	  return {
+	    type: SET_ROLES,
+	    roles: roles
+	  };
+	};
+
+	exports.SET_ROLES = SET_ROLES;
+	exports.setRoles = setRoles;
+
+	var SET_USER_GROUPS = 'setusergroups';
+	var setUserGroups = function setUserGroups(userGroups) {
+	  return {
+	    type: SET_USER_GROUPS,
+	    userGroups: userGroups
+	  };
+	};
+
+	exports.SET_USER_GROUPS = SET_USER_GROUPS;
+	exports.setUserGroups = setUserGroups;
 
 /***/ },
 /* 5 */
@@ -1056,6 +1080,16 @@
 	          active = contextualSettings.querySelector('input.active').checked,
 	          jobTitle = contextualSettings.querySelector('.jobTitle').innerHTML;
 	      //console.log(id,username,userGroups,email,givenName,jobTitle,sudo,active);
+
+	      var groupRoles = {};
+	      Array.prototype.map.call(userRow.nextElementSibling.querySelectorAll('input[name="grouproles[]"]'), function (input) {
+	        var group = input.getAttribute('data-group'),
+	            role = input.getAttribute('data-role');
+
+	        if (!groupRoles[group]) groupRoles[group] = [];
+	        groupRoles[group].push(role);
+	      });
+
 	      if (!addedUsers[id]) users.push({
 	        id: id,
 	        username: username,
@@ -1065,7 +1099,8 @@
 	        active: active,
 	        sudo: sudo,
 	        jobTitle: jobTitle,
-	        userGroups: userGroups
+	        userGroups: userGroups,
+	        groupRoles: groupRoles
 	      });
 	      addedUsers[id] = true;
 	    }
@@ -1105,78 +1140,50 @@
 	  title:'Editors'
 	}];*/
 
+	var initialRoles = function () {
+	  try {
+	    return Array.prototype.map.call(document.querySelector('.create-setting-form .field-group fieldset fieldset').querySelectorAll('label'), function (fieldsetLabel) {
+	      return {
+	        name: fieldsetLabel.querySelector('span').innerHTML,
+	        id: fieldsetLabel.querySelector('input').getAttribute('data-role-id'),
+	        key: fieldsetLabel.querySelector('input').getAttribute('data-role-id')
+	      };
+	    });
+	  } catch (e) {
+	    return [];
+	  }
+	}();
+
+	console.log(initialRoles);
+
 	var initialFieldsetRoles = [// todo: move this to the store
 	{
 	  key: 'administrator',
 	  title: 'Administrator',
-	  id: 1,
-	  roles: [{
-	    title: 'Super User',
-	    id: 1,
-	    key: 1
-	  }, {
-	    title: 'Editor',
-	    id: 2,
-	    key: 2
-	  }]
+	  id: 1
 	}, {
 	  key: 'modmore',
 	  title: 'modmore',
-	  id: 2,
-	  roles: [{
-	    title: 'Super User',
-	    id: 1,
-	    key: 1
-	  }, {
-	    title: 'Editor',
-	    id: 2,
-	    key: 2
-	  }]
+	  id: 2
 	}, {
 	  key: 'mgab',
 	  title: 'MGAB',
-	  id: 3,
-	  roles: [{
-	    title: 'Super User',
-	    id: 1,
-	    key: 1
-	  }, {
-	    title: 'Editor',
-	    id: 2,
-	    key: 2
-	  }]
+	  id: 3
 	}, {
 	  key: 'sterc',
 	  title: 'Sterc',
-	  id: 4,
-	  roles: [{
-	    title: 'Super User',
-	    id: 1,
-	    key: 1
-	  }, {
-	    title: 'Editor',
-	    id: 2,
-	    key: 2
-	  }]
+	  id: 4
 	}, {
 	  key: 'sitebuilders',
 	  title: 'Site Builders',
-	  id: 5,
-	  roles: [{
-	    title: 'Super User',
-	    id: 1,
-	    key: 1
-	  }, {
-	    title: 'Editor',
-	    id: 2,
-	    key: 2
-	  }]
+	  id: 5
 	}];
 
 	var initialState = {
 	  users: initialUsers,
 	  userGroups: initialUserGroups,
 	  fieldsetRoles: initialFieldsetRoles,
+	  roles: initialRoles,
 	  quickCreate: {
 	    username: '',
 	    givenName: '',
@@ -1186,7 +1193,8 @@
 	    sudo: true,
 	    open: false,
 	    updating: false,
-	    id: undefined
+	    id: undefined,
+	    roles: {}
 	  }
 	};
 
@@ -1304,8 +1312,22 @@
 	      }
 
 	      return update(state, { $push: [action.userGroup] });
-	      break;
+
+	    case actions.SET_USER_GROUPS:
+	      return update(state, { $set: action.userGroups });
 	  }
+	  return state;
+	};
+
+	var rolesReducer = function rolesReducer(state, action) {
+	  state = state || initialState.roles;
+
+	  switch (action.type) {
+	    case actions.SET_ROLES:
+	      console.log('setting roles', update(state, { $set: action.roles }));
+	      return update(state, { $set: action.roles });
+	  }
+
 	  return state;
 	};
 
@@ -1313,7 +1335,8 @@
 	  quickCreate: quickCreateReducer,
 	  users: usersReducer,
 	  userGroups: userGroupsReducer,
-	  fieldsetRoles: fieldsetRolesReducer
+	  fieldsetRoles: fieldsetRolesReducer,
+	  roles: rolesReducer
 	});
 
 	exports.manageUsersReducer = manageUsersReducer;
@@ -1837,7 +1860,7 @@
 	      React.createElement(
 	        'div',
 	        { id: 'manage-user-form__header' },
-	        React.createElement(ManageUserFormHeader, { fieldsetRoles: props.fieldsetRoles, quickCreate: props.quickCreate, handleFilterBy: function handleFilterBy(filterBy) {
+	        React.createElement(ManageUserFormHeader, { roles: props.roles, userGroups: props.userGroups, fieldsetRoles: props.fieldsetRoles, quickCreate: props.quickCreate, handleFilterBy: function handleFilterBy(filterBy) {
 	            return _this.setState({
 	              filterBy: isNaN(filterBy) ? undefined : filterBy
 	            });
@@ -1887,7 +1910,6 @@
 	      _this.setState({ quickCreateOpen: store.getState().quickCreate.open });
 	    });
 	  },
-	  handleSubmit: function handleSubmit() {},
 	  render: function render() {
 	    var _this2 = this;
 
@@ -1902,97 +1924,8 @@
 	      props.quickCreate.updating ? 'Update' : 'Create',
 	      ' User'
 	    );
-	    /*var fieldsetRoles = [
-	        {
-	          key:'administrator',
-	          title:'Administrator',
-	          id:1,
-	          roles:[{
-	            title:'Super User',
-	            id:1,
-	            key:1
-	          },{
-	            title:'Editor',
-	            id:2,
-	            key:2
-	          }]
-	        },
-	        {
-	          key:'modmore',
-	          title:'modmore',
-	          id:2,
-	          roles:[{
-	            title:'Super User',
-	            id:1,
-	            key:1
-	          },{
-	            title:'Editor',
-	            id:2,
-	            key:2
-	          }]
-	        },
-	        {
-	          key:'mgab',
-	          title:'MGAB',
-	          id:3,
-	          roles:[{
-	            title:'Super User',
-	            id:1,
-	            key:1
-	          },{
-	            title:'Editor',
-	            id:2,
-	            key:2
-	          }]
-	        },
-	        {
-	          key:'sterc',
-	          title:'Sterc',
-	          id:4,
-	          roles:[{
-	            title:'Super User',
-	            id:1,
-	            key:1
-	          },{
-	            title:'Editor',
-	            id:2,
-	            key:2
-	          }]
-	        },
-	        {
-	          key:'sitebuilders',
-	          title:'Site Builders',
-	          id:5,
-	          roles:[{
-	            title:'Super User',
-	            id:1,
-	            key:1
-	          },{
-	            title:'Editor',
-	            id:2,
-	            key:2
-	          }]
-	        }
-	    ];
-	    var fieldsetRolesMarkup = [];
-	    fieldsetRoles.map(function(group,index){
-	      var roles = [];
-	      group.roles.map(function(role,index){
-	        roles.push(
-	          <label key={index} htmlFor={'user-group-' + group.key + '-roles[]'}><input type="checkbox" checked={role.checked} ref="userGroupEditorRoles" name={'user-group-' + group.key + '-roles[]'} value={group.id + '|' + role.id} />&nbsp;{role.title}</label>
-	        );
-	      });
-	      fieldsetRolesMarkup.push((
-	        <fieldset key={index}>
-	          <legend>{group.title}</legend>
-	          {roles}
-	        </fieldset>
-	      ));
-	    });*/
 
 	    var quickCreate = this.state.quickCreateOpen ? React.createElement(QuickCreateFieldset, props) : false;
-
-	    console.log('props', props);
 
 	    return React.createElement(
 	      'form',
@@ -2043,8 +1976,6 @@
 	            }
 	          }
 
-	          console.log('user', user);
-
 	          userGroups = [].concat(_toConsumableArray(new Set(userGroups))); // remove duplicates
 
 	          var userParams = {
@@ -2067,8 +1998,8 @@
 	        { className: 'top-bar' },
 	        quickCreateUserBtn,
 	        React.createElement(
-	          'button',
-	          { id: 'create-user', formaction: './../user-edit/index.html' },
+	          'a',
+	          { className: 'button', href: '/add/user' },
 	          'Create User'
 	        )
 	      ),
@@ -2088,13 +2019,11 @@
 
 	    var props = this.props;
 
-	    var filterBuyOptions = props.fieldsetRoles;
-
-	    var filterBuyOptions = props.fieldsetRoles.map(function (fieldset, index) {
+	    var filterBuyOptions = props.userGroups.map(function (userGroup, index) {
 	      return React.createElement(
 	        'option',
-	        { key: fieldset.id, value: fieldset.id },
-	        fieldset.title
+	        { key: userGroup.id, value: userGroup.id },
+	        userGroup.title
 	      );
 	    });
 
@@ -2117,7 +2046,7 @@
 	        null,
 	        React.createElement(
 	          'h3',
-	          null,
+	          { id: 'search-users' },
 	          'Search Users'
 	        ),
 	        React.createElement(
@@ -2128,7 +2057,7 @@
 	            { 'for': 'search-users' },
 	            React.createElement(
 	              'span',
-	              { 'a11y-hidden': true },
+	              { className: 'accessibly-hidden' },
 	              'Search: '
 	            ),
 	            React.createElement('input', { name: 'search-users', id: 'search-users', type: 'text', placeholder: 'Search for any User. We\'ll try and find them.', onChange: function onChange(event) {
@@ -2313,31 +2242,47 @@
 	  _createClass(QuickCreateFieldset, [{
 	    key: 'render',
 	    value: function render() {
+
 	      var props = this.props;
-	      var fieldsetRoles = props.fieldsetRoles;
-	      var fieldsetRolesMarkup = [];
-	      fieldsetRoles.map(function (group, index) {
-	        var roles = [];
-	        group.roles.map(function (role, index) {
-	          roles.push(React.createElement(
-	            'label',
-	            { key: index, htmlFor: 'user-group-' + group.key + '-roles[]' },
-	            React.createElement('input', { type: 'checkbox', checked: role.checked, ref: 'userGroupEditorRoles', name: 'user-group-' + group.key + '-roles[]', value: group.id + '|' + role.id }),
-	            ' ',
-	            role.title
+	      var userGroups = props.userGroups;
+	      var roles = props.roles; // all the roles there are
+	      var userGroupsMarkup = [];
+	      var userRoles = props.quickCreate.roles; // an object containing what roles the user is in per group
+
+	      console.log('userGroups', userGroups);
+
+	      try {
+	        userGroups.map(function (group, index) {
+	          var rolesMarkup = [];
+
+	          roles.map(function (role, index) {
+	            var roleChecked = function () {
+	              try {
+	                return userRoles[group.id].includes(role.id);
+	              } catch (e) {
+	                return false;
+	              }
+	            }();
+	            rolesMarkup.push(React.createElement(
+	              'label',
+	              { key: index, htmlFor: 'user-group-' + group.key + '-roles[]' },
+	              React.createElement('input', { type: 'checkbox', checked: roleChecked, ref: 'userGroupEditorRoles', name: 'user-group-' + group.key + '-roles[]', value: group.id + '|' + role.id }),
+	              ' ',
+	              role.name
+	            ));
+	          });
+	          userGroupsMarkup.push(React.createElement(
+	            'fieldset',
+	            { key: index },
+	            React.createElement(
+	              'legend',
+	              null,
+	              group.title
+	            ),
+	            rolesMarkup
 	          ));
 	        });
-	        fieldsetRolesMarkup.push(React.createElement(
-	          'fieldset',
-	          { key: index },
-	          React.createElement(
-	            'legend',
-	            null,
-	            group.title
-	          ),
-	          roles
-	        ));
-	      });
+	      } catch (e) {}
 
 	      var otherButtons = props.quickCreate.updating ? React.createElement(
 	        'div',
@@ -2347,12 +2292,12 @@
 	          null,
 	          React.createElement(
 	            'button',
-	            { type: 'submit', formaction: '/duplicate/user', formmethod: 'put' },
+	            { type: 'submit', formaction: '/duplicate/user', formMethod: 'put' },
 	            'Duplicate User'
 	          ),
 	          React.createElement(
 	            'button',
-	            { type: 'submit', formaction: '/delete/user', formmethod: 'delete' },
+	            { type: 'submit', className: 'dangerous', formaction: '/user/delete', formMethod: 'delete' },
 	            'Delete User'
 	          )
 	        ),
@@ -2377,6 +2322,7 @@
 	          props.quickCreate.updating ? 'Update' : 'Create',
 	          ' User'
 	        ),
+	        React.createElement('input', { type: 'hidden', name: 'id', value: props.quickCreate.id }),
 	        React.createElement(
 	          'div',
 	          { className: 'n field-group' },
@@ -2447,7 +2393,7 @@
 	            React.createElement(
 	              'label',
 	              { htmlFor: 'user-active' },
-	              'Active'
+	              ' Active'
 	            )
 	          ),
 	          React.createElement(
@@ -2461,7 +2407,7 @@
 	            React.createElement(
 	              'label',
 	              { htmlFor: 'user-sudo' },
-	              'Sudo'
+	              ' Sudo'
 	            )
 	          )
 	        ),
@@ -2493,9 +2439,9 @@
 	            React.createElement(
 	              'p',
 	              null,
-	              'Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can below to the same User Group with multiple roles.'
+	              'Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can belong to the same User Group with multiple roles.'
 	            ),
-	            fieldsetRolesMarkup
+	            userGroupsMarkup
 	          )
 	        ),
 	        React.createElement(
@@ -2506,7 +2452,7 @@
 	            null,
 	            React.createElement(
 	              'button',
-	              { type: 'submit' },
+	              { className: 'comfortably', type: 'submit' },
 	              props.quickCreate.updating ? 'Update' : 'Create',
 	              ' User'
 	            )
@@ -2661,18 +2607,23 @@
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, formAction: '/api/users/deactivate', formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: '/api/users/deactivate', formMethod: 'post', onClick: this.handleBulkButtonClick },
 	          'Suspend'
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, formAction: '/api/users/delete', formMethod: 'delete', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: '/api/users/delete', formMethod: 'delete', onClick: this.handleBulkButtonClick },
 	          'Delete'
 	        ),
 	        React.createElement(
-	          'button',
-	          { disabled: !props.emails.length, formAction: 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body=', formTarget: '_blank' },
+	          'a',
+	          { className: 'button', disabled: !props.emails.length, href: 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body=' },
 	          'Email'
+	        ),
+	        React.createElement(
+	          'a',
+	          { className: 'button', disabled: !props.emails.length, href: 'https://modxcommunity.slack.com/messages/@' + props.usernames.join(','), target: '_blank' },
+	          'Slack DM'
 	        )
 	      )
 	    );
@@ -2735,7 +2686,7 @@
 	          bulkTh,
 	          React.createElement(
 	            'th',
-	            null,
+	            { className: 'username' },
 	            'User'
 	          ),
 	          React.createElement(
@@ -2775,6 +2726,12 @@
 	      return email;
 	    });
 
+	    var usernames = users.map(function (user) {
+	      return _this4.state.bulkToggledUsers[user.id] ? user.username : undefined;
+	    }).filter(function (email) {
+	      return email;
+	    });
+
 	    if (props.filter !== undefined && props.filter.length) {
 	      users = users.filter(function (user) {
 	        if (user.username.indexOf(props.filter) > -1) return true;
@@ -2782,9 +2739,7 @@
 	      });
 	    }
 
-	    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails }) : false;
-
-	    console.log(emails);
+	    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails, usernames: usernames }) : false;
 
 	    return users.length ? React.createElement(
 	      'section',
@@ -2803,6 +2758,15 @@
 	        ),
 	        React.createElement(
 	          'div',
+	          { className: 'balanced' },
+	          React.createElement(
+	            'a',
+	            { className: 'button', href: "/add/user?group=" + props.userGroup.id, style: { marginBottom: "2em" } },
+	            'Create ' + props.title + ' User'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
 	          null,
 	          bulkActionsFieldset,
 	          React.createElement(SettingsTable, { bulkActions: users.length >= minimumUsersBulkAction ? props.bulkActions : false, users: users, bulkToggledUsers: this.state.bulkToggledUsers, userGroup: props.userGroup, handleBulkToggle: function handleBulkToggle(id, checked) {
@@ -2810,7 +2774,6 @@
 	                bulkToggledUsers: update(_this4.state.bulkToggledUsers, _defineProperty({}, id, { $set: checked }))
 	              });
 	            }, handleBulkAllCheck: function handleBulkAllCheck(allChecked) {
-	              console.log('handleBulkAllCheck', allChecked);
 	              var all = {};
 	              if (allChecked) {
 	                users.map(function (user) {
@@ -2858,6 +2821,7 @@
 	      user.username
 	    ),
 	    React.createElement('input', { type: 'checkbox', name: bulkName, checked: props.bulkToggle, onChange: function onChange(event) {
+	        event.stopPropagation();
 	        try {
 	          props.handleBulkToggle(user.id, event.target.checked);
 	        } catch (e) {}
@@ -2867,6 +2831,7 @@
 	  return React.createElement(
 	    'tr',
 	    { tabIndex: '0', onFocus: function onFocus(event) {
+	        console.log(event.nativeEvent);
 	        try {
 	          props.handleFocus();
 	        } catch (e) {}
@@ -2878,7 +2843,7 @@
 	    bulkActionsTd,
 	    React.createElement(
 	      'td',
-	      null,
+	      { className: 'username' },
 	      user.username
 	    ),
 	    React.createElement(
@@ -2986,7 +2951,8 @@
 	                    sudo: user.sudo,
 	                    open: true,
 	                    updating: true,
-	                    id: user.id
+	                    id: user.id,
+	                    roles: user.groupRoles
 	                  }));
 	                } },
 	              'Quick Edit'
@@ -3007,19 +2973,28 @@
 	            ),
 	            React.createElement(
 	              'button',
-	              { type: 'submit', onClick: function onClick(event) {
+	              { className: 'delete', type: 'submit', onClick: function onClick(event) {
 	                  event.preventDefault();
 	                  event.stopPropagation();
 	                  store.dispatch(actions.deleteUser(update(user, { $merge: {
 	                      user_id: user.id
 	                    } })));
-	                }, formMethod: 'delete', formAction: '/delete/user', 'data-async-action': 'deleteuser' },
+	                }, formMethod: 'post', formAction: '/user/delete', 'data-async-action': 'deleteuser' },
 	              'Delete'
 	            ),
 	            React.createElement(
 	              'a',
 	              { className: 'button', href: 'mailto:' + user.email + '?subject=MODX%20Next' },
 	              'Email'
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            null,
+	            React.createElement(
+	              'a',
+	              { className: 'button', href: "https://modxcommunity.slack.com/messages/@" + user.username + "/details/", target: '_blank' },
+	              'Slack DM'
 	            )
 	          ),
 	          React.createElement(

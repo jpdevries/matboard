@@ -3,20 +3,13 @@
   <div id="manage-users-form">
     <div id="manage-user-form__header">
       <header>
-        <h1>Update User {{ user.username }} ({{ user.id }})</h1>
+        <h1>Create User</h1>
         <div class="create-user-module">
           <form action="/update/user" method="post" class="create-setting-form">
               {{ react }}
           </form>
         </div>
       </header>
-    </div>
-    <div class="horizontally-padded">
-      <aside class="bright oblique balanced padded">
-        <p>
-          {{ user.fullname }} last logged in 12 days&nbsp;ago.
-        </p>
-      </aside>
     </div>
     <div class="horizontally-padded">
       <aside class="bright padded">

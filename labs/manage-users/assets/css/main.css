@@ -11,7 +11,7 @@ table .contextual-setting input[type="text"], .create-setting-form input[type="t
 /*
 http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
 */
-.accessibly-hidden, html.js [a11y-hidden] {
+.accessibly-hidden, html.js [a11y-hidden], [a11y-hidden] {
   position: absolute;
   height: 1px;
   width: 1px;
@@ -29,6 +29,19 @@ http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
 
 .shy.checkbox {
   width: 1em; }
+
+.oblique {
+  font-style: italic; }
+
+.micro-page {
+  text-align: center; }
+  .micro-page > * {
+    text-align: left;
+    max-width: 42em;
+    margin-left: auto;
+    margin-right: auto; }
+  .micro-page table {
+    width: 100%; }
 
 /*%button-apperance {
   appearance: button;
@@ -71,15 +84,26 @@ button, .button {
   text-decoration: none;
   margin: 0.2rem;
   transition: all 240ms ease; }
+  html:not(.react) .contextual-setting button, html:not(.react) .contextual-setting .button {
+    background: white; }
   button:hover, button:focus, .button:hover, .button:focus {
     color: #0000ee;
     border-color: #0000ee; }
   button:active, .button:active {
     color: red;
     border-color: red; }
-  button[formmethod="delete"]:hover, button[formmethod="delete"]:focus, .button[formmethod="delete"]:hover, .button[formmethod="delete"]:focus {
+  button.go:hover, button.go:focus, .button.go:hover, .button.go:focus {
+    color: #3f812d;
+    border-color: #3f812d; }
+  button[formaction="/users/delete"]:hover, button[formaction="/users/delete"]:focus, button[formmethod="delete"]:hover, button[formmethod="delete"]:focus, button.delete:hover, button.delete:focus, button.danger:hover, button.danger:focus, button.dangerous:hover, button.dangerous:focus, .button[formaction="/users/delete"]:hover, .button[formaction="/users/delete"]:focus, .button[formmethod="delete"]:hover, .button[formmethod="delete"]:focus, .button.delete:hover, .button.delete:focus, .button.danger:hover, .button.danger:focus, .button.dangerous:hover, .button.dangerous:focus {
     color: red;
     border-color: red; }
+  button[disabled], .button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    color: #3c3c3c !important;
+    border: 1px solid #787878 !important;
+    background: #f0f0f0 !important; }
 
 fieldset {
   border: 1px solid #c8c8c8; }
@@ -92,14 +116,16 @@ body {
   padding-top: 1rem;
   color: #080808; }
 
-.top-bar button {
-  margin-right: 1em; }
+.top-bar {
+  margin-bottom: 1rem; }
+  .top-bar button {
+    margin-right: 1em; }
 
 .horizontally-padded {
   padding-left: 1rem;
   padding-right: 1rem; }
 
-#manage-users-form #manage-user-form__header header h1 {
+header > h1:first-of-type, aside > h1:first-of-type, .padded > h1:first-of-type {
   margin-top: 0; }
 
 .subtle {
@@ -150,7 +176,7 @@ table tbody > tr:focus html.no-js {
   background: #F2F2C5;
   /* highlight focused setting for no-js users */ }
 
-table thead th:first-of-type, table tbody tr td:first-of-type {
+table.settings-table thead th:first-of-type, table.settings-table thead th:last-of-type, table.settings-table tbody tr td:first-of-type, table.settings-table tbody tr td:last-of-type {
   width: 1em; }
 
 table .contextual-setting {
@@ -206,6 +232,9 @@ table .contextual-setting {
       padding-left: 1rem;
       padding-right: 1rem; } }
 
+table .username {
+  width: 100% !important; }
+
 .settings-grid {
   display: flex;
   flex-wrap: wrap;
@@ -246,8 +275,6 @@ form.search-settings, form.search-users {
   form.search-settings > label[for="filter-by"], form.search-settings #filter-by, form.search-users > label[for="filter-by"], form.search-users #filter-by {
     text-align: right;
     margin-top: 1.6rem; }
-  form.search-settings > div, form.search-users > div {
-    padding-top: 1em; }
   @media screen and (max-width: 640px) {
     form.search-settings button, form.search-users button {
       display: block;
@@ -256,7 +283,10 @@ form.search-settings, form.search-users {
     font-size: inherit; }
 
 input[name="search-settings"], input[name="search-users"] {
-  margin-bottom: 1em; }
+  line-height: 1.6rem; }
+
+#search-users {
+  margin-bottom: 0.2em; }
 
 label[for="filter-by"] {
   text-align: right; }

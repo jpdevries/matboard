@@ -44,32 +44,55 @@ app.post('/add/user', function(req, res){
   });
 });
 
-/*app.post('/update/user', function(req, res){
+app.post('/update/user', function(req, res){
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
 
-    res.writeHead(200, {
-      'content-type': 'text/html'
-    });
 
-    addUserQuickly(fields).then(function(result){
+
+    quicklyUpdateUser(fields).then(function(result){
       console.log(result);
-      var username = result.username;
-      res.write('<h1>User ' + username + ' has been added with an id of ' + result.user_id + '.</h1>');
-      res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
+      var username = result.fields.username;
+      res.render('updateduser.twig', {
+        user:{
+          id:result.fields.id,
+          username:result.fields.username
+        }
+      });
     },function(err){
-      res.write('<h1>Error adding user with username ' + fields.username  + '</h1>');
+      res.writeHead(200, {
+        'content-type': 'text/html'
+      });
+      res.write('<h1>Error updating user with username ' + result.fields.username  + '</h1>');
       res.write('<p>Perhaps a user with that username already exists. <a href="#">Get help</a>.</p>');
       res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
     });
 
   });
-});*/
+});
 
 
 app.get('/api/users',function(req, res){
   getUserRows().then(function(result){
     res.json(result);
+  },function(err){
+    console.log(err);
+  });
+});
+
+app.get('/api/user/groups', function(req, res){
+  getUserGroups().then(function(userGroups){
+    res.json({
+      userGroups:userGroups
+    })
+  });
+});
+
+app.get('/api/roles',function(req, res){
+  getRoles().then(function(roles){
+    res.json({
+      roles:roles
+    });
   },function(err){
     console.log(err);
   });
@@ -101,7 +124,7 @@ app.post('/api/user/update',function(req, res){
 });
 
 
-app.delete('/delete/user', function(req, res) {
+app.post('/user/delete', function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -110,17 +133,34 @@ app.delete('/delete/user', function(req, res) {
     var message = 'YOLO';
 
     deleteUserById(fields.user_id).then(function(result){
-      res.writeHead(200, {
-        'content-type': 'text/html'
+      res.render('deletedusers.twig', {
+        deleted:'Deleted',
+        users:result.rows
       });
-      res.write('<h1>User ' + fields.username + ' has been deleted. This action was irreversible.</h1>');
-      res.end('<p><a href="/">' + 'Return to Manager Users' + '</a></p>');
     },function(){ // error
-      res.writeHead(200, { // should we throw a different status code?
-        'content-type': 'text/html'
+      res.render('deletedusers.twig', {
+        deleted:'Delete'
       });
-      res.write('<h1>Unable to delete user ' + fields.username + '.</h1>');
-      res.end('<p><a href="/">' + 'Return to Manager Users' + '</a></p>');
+    });
+  });
+});
+
+app.post('/users/delete',function(req, res) {
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    var users = fields['users[]'];
+
+    deleteUsersById(users).then(function(result){
+      res.render('deletedusers.twig', {
+        deleted:'Deleted',
+        users:result.rows
+      });
+    },function(err,result){ // error
+      res.render('deletedusers.twig', {
+        deleted:'Delete',
+        users:result.rows
+      });
     });
   });
 });
@@ -192,15 +232,15 @@ app.post('/users/deactivate', function(req, res) {
 
   form.parse(req, function (err, fields, files) {
     activateUsersById(fields['users[]'], false).then(function(result){
-      console.log(result.rows);
+      //console.log(result.rows);
       res.render('activatedusers.twig', {
-        activated:'Deactivated',
+        activated:'Suspended',
         users:result.rows
       });
     },function(err,result){
       res.render('unabletoactivateusers.twig', {
-        activate:'Deactivate',
-        activated:'Deactivated',
+        activate:'Suspend',
+        activated:'Suspended',
         users:result.rows
       });
     });
@@ -221,14 +261,68 @@ app.post('/api/users/deactivate',function(req, res) {
   });
 });
 
+app.get('/add/user', function(req, res){
+  getRoles().then(function(roles){
+    store.dispatch(actions.setRoles(roles));
+    return roles;
+  }).then(function(roles){
+    res.render('createuser.twig', {
+      react: ReactDOM.renderToStaticMarkup(
+        React.createElement(QuickCreateFieldset,{
+          fieldsetRoles:store.getState().fieldsetRoles,
+          quickCreate:store.getState().quickCreate,
+          roles:store.getState().roles
+        })
+      )
+    });
+  });
+});
+
 app.get('/update/user/:userid', function(req, res){
   var userid = req.params.userid;
 
-  getUserRows(`WHERE user_id = ${userid}`).then(function(result){
-    //console.log(result);
-    var user = result.users[0],
-    userGroups = result.userGroups;
-    //console.log(user.user_groups);
+  getUserRows(`WHERE user_id = ${userid}`).then((userRows) => (
+    userRows.users
+  )).then(function(users){
+    var user = users[0],
+    userGroupRoles = {};
+    user.group_roles.map((groupRole,index) => {
+      userGroupRoles[groupRole.group] = groupRole.roles;
+    });
+    user.userGroupRoles = userGroupRoles;
+    return user;
+  }).then((user) => ({
+    user:user
+  })).then((data) => (
+    new Promise(function(resolve,reject){
+      getUserGroups().then(function(userGroups){
+        store.dispatch(actions.setUserGroups(userGroups));
+        return userGroups;
+      }).then(function(userGroups){
+        resolve(Object.assign({},data,{
+          userGroups:userGroups
+        }));
+      })
+    })
+  )).then((data) => (
+    new Promise(function(resolve,reject){
+      getRoles().then(function(roles){
+        store.dispatch(actions.setRoles(roles));
+        return roles;
+      }).then(function(roles){
+        resolve(Object.assign({},data,{
+          roles:roles
+        }));
+      });
+    })
+  )).then(function(data){
+    var user = data.user,
+    userGroups = data.userGroups,
+    userGroupRoles = {};
+    user.group_roles.map((groupRole,index) => {
+      userGroupRoles[groupRole.group] = groupRole.roles;
+    });
+
     store.dispatch(actions.updateQuickCreate({
       username:user.username,
       givenName:user.fullname,
@@ -238,61 +332,51 @@ app.get('/update/user/:userid', function(req, res){
       sudo:user.sudo == 1,
       open:true,
       updating:true,
-      id:user.id
+      id:user.id,
+      roles:userGroupRoles
     }));
+
     res.render('updateuser.twig', {
       user:user,
-      react: ReactDOM.renderToStaticMarkup(
+      react:ReactDOM.renderToStaticMarkup(
         React.createElement(QuickCreateFieldset,{
           fieldsetRoles:store.getState().fieldsetRoles,
-          quickCreate:store.getState().quickCreate
+          quickCreate:store.getState().quickCreate,
+          roles:store.getState().roles,
+          userGroups:store.getState().userGroups
         })
       )
     });
-  },function(){
 
   });
 
-
 });
-
-/*
-<Provider store={store}>
-      <QuickCreateFieldset />
-</Provider>
-*/
 
 app.get('/', function(req, res){
-  getUserRows().then(function(result){
-    res.render('index.twig', result);
-  },function(err){
-    console.log(err);
+  getUserRows().then(function(results){
+    return new Promise(function(resolve,reject){
+      getRoles().then(function(roles){
+         resolve({
+          results:results,
+          roles:roles
+         });
+      })
+    }).then(function(data){
+      res.render('index.twig', Object.assign({},data.results,{
+        roles:data.roles
+      }));
+    },function(err){
+      console.log(err);
+    })
   });
-});
-
-
-
-/*app.post('/delete/user', function(req, res){
 
 });
 
-app.post('/delete/user', function(req, res){
-
-});
-
-app.get('/duplicate/user', function(req, res){
-
-});
-
-app.post('/delete/user/from/group', function(req, res){
-
-});*/
 
 app.use(express.static(__dirname));
 
-
-function deleteUserById(user_id) {
-  return new Promise(function(resolve, reject) {
+function getRoles() {
+  return new Promise(function(resolve, reject){
     // instantiate a new client
     // the client will read connection information from
     // the same environment varaibles used by postgres cli tools
@@ -303,7 +387,8 @@ function deleteUserById(user_id) {
       if (err) reject(err);
 
       // execute a query on our database
-      client.query('DELETE FROM "modx_users" WHERE user_id = $1;', [user_id], function (err, result) {
+      client.query('SELECT * FROM "modx_user_group_roles";', function (err, result) {
+        //console.log(result);
         if (err) reject(err);
 
         // disconnect the client
@@ -311,16 +396,19 @@ function deleteUserById(user_id) {
           if (err) reject(err);
         });
 
-        resolve({
-          user_id:user_id
-        });
+        resolve(result.rows);
       });
     });
   });
 }
 
+
+function deleteUserById(user_id) {
+  return deleteUsersById([user_id]);
+}
+
 function activateUsersById(users,active = true) {
-  console.log('activateUsersById',users);
+  //console.log('activateUsersById',users);
   active = active ? 1 : 0;
   return new Promise(function(resolve, reject) {
     // instantiate a new client
@@ -379,30 +467,38 @@ function deleteUsersById(users) {
     client.connect(function (err) {
       if (err) reject(err);
 
-      var query = `
+      /*var query = `
         DELETE FROM "modx_users" WHERE user_id IN (${usersList});
+        `;*/
+
+        var query = `
+        WITH "delete_users" AS (
+          DELETE FROM "modx_users" WHERE user_id IN (${usersList})
+          RETURNING *
+        )
+          SELECT user_id,username,fullname FROM "delete_users"
+          INNER JOIN modx_user_attributes ON modx_user_attributes.id = delete_users.user_id;
         `;
+
         console.log(query);
 
       // execute a query on our database
       client.query(query, function (err, result) {
-        if (err) reject(err);
+        if (err) reject(err, result);
 
         // disconnect the client
         client.end(function (err) {
-          if (err) reject(err);
+          if (err) reject(err, result);
         });
 
-        resolve({
-          users:users
-        });
+        resolve(result);
       });
     });
   });
 }
 
 function quicklyUpdateUser(fields) {
-  //console.log('quicklyUpdateUser',fields);
+  console.log('quicklyUpdateUser',fields);
   return new Promise(function(resolve, reject) {
     // instantiate a new client
     // the client will read connection information from
@@ -410,12 +506,15 @@ function quicklyUpdateUser(fields) {
     var client = new pg.Client(),
     user_id = fields.id,
     username = fields.username,
-    givenname = fields.givenName,
-    familyname = fields.familyName,
+    givenname = fields.givenName || fields['given-name'], // #janky
+    familyname = fields.familyName || fields['family-name'],
     email = fields.email,
     groupSelects = (fields.userGroups !== undefined) ? getGroupSelects(fields.userGroups,'update_user') : undefined,
     active = (fields.active) ? 1 : 0,
     sudo = (fields.sudo) ? 1 : 0;
+
+    if(fields['user-active'] == 'on') active = 1;
+    if(fields['user-sudo'] == 'on') sudo = 1;
 
     // DANGEROUS!!!
     var updateUserGroups = (fields.userGroups !== undefined) ? `, "delete_modx_member_groups" AS (
@@ -424,7 +523,7 @@ function quicklyUpdateUser(fields) {
       INSERT INTO "modx_member_groups" (user_group, member, role, rank)
       ${groupSelects}
       RETURNING *
-    )` : undefined;
+    )` : '';
 
     // connect to our database
     client.connect(function (err) {
@@ -441,6 +540,8 @@ function quicklyUpdateUser(fields) {
       ) ${updateUserGroups}
       SELECT * FROM "update_user";`;
 
+      console.log(query);
+
       // execute a query on our database
       client.query(query, function (err, result) {
         if (err) reject(err);
@@ -451,10 +552,36 @@ function quicklyUpdateUser(fields) {
         });
 
         resolve({
-          user_id:user_id
+          user_id:user_id,
+          fields:fields
         });
       });
     });
+  });
+}
+
+function getUserGroups() {
+  return new Promise(function(resolve, reject){
+    var client = new pg.Client();
+
+    client.connect(function (err) {
+      if (err) throw err;
+
+      // execute a query on our database
+      client.query(`
+        SELECT * FROM "modx_user_group_roles";
+        `, function (err, results) {
+        if (err) reject(err);
+
+        // disconnect the client
+        client.end(function (err) {
+          if (err) reject(err);
+        });
+
+        resolve(results.rows);
+      });
+    });
+
   });
 }
 
@@ -497,11 +624,27 @@ function getUserRows(where = '') {
             return user.user_group;
           });
 
+          var groupRolesHash = {};
+          var groupRoles = [];
+          filtered.map((user) => {
+            if(!groupRolesHash[user.user_group]) groupRolesHash[user.user_group] = [];
+            groupRolesHash[user.user_group].push(user.role);
+          });
+
+          for (var groupId in groupRolesHash) {
+            groupRoles.push({
+              group:groupId,
+              roles:groupRolesHash[groupId]
+            });
+          }
+
           var newRow = filtered[0];
           delete newRow['user_group'];
           delete newRow['groupname'];
 
           newRow.user_groups = userGroups;
+          newRow.group_roles = groupRoles;
+
           return newRow;
         });
 

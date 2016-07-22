@@ -102,9 +102,10 @@ var SettingsGridSectionBulkActionsFieldset = React.createClass({
         <fieldset>
           <legend>Bulk Actions</legend>
           <button type="submit" disabled={!props.emails.length} className="go" formAction="/api/users/activate" formMethod="post" onClick={this.handleBulkButtonClick}>Activate</button>
-          <button type="submit" disabled={!props.emails.length} formAction="/api/users/deactivate" formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
-          <button type="submit" disabled={!props.emails.length} formAction="/api/users/delete" formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
-          <button disabled={!props.emails.length} formAction={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body='} formTarget="_blank">Email</button>
+          <button type="submit" disabled={!props.emails.length} className="danger" formAction="/api/users/deactivate" formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
+          <button type="submit" disabled={!props.emails.length} className="danger" formAction="/api/users/delete" formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
+          <a className="button" disabled={!props.emails.length} href={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body='}>Email</a>
+          <a className="button" disabled={!props.emails.length} href={'https://modxcommunity.slack.com/messages/@' + props.usernames.join(',')} target="_blank">Slack DM</a>
         </fieldset>
       </form>
     );
@@ -154,7 +155,7 @@ var SettingsTable = React.createClass({
         <thead>
           <tr>
             {bulkTh}
-            <th>User</th>
+            <th className="username">User</th>
             <th>Active</th>
           </tr>
         </thead>
@@ -181,6 +182,10 @@ var SettingsGridSection = React.createClass({
       (this.state.bulkToggledUsers[user.id]) ? user.email : undefined
     )).filter((email) => email);
 
+    var usernames = users.map((user) => (
+      (this.state.bulkToggledUsers[user.id]) ? user.username : undefined
+    )).filter((email) => email);
+
     if(props.filter !== undefined && props.filter.length) {
       users = users.filter((user) => {
         if(user.username.indexOf(props.filter) > -1) return true;
@@ -188,9 +193,7 @@ var SettingsGridSection = React.createClass({
       });
     }
 
-    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} /> : false;
-
-    console.log(emails);
+    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} usernames={usernames} /> : false;
 
     return (users.length) ? (
       <section id={"user-group-" + props.userGroup.id}>
@@ -198,6 +201,9 @@ var SettingsGridSection = React.createClass({
           <header>
             <h2>{props.title}</h2>
           </header>
+          <div className="balanced">
+            <a className="button" href={"/add/user?group=" + props.userGroup.id} style={{marginBottom:"2em"}}>{'Create ' + props.title + ' User'}</a>
+          </div>
           <div>
             {bulkActionsFieldset}
             <SettingsTable bulkActions={users.length >= minimumUsersBulkAction ? props.bulkActions : false} users={users} bulkToggledUsers={this.state.bulkToggledUsers} userGroup={props.userGroup} handleBulkToggle={(id,checked) => {
@@ -205,7 +211,6 @@ var SettingsGridSection = React.createClass({
                 bulkToggledUsers:update(this.state.bulkToggledUsers, {[id]: {$set:checked}})
               });
             }} handleBulkAllCheck={(allChecked) => {
-              console.log('handleBulkAllCheck',allChecked);
               var all = {};
               if(allChecked) {
                 users.map((user) => {
@@ -233,6 +238,7 @@ var SettingsTableRow = function(props) {
   var bulkActionsTd;
   var bulkName = 'bulk-' + props.userGroup.id + '-' + user.username;
   if(props.bulkActions) bulkActionsTd = <td><label htmlFor={bulkName} className="accessibly-hidden">Select {user.username}</label><input type="checkbox" name={bulkName} checked={props.bulkToggle} onChange={(event) => {
+    event.stopPropagation();
     try {
       props.handleBulkToggle(user.id,event.target.checked)
     } catch(e) {}
@@ -240,6 +246,7 @@ var SettingsTableRow = function(props) {
 
   return (
     <tr tabIndex="0" onFocus={(event) => {
+        console.log(event.nativeEvent);
           try {
             props.handleFocus();
           } catch(e) {}
@@ -249,7 +256,7 @@ var SettingsTableRow = function(props) {
           } catch(e) {}
     }}>
       {bulkActionsTd}
-      <td>{user.username}</td>
+      <td className="username">{user.username}</td>
       <td className="shy balanced checkbox">
         <label>
           <span className="accessibly-hidden">Active: </span>
@@ -312,14 +319,15 @@ var SettingsTableRowForm = React.createClass({
                     sudo:user.sudo,
                     open:true,
                     updating:true,
-                    id:user.id
+                    id:user.id,
+                    roles:user.groupRoles
                   }));
                 }}>Quick Edit</a>
                 <a className="button" href={"/update/user/" + user.id}>Edit</a>
               </div>
               <div>
                 <button type="submit" formAction="duplicate/user" className="save">Duplicate</button>
-                <button type="submit" onClick={(event) => {
+                <button className="delete" type="submit" onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
                   store.dispatch(actions.deleteUser(
@@ -327,8 +335,11 @@ var SettingsTableRowForm = React.createClass({
                       user_id:user.id
                     }})
                   ));
-                }} formMethod="delete" formAction="/delete/user" data-async-action="deleteuser">Delete</button>
+                }} formMethod="post" formAction="/user/delete" data-async-action="deleteuser">Delete</button>
                 <a className="button" href={'mailto:' + user.email + '?subject=MODX%20Next'}>Email</a>
+              </div>
+              <div>
+                <a className="button" href={"https://modxcommunity.slack.com/messages/@" + user.username + "/details/"} target="_blank">Slack DM</a>
               </div>
 
               <div style={{marginTop:"1em"}}>

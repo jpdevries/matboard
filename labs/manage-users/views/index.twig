@@ -9,7 +9,7 @@
               <div class="top-bar">
                 <script>document.write('<button js-hidden formaction="./quick-create/user.html" aria-haspopup="true">Quick Create User</button>')</script>
               </div>
-              <a id="create-user" class="button" href="/user/create">Create User</a>
+              <a id="create-user" class="button" href="/add/user">Create User</a>
               <fieldset style="margin-top:1em" js-not-hidden>
                 <legend>Quick Create User</legend>
                 <div class="n field-group">
@@ -49,7 +49,17 @@
                   <fieldset class="field">
                     <legend>User Groups</legend>
                     <p>Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can below to the same User Group with multiple&nbsp;roles.</p>
-                    <fieldset>
+
+                    {% for userGroup in userGroups %}
+                      <fieldset>
+                        <legend>{{ userGroup.name }}<span class="accessibly-hidden"> Roles</span></legend>
+                        {% for role in roles %}
+                          <label for="user-group-{{ userGroup.id }}-{{ role.id }}roles[]"><input id="user-group-{{ userGroup.id }}-{{ role.id }}roles[]" type="checkbox"{% if loop.first %} checked {% endif %}name="user-group-roles[]" data-user-group-id="{{ userGroup.id }}" data-role-id="{{ role.id }}" value="{{ userGroup.id }}|{{ role.id }}" />&nbsp;<span>{{ role.name }}</span></label>
+                        {% endfor %}
+                      </fieldset>
+                    {% endfor %}
+
+                    <!--fieldset>
                       <legend>Administrator</legend>
                       <label for="user-group-editor-roles[]">Roles</label>
                       <label><input type="checkbox" checked name="user-group-editor-roles[]" />&nbsp;Editor</label>
@@ -60,7 +70,7 @@
                       <label for="user-group-editor-roles[]">Roles</label>
                       <label><input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Editor</label>
                       <label><input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Super User</label>
-                    </fieldset>
+                    </fieldset-->
                   </fieldset>
                 </div>
                 <footer style="margin-top:1em">
@@ -71,7 +81,7 @@
           </div>
           <hr>
           <div>
-            <h3>Search Users</h3>
+            <h3 id="search-users">Search Users</h3>
             <form action="#" id="search" class="search-settings">
               <label for="search-users" ><span a11y-hidden>Search: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User or User Group. We'll try and find it."></label>
               <div>
@@ -104,15 +114,15 @@
               <h2 class="name">{{ userGroup.name }}</h2>
             </header>
             <div>
-              <div class="balanced"><button style="margin-bottom:2em">Create {{ userGroup.name }} User</button></div>
+              <div class="balanced"><a class="button" href="/add/user?group={{ userGroup.id }}" style="margin-bottom:2em">Create {{ userGroup.name }} User</a></div>
               {% if usersInGroup > 3 %}
                 {% include 'bulkactions.twig' with {'users' : users} %}
               {% endif %}
               <table class="settings-table">
                 <thead>
                   <tr>
-                    <th>User</th>
-                    <th>Active</th>
+                    <th class="username">User</th>
+                    <!--th>Active</th-->
                   </tr>
                 </thead>
                 <tbody>
@@ -120,11 +130,16 @@
                   {% if userGroup.id in user.user_groups %}
                   <tr tabindex="0" class="user-row" data-user-id="{{ user.id }}" data-email="{{ user.email }}" data-user-groups="{{ user.user_groups|join(',') }}">
                     <td class="username">{{ user.username }}</td>
-                    <td><label><span a11y-hidden>Active: </span><input {% if user.active == '1' %}checked {% endif %} type="checkbox"></label></td>
+                    <!--td><label><span a11y-hidden>Active: </span><input {% if user.active == '1' %}checked {% endif %} type="checkbox"></label></td-->
                   </tr>
                   <tr class="contextual-setting" js-hidden>
                     <td colspan="3">
                         <form action="/" method="post">
+                          {% for groupRoles in user.group_roles %}
+                            {% for role in groupRoles.roles %}
+                              <input type="hidden" class="grouproles" name="grouproles[]" value="{{ groupRoles.group }}|{{ role }}" data-group="{{ groupRoles.group }}" data-role="{{ role }}">
+                            {% endfor %}
+                          {% endfor %}
                           <input name="user_id" type="hidden" value="{{ user.id }}" />
                           <input name="username" type="hidden" value="{{ user.username }}" />
                           <div class="friendly-labels">
@@ -142,7 +157,7 @@
                           </div>
                           <div>
                             <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
-                            <button type="submit" formaction="/delete/user" formmethod="delete">Delete</button>
+                            <button class="delete" type="submit" formaction="/user/delete" formmethod="post">Delete</button>
                             <a class="button" href="mailto:{{ user.email }}">Email</a>
                           </div>
                           <div>
@@ -163,7 +178,7 @@
               {% endif %}
             </div>
             <footer>
-              <p><a href="#">View all</a></p>
+              <p><a href="#">View all {{ userGroup.name }} Users</a></p>
             </footer>
           </div>
         </section>

@@ -6,7 +6,7 @@
 $white:white;
 $link:rgb(0, 0, 238); // default link blue
 $active:rgb(255,0,0); // default link red
-$go:#55AE3D; // MODX green
+$go:darken(#55AE3D,12%); // MODX green
 
 %bright-padded-module {
   background:$white;
@@ -21,6 +21,23 @@ $go:#55AE3D; // MODX green
 
 .shy.checkbox {
   width:1em;
+}
+
+.oblique {
+  font-style:italic;
+}
+
+.micro-page {
+  text-align:center;
+  > * {
+    text-align:left;
+    max-width:42em;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  table {
+    width:100%;
+  }
 }
 
 /*%button-apperance {
@@ -70,6 +87,11 @@ button, .button {
   text-decoration:none;
   margin:0.2rem;
   transition:all 240ms ease;
+
+  html:not(.react) .contextual-setting & {
+    background:$white;
+  }
+
   &:hover,&:focus {
     color:$link;
     border-color:$link;
@@ -78,11 +100,25 @@ button, .button {
     color:$active;
     border-color:$active;
   }
-  &[formmethod="delete"] {
+  &.go {
+    &:hover,&:focus {
+      color:$go;
+      border-color:$go;
+    }
+  }
+  &[formaction="/users/delete"], &[formmethod="delete"], &.delete, &.danger, &.dangerous {
     &:hover,&:focus {
       color:$active;
       border-color:$active;
     }
+  }
+  &[disabled] {
+    opacity:0.6;
+    cursor:not-allowed;
+
+    color:rgb(60,60,60) !important;
+    border:1px solid rgb(120,120,120) !important;
+    background:rgb(240,240,240) !important;
   }
 }
 
@@ -108,6 +144,7 @@ body {
 .top-bar {
   //padding-left:1rem;
   //padding-right:1rem;
+  margin-bottom:1rem;
   button {
     margin-right:1em;
   }
@@ -128,6 +165,14 @@ body {
   #manage-user-form__header header {
     @extend %bright-padded-module;
     h1 {
+
+    }
+  }
+}
+
+header, aside, .padded {
+  > h1 {
+    &:first-of-type {
       margin-top:0;
     }
   }
@@ -216,9 +261,11 @@ h1 {
             }
         }
     }
-    thead th, tbody tr td {
-      &:first-of-type {
-        width:1em;
+    &.settings-table {
+      thead th, tbody tr td {
+        &:first-of-type, &:last-of-type {
+          width:1em;
+        }
       }
     }
     .contextual-setting {
@@ -311,6 +358,9 @@ h1 {
 
 table { // .settings-table
     @extend %settings-table;
+    .username {
+      width:100% !important; //#janky
+    }
 }
 
 .settings-grid {
@@ -381,7 +431,7 @@ form.search-settings, form.search-users {
     margin-top:1.6rem;
   }
   > div {
-    padding-top:1em;
+    //padding-top:1em;
   }
   button {
     @include media($mobile) {
@@ -394,9 +444,18 @@ form.search-settings, form.search-users {
   }
 }
 
+[a11y-hidden] {
+  @extend %accessibly-hidden;
+}
+
 input[name="search-settings"], input[name="search-users"] {
   @extend %very-greedy;
-  margin-bottom:1em;
+  //margin-bottom:1em;
+  line-height:1.6rem;
+}
+
+#search-users {
+  margin-bottom:0.2em;
 }
 
 label[for="filter-by"] {

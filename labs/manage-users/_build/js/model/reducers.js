@@ -40,6 +40,16 @@ var initialUsers = (function(){
       active = contextualSettings.querySelector('input.active').checked,
       jobTitle = contextualSettings.querySelector('.jobTitle').innerHTML;
       //console.log(id,username,userGroups,email,givenName,jobTitle,sudo,active);
+
+      var groupRoles = {};
+      Array.prototype.map.call(userRow.nextElementSibling.querySelectorAll('input[name="grouproles[]"]'),function(input){
+        var group = input.getAttribute('data-group'),
+        role = input.getAttribute('data-role');
+
+        if(!groupRoles[group]) groupRoles[group] = [];
+        groupRoles[group].push(role);
+      });
+
       if(!addedUsers[id]) users.push({
         id:id,
         username:username,
@@ -49,7 +59,8 @@ var initialUsers = (function(){
         active:active,
         sudo:sudo,
         jobTitle:jobTitle,
-        userGroups:userGroups
+        userGroups:userGroups,
+        groupRoles:groupRoles
       });
       addedUsers[id] = true;
     }
@@ -90,76 +101,45 @@ console.log(initialUsers);
     title:'Editors'
   }];*/
 
+var initialRoles = (function(){
+  try {
+    return Array.prototype.map.call(document.querySelector('.create-setting-form .field-group fieldset fieldset').querySelectorAll('label'), (fieldsetLabel) => ({
+      name:fieldsetLabel.querySelector('span').innerHTML,
+      id:fieldsetLabel.querySelector('input').getAttribute('data-role-id'),
+      key:fieldsetLabel.querySelector('input').getAttribute('data-role-id')
+    }));
+  } catch (e) {
+    return [];
+  }
+})();
+
+console.log(initialRoles);
+
 var initialFieldsetRoles = [ // todo: move this to the store
   {
     key:'administrator',
     title:'Administrator',
-    id:1,
-    roles:[{
-      title:'Super User',
-      id:1,
-      key:1
-    },{
-      title:'Editor',
-      id:2,
-      key:2
-    }]
+    id:1
   },
   {
     key:'modmore',
     title:'modmore',
-    id:2,
-    roles:[{
-      title:'Super User',
-      id:1,
-      key:1
-    },{
-      title:'Editor',
-      id:2,
-      key:2
-    }]
+    id:2
   },
   {
     key:'mgab',
     title:'MGAB',
-    id:3,
-    roles:[{
-      title:'Super User',
-      id:1,
-      key:1
-    },{
-      title:'Editor',
-      id:2,
-      key:2
-    }]
+    id:3
   },
   {
     key:'sterc',
     title:'Sterc',
-    id:4,
-    roles:[{
-      title:'Super User',
-      id:1,
-      key:1
-    },{
-      title:'Editor',
-      id:2,
-      key:2
-    }]
+    id:4
   },
   {
     key:'sitebuilders',
     title:'Site Builders',
-    id:5,
-    roles:[{
-      title:'Super User',
-      id:1,
-      key:1
-    },{
-      title:'Editor',
-      id:2,
-      key:2
-    }]
+    id:5
   }
 ];
 
@@ -167,6 +147,7 @@ var initialState = {
   users:initialUsers,
   userGroups:initialUserGroups,
   fieldsetRoles:initialFieldsetRoles,
+  roles:initialRoles,
   quickCreate:{
     username:'',
     givenName:'',
@@ -176,7 +157,8 @@ var initialState = {
     sudo:true,
     open:false,
     updating:false,
-    id:undefined
+    id:undefined,
+    roles:{}
   }
 };
 
@@ -295,8 +277,22 @@ var userGroupsReducer = function(state, action) {
     }
 
     return update(state, {$push: [action.userGroup]});
-    break;
+
+    case actions.SET_USER_GROUPS:
+    return update(state, {$set: action.userGroups})
   }
+  return state;
+}
+
+var rolesReducer = function(state, action) {
+  state = state || initialState.roles;
+
+  switch(action.type) {
+    case actions.SET_ROLES:
+    console.log('setting roles',update(state, {$set:action.roles}));
+    return update(state, {$set:action.roles});
+  }
+
   return state;
 }
 
@@ -304,7 +300,8 @@ var manageUsersReducer = combineReducers({
   quickCreate:quickCreateReducer,
   users:usersReducer,
   userGroups:userGroupsReducer,
-  fieldsetRoles:fieldsetRolesReducer
+  fieldsetRoles:fieldsetRolesReducer,
+  roles:rolesReducer
 });
 
 

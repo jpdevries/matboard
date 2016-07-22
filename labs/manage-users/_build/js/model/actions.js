@@ -335,18 +335,6 @@ exports.ACTIVATE_USERS_SUCCESS = ACTIVATE_USERS_SUCCESS;
 exports.ACTIVATE_USERS_ERROR = ACTIVATE_USERS_ERROR;
 exports.activateUsers = activateUsers;
 
-
-
-
-
-
-
-
-
-
-
-
-
 var DEACTIVATE_USERS = 'deactivateusers';
 var DEACTIVATE_USERS_SUCCESS = 'deactivateuserssuccess';
 var DEACTIVATE_USERS_ERROR = 'deactivateuserserror';
@@ -401,3 +389,26 @@ var deactivateUsers = function(users) {
 exports.DEACTIVATE_USERS_SUCCESS = DEACTIVATE_USERS_SUCCESS;
 exports.DEACTIVATE_USERS_ERROR = DEACTIVATE_USERS_ERROR;
 exports.deactivateUsers = deactivateUsers;
+
+
+var SET_ROLES = 'setroles';
+var setRoles = function(roles) {
+  return {
+    type:SET_ROLES,
+    roles:roles
+  }
+}
+
+exports.SET_ROLES = SET_ROLES;
+exports.setRoles = setRoles;
+
+var SET_USER_GROUPS = 'setusergroups';
+var setUserGroups = function(userGroups) {
+  return {
+    type:SET_USER_GROUPS,
+    userGroups:userGroups
+  }
+}
+
+exports.SET_USER_GROUPS = SET_USER_GROUPS;
+exports.setUserGroups = setUserGroups;

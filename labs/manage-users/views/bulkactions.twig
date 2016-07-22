@@ -2,14 +2,16 @@
   <input type="hidden" name="usergroup" value="{{ userGroup.id }}" />
   {% set emails = [] %}
   {% for user in users %}
-    {% set emails = emails|merge([user.email]) %}
-    <input type="hidden" name="users[]" id="usergroup-{{ userGroup.id }}-{{ user.id }}-users[]" value="{{ user.id }}" />
+    {% if userGroup.id in user.user_groups %}
+      {% set emails = emails|merge([user.email]) %}
+      <input type="hidden" name="users[]" id="usergroup-{{ userGroup.id }}-{{ user.id }}-users[]" value="{{ user.id }}" />
+    {% endif %}
   {% endfor %}
   <fieldset>
     <legend>Bulk Actions</legend>
-    <button type="submit" formaction="/users/deactivate" formmethod="post">Suspend All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
+    <button class="danger" type="submit" formaction="/users/deactivate" formmethod="post">Suspend All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
     <button type="submit" className="go" formaction="/users/activate">Activate All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
-    <button formaction="/users/delete" formmethod="delete">Delete All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
-    <a class="button" href="mailto:{{ emails|join(',') }}&subject=MODX%20Next">Email All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></a>
+    <button class="delete" formaction="/users/delete" formmethod="post">Delete All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
+    <a class="button" href="mailto:{{ emails|join(',') }}?subject=MODX%20Next">Email All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></a>
   </fieldset>
 </form>

@@ -15,9 +15,6 @@ var CreateSettingsForm = React.createClass({
       this.setState({quickCreateOpen:store.getState().quickCreate.open})
     });
   },
-  handleSubmit: function() {
-
-  },
   render:function() {
     var props = this.props;
     console.log(props);
@@ -26,99 +23,10 @@ var CreateSettingsForm = React.createClass({
         this.setState({quickCreateOpen:true})
       )}>Quick {props.quickCreate.updating ? 'Update' : 'Create'} User</button>
     );
-    /*var fieldsetRoles = [
-        {
-          key:'administrator',
-          title:'Administrator',
-          id:1,
-          roles:[{
-            title:'Super User',
-            id:1,
-            key:1
-          },{
-            title:'Editor',
-            id:2,
-            key:2
-          }]
-        },
-        {
-          key:'modmore',
-          title:'modmore',
-          id:2,
-          roles:[{
-            title:'Super User',
-            id:1,
-            key:1
-          },{
-            title:'Editor',
-            id:2,
-            key:2
-          }]
-        },
-        {
-          key:'mgab',
-          title:'MGAB',
-          id:3,
-          roles:[{
-            title:'Super User',
-            id:1,
-            key:1
-          },{
-            title:'Editor',
-            id:2,
-            key:2
-          }]
-        },
-        {
-          key:'sterc',
-          title:'Sterc',
-          id:4,
-          roles:[{
-            title:'Super User',
-            id:1,
-            key:1
-          },{
-            title:'Editor',
-            id:2,
-            key:2
-          }]
-        },
-        {
-          key:'sitebuilders',
-          title:'Site Builders',
-          id:5,
-          roles:[{
-            title:'Super User',
-            id:1,
-            key:1
-          },{
-            title:'Editor',
-            id:2,
-            key:2
-          }]
-        }
-    ];
-    var fieldsetRolesMarkup = [];
-    fieldsetRoles.map(function(group,index){
-      var roles = [];
-      group.roles.map(function(role,index){
-        roles.push(
-          <label key={index} htmlFor={'user-group-' + group.key + '-roles[]'}><input type="checkbox" checked={role.checked} ref="userGroupEditorRoles" name={'user-group-' + group.key + '-roles[]'} value={group.id + '|' + role.id} />&nbsp;{role.title}</label>
-        );
-      });
-      fieldsetRolesMarkup.push((
-        <fieldset key={index}>
-          <legend>{group.title}</legend>
-          {roles}
-        </fieldset>
-      ));
-    });*/
 
     var quickCreate = this.state.quickCreateOpen ? (
       <QuickCreateFieldset  {...props} />
     ) : false;
-
-    console.log('props',props);
 
     return(
       <form ref="createSettingForm" action={props.quickCreate.updating ? "/update/user" : "/add/user"} method="post" className="create-setting-form" onChange={this.updateFormData} onSubmit={(event) => {
@@ -145,9 +53,6 @@ var CreateSettingsForm = React.createClass({
           }
         }
 
-        console.log('user',user);
-
-
         userGroups = [...new Set(userGroups)]; // remove duplicates
 
         var userParams = {
@@ -169,7 +74,7 @@ var CreateSettingsForm = React.createClass({
     }}>
       <div className="top-bar">
         {quickCreateUserBtn}
-        <button id="create-user" formaction="./../user-edit/index.html">Create User</button>
+        <a className="button" href="/add/user">Create User</a>
       </div>
       {quickCreate}
     </form>
@@ -184,10 +89,8 @@ var ManageUserFormHeader = React.createClass({
   render:function(){
     var props = this.props;
 
-    var filterBuyOptions = props.fieldsetRoles;
-
-    var filterBuyOptions = props.fieldsetRoles.map((fieldset,index) => (
-      <option key={fieldset.id} value={fieldset.id}>{fieldset.title}</option>
+    var filterBuyOptions = props.userGroups.map((userGroup,index) => (
+      <option key={userGroup.id} value={userGroup.id}>{userGroup.title}</option>
     ));
 
     return (
@@ -198,10 +101,10 @@ var ManageUserFormHeader = React.createClass({
         </div>
         <hr />
         <div>
-          <h3>Search Users</h3>
+          <h3 id="search-users">Search Users</h3>
           <form action="#" id="search" className="search-settings">
             <label for="search-users">
-              <span a11y-hidden>Search: </span>
+              <span className="accessibly-hidden">Search: </span>
               <input name="search-users" id="search-users" type="text" placeholder="Search for any User. We'll try and find them." onChange={(event) => {
                 try {
                   this.props.handleFilter(event.target.value);

@@ -23,7 +23,7 @@ var ManageUsersForm = React.createClass({
     return (
       <div>
         <div id="manage-user-form__header">
-          <ManageUserFormHeader fieldsetRoles={props.fieldsetRoles} quickCreate={props.quickCreate} handleFilterBy={(filterBy) => (
+          <ManageUserFormHeader roles={props.roles} userGroups={props.userGroups} fieldsetRoles={props.fieldsetRoles} quickCreate={props.quickCreate} handleFilterBy={(filterBy) => (
             this.setState({
               filterBy:isNaN(filterBy) ? undefined : filterBy
             })

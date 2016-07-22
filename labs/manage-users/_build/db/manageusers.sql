@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS "modx_membergroup_names";
 DROP TABLE IF EXISTS "modx_member_groups";
 DROP TABLE IF EXISTS "modx_user_attributes";
 DROP TABLE IF EXISTS "modx_users";
+DROP TABLE IF EXISTS "modx_user_group_roles";
 
 DROP SEQUENCE IF EXISTS user_id_sequence;
 
@@ -44,7 +45,7 @@ CREATE TABLE "modx_membergroup_names" (
   dashboard integer NOT NULL DEFAULT '1'
 );
 
-CREATE TABLE modx_user_attributes (
+CREATE TABLE "modx_user_attributes" (
   id SERIAL PRIMARY KEY,
   internalkey integer NOT NULL references modx_users(user_id) ON DELETE CASCADE,
   fullname varchar(100) NOT NULL DEFAULT '',
@@ -74,6 +75,23 @@ CREATE TABLE modx_user_attributes (
   extended text
 );
 
+CREATE TABLE "modx_user_group_roles" (
+  id SERIAL PRIMARY KEY,
+  name varchar(255) NOT NULL,
+  description text NULL,
+  authority integer NOT NULL DEFAULT '9999',
+  UNIQUE(name)
+);
+
+INSERT INTO "modx_user_group_roles" (name)
+  VALUES('Administrator');
+
+INSERT INTO "modx_user_group_roles" (name)
+  VALUES('Editor');
+
+INSERT INTO "modx_user_group_roles" (name)
+  VALUES('Site Builder');
+
 
 WITH "new_user" AS (
   INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
@@ -86,9 +104,13 @@ WITH "new_user" AS (
   INSERT INTO "modx_member_groups" (user_group, member, role, rank)
   SELECT 2, new_user.user_id, 1, 0 FROM new_user
   UNION
+  SELECT 2, new_user.user_id, 2, 0 FROM new_user
+  UNION
+  SELECT 2, new_user.user_id, 3, 0 FROM new_user
+  UNION
   SELECT 3, new_user.user_id, 1, 0 FROM new_user
   UNION
-  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  SELECT 5, new_user.user_id, 3, 0 FROM new_user
   RETURNING *
 )
 SELECT user_id FROM "new_user";
@@ -155,7 +177,7 @@ SELECT user_id FROM "new_user";
 
 WITH "new_user" AS (
   INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
-  VALUES (nextval('user_id_sequence'),'opengeek', 1,1,0) RETURNING *
+  VALUES (nextval('user_id_sequence'),'opengeek', 1,1,1) RETURNING *
 ), "new_user_attributes" AS (
   INSERT INTO "modx_user_attributes" (id, internalkey, fullname, email, phone, title)
   SELECT new_user.user_id,new_user.user_id,'Jason Coward','jason@modx.com','','Lead Architect' FROM new_user
@@ -208,11 +230,11 @@ WITH "new_user" AS (
   RETURNING *
 ), "modx_member_group" AS (
   INSERT INTO "modx_member_groups" (user_group, member, role, rank)
-  SELECT 1, new_user.user_id, 2, 0 FROM new_user
+  SELECT 1, new_user.user_id, 1, 0 FROM new_user
   UNION
-  SELECT 3, new_user.user_id, 2, 0 FROM new_user
+  SELECT 3, new_user.user_id, 1, 0 FROM new_user
   UNION
-  SELECT 4, new_user.user_id, 2, 0 FROM new_user
+  SELECT 4, new_user.user_id, 1, 0 FROM new_user
   UNION
   SELECT 5, new_user.user_id, 1, 0 FROM new_user
   RETURNING *
