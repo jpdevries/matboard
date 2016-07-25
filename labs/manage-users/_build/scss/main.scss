@@ -129,12 +129,14 @@ fieldset {
   border:1px solid rgb(200,200,200);
 }
 
-html.js {
-  [js-hidden] {
-    display:none;
-  }
+html {
   [a11y-hidden] {
     @extend %accessibly-hidden;
+  }
+  &.js.react {
+    [js-hidden] {
+      display:none;
+    }
   }
 }
 
