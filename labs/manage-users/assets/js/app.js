@@ -3113,7 +3113,9 @@
 	            user.givenName,
 	            ' ',
 	            user.familyName,
-	            '’ last login was Jan 23, 2016 4:52pm from Planet Earth'
+	            '’',
+	            user.familyName.slice(-1) == 's' ? '' : 's',
+	            ' last login was Jan 23, 2016 4:52pm from Planet Earth'
 	          )
 	        )
 	      )

@@ -166,7 +166,7 @@
                           </div>
                         </form>
                         <footer class="subtle oblique balanced">
-                          <p style="margin-bottom:0"><span class="givenName">{{ user.givenname }}</span> <span class="familyName">{{ user.familyname }}</span> last login was Jan 23, 2016 4:52pm from probably Planet Earth</p>
+                          <p style="margin-bottom:0"><span class="givenName">{{ user.givenname }}</span> <span class="familyName">{{ user.familyname }}</span>&#8217;{% if user.familyname|last != 's' %}s{% endif %} last login was Jan 23, 2016 4:52pm from probably Planet Earth</p>
                         </footer>
                     </td>
                   </tr>
