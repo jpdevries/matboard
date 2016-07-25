@@ -269,7 +269,6 @@ app.get('/add/user', function(req, res){
     res.render('createuser.twig', {
       react: ReactDOM.renderToStaticMarkup(
         React.createElement(QuickCreateFieldset,{
-          fieldsetRoles:store.getState().fieldsetRoles,
           quickCreate:store.getState().quickCreate,
           roles:store.getState().roles,
           userGroups:store.getState().userGroups
@@ -367,7 +366,6 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
       updated:updated,
       react:ReactDOM.renderToStaticMarkup(
         React.createElement(QuickCreateFieldset,{
-          //fieldsetRoles:store.getState().fieldsetRoles,
           quickCreate:store.getState().quickCreate,
           roles:store.getState().roles,
           userGroups:store.getState().userGroups

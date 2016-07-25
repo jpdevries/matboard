@@ -130,8 +130,7 @@
 	        );
 	      }),
 	      userGroups: state.userGroups,
-	      roles: state.roles,
-	      fieldsetRoles: state.fieldsetRoles
+	      roles: state.roles
 	    };
 	  })(ManageUsersForm);
 
@@ -1169,29 +1168,6 @@
 
 	//console.log(initialRoles);
 
-	var initialFieldsetRoles = [// todo: move this to the store
-	{
-	  key: 'administrator',
-	  title: 'Administrator',
-	  id: 1
-	}, {
-	  key: 'modmore',
-	  title: 'modmore',
-	  id: 2
-	}, {
-	  key: 'mgab',
-	  title: 'MGAB',
-	  id: 3
-	}, {
-	  key: 'sterc',
-	  title: 'Sterc',
-	  id: 4
-	}, {
-	  key: 'sitebuilders',
-	  title: 'Site Builders',
-	  id: 5
-	}];
-
 	var initialQuickCreate = {
 	  username: '',
 	  givenName: '',
@@ -1214,7 +1190,6 @@
 	var initialState = {
 	  users: initialUsers,
 	  userGroups: initialUserGroups,
-	  fieldsetRoles: initialFieldsetRoles,
 	  roles: initialRoles,
 	  quickCreate: initialQuickCreate
 	};
@@ -1355,12 +1330,6 @@
 	  return state;
 	};
 
-	var fieldsetRolesReducer = function fieldsetRolesReducer(state, action) {
-	  state = state || initialState.fieldsetRoles;
-
-	  return state;
-	};
-
 	var userGroupsReducer = function userGroupsReducer(state, action) {
 	  state = state || initialState.userGroups;
 	  //return state;
@@ -1398,7 +1367,6 @@
 	  quickCreate: quickCreateReducer,
 	  users: usersReducer,
 	  userGroups: userGroupsReducer,
-	  fieldsetRoles: fieldsetRolesReducer,
 	  roles: rolesReducer
 	});
 
@@ -1922,7 +1890,7 @@
 	      React.createElement(
 	        'div',
 	        { id: 'manage-user-form__header' },
-	        React.createElement(ManageUserFormHeader, { roles: props.roles, userGroups: props.userGroups, fieldsetRoles: props.fieldsetRoles, quickCreate: props.quickCreate, handleFilterBy: function handleFilterBy(filterBy) {
+	        React.createElement(ManageUserFormHeader, { roles: props.roles, userGroups: props.userGroups, quickCreate: props.quickCreate, handleFilterBy: function handleFilterBy(filterBy) {
 	            return _this.setState({
 	              filterBy: isNaN(filterBy) ? undefined : filterBy
 	            });
