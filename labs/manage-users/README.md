@@ -3,6 +3,8 @@ Manage Users Lab
 
 A progressively enhanced proof of concept for a Manage Users CMP&nbsp;page.
 
+![](http://j4p.us/0Q160P2j0E1J/Screen%20Shot%202016-07-25%20at%203.08.32%20AM.png)
+
 ## What you need
 
 In order to build our front end assets, you need to have Node.js/npm latest and git 1.7 or later.
@@ -58,8 +60,18 @@ grunt build
 npm run serve
 ```
 
+## DOM Overview
+An HTML layer is initially served by the Node server to keep the application progressive, optimal, stable, and accessible under any condition. It can truly weather the storms of&nbsp;web.
+
+[Play the DOM Overview section of the screencast](https://vimeo.com/176084699).
+
 ## Synchronous Endpoints
 Being progressive in nature, JavaScript is not required to create, update, or remove users. "Old school" synchronous HTML `<form>`s are used along with synchronous endpoints in the Node server to accept and process user input on a new page. As we progressively enhance the front end, we also enhance the Node server to support asynchronous endpoints that serve JSON over XHR&nbsp;requests.
+
+[Play the Synchronous Endpoints section of the screencast](https://vimeo.com/176084699#t=6m42s).
+
+## Progressive Enhancements
+A lightweight (11kb) JavaScript driver is used to bring asynchronous enhancements into our&nbsp;experience.
 
 [Play the Synchronous Endpoints section of the screencast](https://vimeo.com/176084699#t=6m42s).
 
@@ -91,9 +103,15 @@ It is important to not only consider how our document is seen but also how it is
 
 ## High Contrast Mode
 In consideration of not only visually impaired users, but night owls as well, we support a simple high contrast mode which forces backgrounds to black, colors to white, and uses yellow for focused and input&nbsp;elements.
+
 ![](http://j4p.us/3I3w0n0u280h/Screen%20Shot%202016-07-25%20at%202.23.22%20AM.png)
 
-[Play the DOM Consumption section of the screencast](https://vimeo.com/176084699#t=41m24s).
+[Play the High Contrast Mode section of the screencast](https://vimeo.com/176084699#t=41m24s).
+
+## Responsive Layout
+Our interface uses Flexbox for a simple mobile first and fluid&nbsp;layout.
+
+[Play the Responsive Layout section of the screencast](https://vimeo.com/176084699#t=39m8s).
 
 ## Oh Node You Didn't
 I know, I know. These concepts are written with MODX Next in mind which of course is built on PHP. This lab intends to prove front end (HTML,CSS,JS) concepts. Aside from the HTML or JSON that is served, it does not prove or have opinion of the server side architect it may one day be hooked up to. Node is used as a simple "mock" backend to provide synchronous and asynchronous end points for the user interface to interact with. Idea being, these endpoints and the HTML/JSON they return could be hooked up to PHP and the front end would be none the&nbsp;wiser.
