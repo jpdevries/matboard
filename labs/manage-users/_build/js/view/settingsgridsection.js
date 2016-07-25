@@ -313,7 +313,6 @@ var SettingsTableRowForm = React.createClass({
                 <a className="button" href={"/update/user/" + user.id} onClick={(event) => {
                   event.preventDefault();
                   //event.stopPropagation();
-                  console.log('quick edit clicked',user);
                   store.dispatch(actions.updateQuickCreate({
                     username:user.username,
                     givenName:user.givenName,

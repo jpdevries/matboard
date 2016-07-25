@@ -116,7 +116,7 @@ app.post('/user/delete', function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
-    console.log(fields);
+    //console.log(fields);
 
     deleteUserById(fields.user_id || fields.id).then(function(result){
       res.render('deletedusers.twig', {
@@ -348,11 +348,11 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
     var user = data.user,
     userGroups = data.userGroups,
     userGroupRoles = prepGroupRolesQuickCreate(user.group_roles);
-
+    //console.log(user);
     store.dispatch(actions.updateQuickCreate({
       username:user.username,
-      givenName:user.fullname,
-      familyName:'',
+      givenName:user.givenname,
+      familyName:user.familyname,
       email:user.email,
       active:user.active == 1,
       sudo:user.sudo == 1,
@@ -474,7 +474,7 @@ function activateUsersById(users,active = true) {
         UPDATE "modx_users" SET active = ${active} WHERE user_id IN (${usersList})
         RETURNING *
       )
-      SELECT user_id,username,fullname FROM "update_user"
+      SELECT user_id,username,givenname, familyname, FROM "update_user"
         INNER JOIN modx_user_attributes ON modx_user_attributes.id = update_user.user_id;
       `;
 
@@ -517,7 +517,7 @@ function deleteUsersById(users) {
           DELETE FROM "modx_users" WHERE user_id IN (${usersList})
           RETURNING *
         )
-          SELECT user_id,username,fullname FROM "delete_users"
+          SELECT user_id,username,givenname, familyname, FROM "delete_users"
           INNER JOIN modx_user_attributes ON modx_user_attributes.id = delete_users.user_id;
         `;
 
@@ -577,7 +577,7 @@ function quicklyUpdateUser(fields) {
         RETURNING *
       ), "modx_user_attributes" AS (
         UPDATE "modx_user_attributes"
-          SET fullname ='${givenname} ${familyname}', email = '${email}' WHERE "internalkey" = ${user_id}
+          SET givenname, familyname, ='${givenname} ${familyname}', email = '${email}' WHERE "internalkey" = ${user_id}
           RETURNING *
       ) ${updateUserGroups}
       SELECT * FROM "update_user";`;
@@ -640,7 +640,7 @@ function getUserRows(where = '') {
 
       // execute a query on our database
       client.query(`
-        SELECT modx_users.username, modx_users.user_id as id, user_group, role, name as groupname, fullname, email, slack, title, active, sudo FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.user_id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.user_id ${where};
+        SELECT modx_users.username, modx_users.user_id as id, user_group, role, name as groupname, givenname, familyname, email, slack, title, active, sudo FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.user_id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.user_id ${where};
         `, function (err, result) {
         if (err) reject(err);
 
@@ -813,7 +813,7 @@ function addUserQuickly(fields) {
         INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
         VALUES (nextval('user_id_sequence'),'${username}', 1,1,0) RETURNING *
       ), "new_user_attributes" AS (
-        INSERT INTO "modx_user_attributes" (id, internalKey, fullname, email, phone, title)
+        INSERT INTO "modx_user_attributes" (id, internalKey, givenname, familyname, email, phone, title)
         SELECT new_user.user_id,new_user.user_id,'${givenname} ${familyname}','${email}','','' FROM new_user
         RETURNING *
       ) ${groupSelectsBlock}

@@ -22,7 +22,7 @@ var initialUserGroups = (function(){
   return userGroups;
 })();
 
-console.log('initialUserGroups',initialUserGroups);
+//console.log('initialUserGroups',initialUserGroups);
 
 var initialUsers = (function(){
   var users = [];
@@ -40,6 +40,7 @@ var initialUsers = (function(){
       id = userRow.getAttribute('data-user-id'),
       contextualSettings = userRow.nextElementSibling,
       givenName = contextualSettings.querySelector('.givenName').innerHTML,
+      familyName = contextualSettings.querySelector('.familyName').innerHTML,
       sudo = contextualSettings.querySelector('input.sudo').checked,
       active = contextualSettings.querySelector('input.active').checked,
       jobTitle = contextualSettings.querySelector('.jobTitle').innerHTML;
@@ -59,7 +60,7 @@ var initialUsers = (function(){
         username:username,
         slack:slack,
         givenName:givenName,
-        familyName:'',
+        familyName:familyName,
         email:email,
         active:active,
         sudo:sudo,
@@ -76,36 +77,6 @@ var initialUsers = (function(){
 })();
 
 //console.log(initialUsers);
-
-/*initialUsers = [{
-    id:0,
-    username:'jpdevries',
-    givenName:'John-Paul',
-    familyName:'de Vries',
-    email:'mail@devries.jp',
-    active:true,
-    sudo:false,
-    jobTitle:'Redactor Lead Developer',
-    userGroups:[1]
-  },{
-    id:1,
-    username:'markh',
-    givenName:'Mark',
-    familyName:'Hamstra',
-    email:'mark@modmore.com',
-    active:true,
-    sudo:true,
-    jobTitle:'modmore Founder',
-    userGroups:[0,1]
-}];*/
-
-  /*initialUserGroups = [{
-    id:0,
-    title:'Administrators'
-  },{
-    id:1,
-    title:'Editors'
-  }];*/
 
 var initialRoles = (function(){
   try {
