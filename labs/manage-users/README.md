@@ -34,15 +34,10 @@ Make sure you have `grunt` installed by testing:
 grunt --version
 ```
 
-To interact with the application you'll need to be running Postgres for the database. [Install Postegres](https://www.postgresql.org/download/) if you haven't already. Create a manageusers table and import our example data.
+To interact with the application you'll need to be running PostgreSQL for the database. [Install Postegres](https://www.postgresql.org/download/) if you haven't already. Create a manageusers table and import our example data.
 
 ```bash
 psql manageusers < _build/db/manageusers.sql
-```
-
-By default this lab runs on port 1186. To run it on a different port use the `PORT` environmental variable:
-```bash
-PORT=8081 npm run serve #visit http://localhost:8081 in your browser
 ```
 
 ## Getting Started
@@ -62,6 +57,11 @@ You should now be able to build the files and run the Node&nbsp;server!
 ```bash
 grunt build
 npm run serve
+```
+
+By default this lab runs on port 1186. To run it on a different port use the `PORT` environmental variable:
+```bash
+PORT=8081 npm run serve #visit http://localhost:8081 in your browser
 ```
 
 ## DOM Overview
