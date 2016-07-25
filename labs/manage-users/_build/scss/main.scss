@@ -3,10 +3,13 @@
 
 @import "spec/tacular";
 
+$black:rgb(8,8,8);
 $white:white;
 $link:rgb(0, 0, 238); // default link blue
 $active:rgb(255,0,0); // default link red
 $go:darken(#55AE3D,12%); // MODX green
+
+@import "highcontrast";
 
 %bright-padded-module {
   background:$white;
@@ -145,8 +148,8 @@ body {
   //padding-left:1rem;
   //padding-right:1rem;
   margin-bottom:1rem;
-  button {
-    margin-right:1em;
+  a,button {
+    margin-right:1rem;
   }
 }
 

@@ -22,34 +22,26 @@ app.set("twig options", {
     strict_variables: false
 });
 
+/**
+ * Quickly add the user to the database then get user data, get role data, get user groups data, and render the React form
+ */
 app.post('/add/user', function(req, res){
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
-
-    res.writeHead(200, {
-      'content-type': 'text/html'
-    });
-
     addUserQuickly(fields).then(function(result){
-      //console.log(result);
-      var username = result.username;
-      res.write('<h1>User ' + username + ' has been added with an id of ' + result.user_id + '.</h1>');
-      res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
-    },function(err){
-      console.log(err);
-      res.write('<h1>Error adding user with username ' + fields.username  + '</h1>');
-      res.write('<p>Perhaps a user with that username already exists. <a href="#">Get help</a>.</p>');
-      res.end('<h3><a href="/">' + 'Return to Manager Users' + '</a></h3>');
+      renderUpdateUserPage(req,res,result.user_id,false,'addeduser.twig');
     });
-
   });
 });
 
-app.post('/update/user', function(req, res){
+
+
+
+/*app.post('/update/user', function(req, res){
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
     quicklyUpdateUser(fields).then(function(result){
-      console.log(result);
+      //console.log(result);
       var username = result.fields.username;
       res.render('updateduser.twig', {
         user:{
@@ -67,7 +59,7 @@ app.post('/update/user', function(req, res){
     });
 
   });
-});
+});*/
 
 app.get('/api/users',function(req, res){
   getUserRows().then(function(result){
@@ -124,11 +116,9 @@ app.post('/user/delete', function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
-    //console.log(fields);
+    console.log(fields);
 
-    var message = 'YOLO';
-
-    deleteUserById(fields.user_id).then(function(result){
+    deleteUserById(fields.user_id || fields.id).then(function(result){
       res.render('deletedusers.twig', {
         deleted:'Deleted',
         users:result.rows
@@ -295,7 +285,6 @@ app.post('/update/user/:userid', function(req, res) {
 
   form.parse(req, function (err, fields, files) {
     quicklyUpdateUser(fields).then(function(result){
-      console.log(result);
       var username = result.fields.username;
       return userid;
     },function(err){
@@ -312,9 +301,15 @@ app.post('/update/user/:userid', function(req, res) {
   });
 });
 
-function renderUpdateUserPage(req, res, updated = false) {
-  var userid = req.params.userid;
+function prepGroupRolesQuickCreate(group_roles) {
+  var userGroupRoles = {};
+  group_roles.map((groupRole,index) => {
+    userGroupRoles[groupRole.group] = groupRole.roles;
+  });
+  return userGroupRoles;
+}
 
+function renderUpdateUserPage(req, res, userid, updated = false, template='updateuser.twig') {
   getUserRows(`WHERE user_id = ${userid}`).then((userRows) => (
     userRows.users
   )).then(function(users){
@@ -352,10 +347,7 @@ function renderUpdateUserPage(req, res, updated = false) {
   )).then(function(data){
     var user = data.user,
     userGroups = data.userGroups,
-    userGroupRoles = {};
-    user.group_roles.map((groupRole,index) => {
-      userGroupRoles[groupRole.group] = groupRole.roles;
-    });
+    userGroupRoles = prepGroupRolesQuickCreate(user.group_roles);
 
     store.dispatch(actions.updateQuickCreate({
       username:user.username,
@@ -370,7 +362,7 @@ function renderUpdateUserPage(req, res, updated = false) {
       roles:userGroupRoles
     }));
 
-    res.render('updateuser.twig', {
+    res.render(template, {
       user:user,
       updated:updated,
       react:ReactDOM.renderToStaticMarkup(
@@ -387,7 +379,7 @@ function renderUpdateUserPage(req, res, updated = false) {
 }
 
 app.get('/update/user/:userid', function(req, res) {
-  renderUpdateUserPage(req, res);
+  renderUpdateUserPage(req, res, req.params.userid);
 });
 
 app.get('/', function(req, res){
@@ -399,13 +391,24 @@ app.get('/', function(req, res){
           roles:roles
          });
       })
-    }).then(function(data){
-      res.render('index.twig', Object.assign({},data.results,{
-        roles:data.roles
-      }));
-    },function(err){
-      console.log(err);
     })
+  }).then(function(data){
+    return Object.assign({},data.results,{
+      roles:data.roles
+    });
+  }).then(function(data){
+    return new Promise(function(resolve,reject){ // legacy userGroup didn't contain props like slackchannel overwrite with necessary data
+      getUserGroups().then(function(userGroups){
+        resolve(Object.assign({},data,{
+          userGroups:userGroups
+        }))
+      })
+    })
+  }).then(function(data){
+    //console.log(data);
+    res.render('index.twig', data);
+  },function(err){
+    //console.log(err);
   });
 
 });
@@ -491,7 +494,7 @@ function activateUsersById(users,active = true) {
 }
 
 function deleteUsersById(users) {
-  console.log('deleteUsersById',users);
+  //console.log('deleteUsersById',users);
   return new Promise(function(resolve, reject) {
     // instantiate a new client
     // the client will read connection information from
@@ -499,7 +502,7 @@ function deleteUsersById(users) {
     var client = new pg.Client();
 
     usersList = users.join(', ');
-    console.log('usersList',usersList);
+    //console.log('usersList',usersList);
 
     // connect to our database
     client.connect(function (err) {
@@ -518,7 +521,7 @@ function deleteUsersById(users) {
           INNER JOIN modx_user_attributes ON modx_user_attributes.id = delete_users.user_id;
         `;
 
-        console.log(query);
+        //console.log(query);
 
       // execute a query on our database
       client.query(query, function (err, result) {
@@ -536,7 +539,7 @@ function deleteUsersById(users) {
 }
 
 function quicklyUpdateUser(fields) {
-  console.log('quicklyUpdateUser',fields);
+  //console.log('quicklyUpdateUser',fields);
   return new Promise(function(resolve, reject) {
     // instantiate a new client
     // the client will read connection information from
@@ -547,7 +550,8 @@ function quicklyUpdateUser(fields) {
     givenname = fields.givenName || fields['given-name'], // #janky
     familyname = fields.familyName || fields['family-name'],
     email = fields.email,
-    groupRoleSelects = (fields.userGroups !== undefined) ? getGroupRoleSelects(prepGroupRoles(fields)) : '',
+    preparedGroupRoles = prepGroupRoles(fields),
+    groupRoleSelects = getGroupRoleSelects(preparedGroupRoles, 'update_user'),
     active = (fields.active) ? 1 : 0,
     sudo = (fields.sudo) ? 1 : 0;
 
@@ -555,7 +559,7 @@ function quicklyUpdateUser(fields) {
     if(fields['user-sudo'] == 'on') sudo = 1;
 
     // DANGEROUS!!!
-    var updateUserGroups = (fields.userGroups !== undefined) ? `, "delete_modx_member_groups" AS (
+    var updateUserGroups = (preparedGroupRoles.length) ? `, "delete_modx_member_groups" AS (
       DELETE FROM "modx_member_groups" WHERE "member" = ${user_id}
     ), "modx_member_groups" AS (
       INSERT INTO "modx_member_groups" (user_group, member, role, rank)
@@ -578,7 +582,7 @@ function quicklyUpdateUser(fields) {
       ) ${updateUserGroups}
       SELECT * FROM "update_user";`;
 
-      console.log(query);
+      //console.log(query);
 
       // execute a query on our database
       client.query(query, function (err, result) {
@@ -636,7 +640,7 @@ function getUserRows(where = '') {
 
       // execute a query on our database
       client.query(`
-        SELECT modx_users.username, modx_users.user_id as id, user_group, role, name as groupname, fullname, email, title, active, sudo FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.user_id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.user_id ${where};
+        SELECT modx_users.username, modx_users.user_id as id, user_group, role, name as groupname, fullname, email, slack, title, active, sudo FROM modx_users INNER JOIN modx_member_groups ON modx_member_groups.member = modx_users.user_id INNER JOIN modx_membergroup_names ON modx_member_groups.user_group = modx_membergroup_names.id INNER JOIN modx_user_attributes ON modx_user_attributes.id = modx_users.user_id ${where};
         `, function (err, result) {
         if (err) reject(err);
 
@@ -736,9 +740,11 @@ function getGroupRoleSelects(userGroupRoles, userrelation = 'new_user') {
 }
 
 function prepGroupRoles(fields){ // pretty nasty but turns the form data into an array of objects representing user group ids and respective roles of the user
+  console.log('prepGroupRoles',fields);
   var obj = {};
   for(var k in fields) {
     var split = k.split('-');
+    //console.log(k);
     if(split[0] == 'user' && split[1] == 'group' && split[3] == 'roles[]') {
       var roles = fields[k];
       if(!Array.isArray(roles)) roles = [roles];
@@ -756,25 +762,30 @@ function prepGroupRoles(fields){ // pretty nasty but turns the form data into an
   }
 
   var groups = [];
-  for(k in obj) {
+  var gl = (fields.roles) ? fields.roles : obj;
+  for(k in gl) {
     groups.push({
       groupid:k,
-      roles:obj[k]
+      roles:gl[k]
     });
   }
+
+  console.log('groups',groups);
 
   return groups;
 }
 
 function addUserQuickly(fields) {
-  console.log('addUserQuickly',fields);
+  //console.log('addUserQuickly',fields);
   return new Promise(function(resolve, reject){
     var username = fields.username,
     givenname = fields.givenName,
     familyname = fields.familyName,
     email = fields.email,
-    groupRoleSelects = getGroupRoleSelects(prepGroupRoles(fields)),
+    groupRoleSelects = getGroupRoleSelects(prepGroupRoles(fields),'new_user'),
     groupSelectsBlock = '';
+
+    //console.log(groupRoleSelects);
 
     if(groupRoleSelects) {
       groupSelectsBlock = `, "modx_member_group" AS (
@@ -807,6 +818,8 @@ function addUserQuickly(fields) {
         RETURNING *
       ) ${groupSelectsBlock}
       SELECT * FROM "new_user";`;
+
+      console.log(query);
 
       // execute a query on our database
       client.query(query,function(err, result){

@@ -10,14 +10,15 @@ var ManageUsersForm = React.createClass({
     filterBy:undefined
   }),
   render:function(){
-    var props = this.props;
+    var props = this.props,
+    expanded = this.state.filterBy !== undefined;
 
     var sections = props.userGroups.filter((userGroup) => (
       (this.state.filterBy === undefined) ? true : this.state.filterBy == userGroup.id
     )).map((userGroup) => (
-      <SettingsGridSection bulkActions={true} userGroup={userGroup} key={userGroup.id} filter={this.state.filter} users={props.users.filter((user) => (
+      <SettingsGridSection bulkActions={true} userGroup={userGroup} key={userGroup.id} expanded={expanded} filter={this.state.filter} users={props.users.filter((user) => (
         user.userGroups.includes(userGroup.id)
-      ))} title={userGroup.title} userGroup={userGroup} />
+      ))} title={userGroup.title} />
     ));
 
     return (

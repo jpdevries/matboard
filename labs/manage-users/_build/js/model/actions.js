@@ -42,7 +42,7 @@ exports.addUserToGroup = addUserToGroup;
 
 var REMOVE_USER_FROM_GROUP = 'removeuserfromgroup';
 var removeUserFromGroup = function(user,group) {
-  console.log('ru',user,group);
+  //console.log('ru',user,group);
   return {
     type:REMOVE_USER_FROM_GROUP,
     id:user,
@@ -57,11 +57,12 @@ exports.removeUserFromGroup = removeUserFromGroup;
 var UPDATE_USER = 'updateuser';
 var UPDATE_USER_SUCCESS = 'updateusersuccess';
 var UPDATE_USER_ERROR = 'updateusererror';
-var updateUserSuccess = function(id,user) {
+var updateUserSuccess = function(id,user,data) {
   return {
     type:UPDATE_USER_SUCCESS,
     user:user,
-    id:id
+    id:id,
+    data:data
   }
 }
 
@@ -93,7 +94,7 @@ var updateUser = (id,user) => (
       response.json()
     )).then((data) => (
       dispatch(
-        updateUserSuccess(id,user)
+        updateUserSuccess(id,user,data)
       )
     )).catch((error) => (
       dispatch(
@@ -113,10 +114,11 @@ var ADD_USER = 'adduser';
 var ADD_USER_SUCCESS = 'addusersuccess';
 var ADD_USER_ERROR = 'addusererror';
 
-var addUserSuccess = function(user) {
+var addUserSuccess = function(user,data) {
   return {
     type:ADD_USER_SUCCESS,
-    user:user
+    user:user,
+    data:data
   }
 }
 
@@ -147,7 +149,7 @@ var addUser = (user) => (
       response.json()
     )).then((data) => (
       dispatch(
-        addUserSuccess(user)
+        addUserSuccess(user,data)
       )
     )).catch((error) => (
       dispatch(
@@ -234,7 +236,7 @@ var deleteUsersError = function(users) {
 }
 
 var deleteUsers = function(users) {
-  console.log('deleteUsers',users);
+  //console.log('deleteUsers',users);
   return function(dispatch) {
     return fetch('/api/users/delete', {
       method: 'DELETE',
@@ -299,7 +301,7 @@ var activateUsersError = function(users) {
 }
 
 var activateUsers = function(users) {
-  console.log('activate',users);
+  //console.log('activate',users);
   return function(dispatch) {
     return fetch('/api/users/activate', {
       method: 'post',
@@ -354,7 +356,7 @@ var deactivateUsersError = function(users) {
 }
 
 var deactivateUsers = function(users) {
-  console.log('activate',users);
+  //console.log('activate',users);
   return function(dispatch) {
     return fetch('/api/users/deactivate', {
       method: 'post',
@@ -412,3 +414,38 @@ var setUserGroups = function(userGroups) {
 
 exports.SET_USER_GROUPS = SET_USER_GROUPS;
 exports.setUserGroups = setUserGroups;
+
+var QUICKCREATE_ROLE_ADD = "quickcreateroleadd";
+var quickCreateRoleAdd = function(group,role) {
+  return {
+    type:QUICKCREATE_ROLE_ADD,
+    group:group,
+    role:role
+  }
+}
+
+exports.QUICKCREATE_ROLE_ADD = QUICKCREATE_ROLE_ADD;
+exports.quickCreateRoleAdd = quickCreateRoleAdd;
+
+
+var QUICKCREATE_ROLE_REMOVE = "quickcreateroleremove";
+var quickCreateRoleRemove = function(group,role) {
+  return {
+    type:QUICKCREATE_ROLE_REMOVE,
+    group:group,
+    role:role
+  }
+}
+
+exports.QUICKCREATE_ROLE_REMOVE = QUICKCREATE_ROLE_REMOVE;
+exports.quickCreateRoleRemove = quickCreateRoleRemove;
+
+var FLUSH_QUICK_CREATE = 'flushquickcreate';
+var flushQuickCreate = function() {
+  return {
+    type:FLUSH_QUICK_CREATE
+  }
+}
+
+exports.FLUSH_QUICK_CREATE = FLUSH_QUICK_CREATE;
+exports.flushQuickCreate = flushQuickCreate;

@@ -1,8 +1,6 @@
 var update = require('react-addons-update');
-
 var store = require('./../model/store');
 var actions = require('./../model/actions');
-
 var ReactFormData = require('react-form-data');
 
 // can't use this until a future version of React
@@ -15,6 +13,7 @@ var SettingTableRowGroup = React.createClass({
   render:function(){
     var props = this.props;
     var user = props.user;
+    console.log('user',user);
     //<SettingsTableRowForm user={user} colspan="2" />
     return (
         <SettingsTableRow user={user} className="contextual-setting"
@@ -105,7 +104,7 @@ var SettingsGridSectionBulkActionsFieldset = React.createClass({
           <button type="submit" disabled={!props.emails.length} className="danger" formAction="/api/users/deactivate" formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
           <button type="submit" disabled={!props.emails.length} className="danger" formAction="/api/users/delete" formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
           <a className="button" disabled={!props.emails.length} href={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body='}>Email</a>
-          <a className="button" disabled={!props.emails.length} href={'https://modxcommunity.slack.com/messages/@' + props.usernames.join(',')} target="_blank">Slack DM</a>
+          <a className="button" disabled={!props.emails.length} href={'https://' + props.slackChannel + '.slack.com/messages/@' + props.slackHandles.join(',')} target="_blank">Slack DM</a>
         </fieldset>
       </form>
     );
@@ -145,7 +144,7 @@ var SettingsTable = React.createClass({
             } catch(e) {}
           }}
         />,
-        (this.state.userFormsToShow[user.id]) ? <SettingsTableRowForm handleQuickEdit={this.handleQuickEdit.bind(null, user)} className="contextual-setting"  user={user} userGroup={props.userGroup} colspan={props.bulkActions ? "3" : "2"} /> : undefined
+        (this.state.userFormsToShow[user.id]) ? <SettingsTableRowForm slackChannel={props.userGroup.slackChannel} handleQuickEdit={this.handleQuickEdit.bind(null, user)} className="contextual-setting"  user={user} userGroup={props.userGroup} colspan={props.bulkActions ? "3" : "2"} /> : undefined
       ]);
 
     });
@@ -182,9 +181,9 @@ var SettingsGridSection = React.createClass({
       (this.state.bulkToggledUsers[user.id]) ? user.email : undefined
     )).filter((email) => email);
 
-    var usernames = users.map((user) => (
-      (this.state.bulkToggledUsers[user.id]) ? user.username : undefined
-    )).filter((email) => email);
+    var slackHandles = users.map((user) => (
+      (this.state.bulkToggledUsers[user.id]) ? user.slack : undefined
+    )).filter((slack) => slack);
 
     if(props.filter !== undefined && props.filter.length) {
       users = users.filter((user) => {
@@ -193,10 +192,14 @@ var SettingsGridSection = React.createClass({
       });
     }
 
-    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} usernames={usernames} /> : false;
-    var viewAll = (users.length >= minimumUsersBulkAction) ? (<p><a href="#">View all {props.title} users</a></p>) : false;
+    console.log(props.userGroup.slackChannel);
 
-    return (users.length) ? (
+    var paginationAmount = 12,
+    bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} slackChannel={props.userGroup.slackChannel} slackHandles={slackHandles} /> : false,
+    viewAll = this.props.expanded ? false : (users.length > paginationAmount) ? (<p><a href="#">View all {props.title} users</a></p>) : false,
+    paginatedUsers = this.props.expanded ? users : users.slice(0, paginationAmount);
+
+    return (paginatedUsers.length) ? (
       <section id={"user-group-" + props.userGroup.id}>
         <div>
           <header>
@@ -207,14 +210,14 @@ var SettingsGridSection = React.createClass({
           </div>
           <div>
             {bulkActionsFieldset}
-            <SettingsTable bulkActions={users.length >= minimumUsersBulkAction ? props.bulkActions : false} users={users} bulkToggledUsers={this.state.bulkToggledUsers} userGroup={props.userGroup} handleBulkToggle={(id,checked) => {
+            <SettingsTable slackChannel={props.userGroup.slackChannel} bulkActions={paginatedUsers.length >= minimumUsersBulkAction ? props.bulkActions : false} users={paginatedUsers} bulkToggledUsers={this.state.bulkToggledUsers} userGroup={props.userGroup} handleBulkToggle={(id,checked) => {
               this.setState({
                 bulkToggledUsers:update(this.state.bulkToggledUsers, {[id]: {$set:checked}})
               });
             }} handleBulkAllCheck={(allChecked) => {
               var all = {};
               if(allChecked) {
-                users.map((user) => {
+                paginatedUsers.map((user) => {
                   all[user.id] = true;
                 });
               }
@@ -282,8 +285,8 @@ var SettingsTableRowForm = React.createClass({
     var user = props.user;
     var userGroup = props.userGroup;
 
-    console.log('SettingsTableRowForm');
-    console.log(user);
+    //console.log('SettingsTableRowForm');
+    //console.log(user);
 
     return (
       <tr {...props}>
@@ -310,7 +313,7 @@ var SettingsTableRowForm = React.createClass({
                 <a className="button" href={"/update/user/" + user.id} onClick={(event) => {
                   event.preventDefault();
                   //event.stopPropagation();
-
+                  console.log('quick edit clicked',user);
                   store.dispatch(actions.updateQuickCreate({
                     username:user.username,
                     givenName:user.givenName,
@@ -321,7 +324,7 @@ var SettingsTableRowForm = React.createClass({
                     open:true,
                     updating:true,
                     id:user.id,
-                    roles:user.groupRoles
+                    roles:user.roles
                   }));
                 }}>Quick Edit</a>
                 <a className="button" href={"/update/user/" + user.id}>Edit</a>
@@ -340,7 +343,7 @@ var SettingsTableRowForm = React.createClass({
                 <a className="button" href={'mailto:' + user.email + '?subject=MODX%20Next'}>Email</a>
               </div>
               <div>
-                <a className="button" href={"https://modxcommunity.slack.com/messages/@" + user.username} target="_blank">Slack DM</a>
+                <a className="button" href={"https://" + props.slackChannel + ".slack.com/messages/@" + user.username} target="_blank">Slack DM</a>
               </div>
 
               <div style={{marginTop:"1em"}}>

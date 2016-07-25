@@ -9,11 +9,13 @@ var initialUserGroups = (function(){
     for(var i = 0; i < userGroupSections.length; i++) {
       var userGroup = userGroupSections[i],
       id = parseInt(userGroup.getAttribute('data-user-group-id')),
+      slackChannel = userGroup.getAttribute('data-slackchannel'),
       title = userGroup.querySelector('.name').innerHTML;
       userGroups.push({
         id:id,
         title:title,
-        name:title
+        name:title,
+        slackChannel:slackChannel
       });
     }
   } catch (e) {}
@@ -34,6 +36,7 @@ var initialUsers = (function(){
       )),
       username = userRow.querySelector('.username').innerHTML,
       email = userRow.getAttribute('data-email'),
+      slack = userRow.getAttribute('data-slack') || undefined,
       id = userRow.getAttribute('data-user-id'),
       contextualSettings = userRow.nextElementSibling,
       givenName = contextualSettings.querySelector('.givenName').innerHTML,
@@ -54,6 +57,7 @@ var initialUsers = (function(){
       if(!addedUsers[id]) users.push({
         id:id,
         username:username,
+        slack:slack,
         givenName:givenName,
         familyName:'',
         email:email,
@@ -61,7 +65,8 @@ var initialUsers = (function(){
         sudo:sudo,
         jobTitle:jobTitle,
         userGroups:userGroups,
-        groupRoles:groupRoles
+        groupRoles:groupRoles, // #remove
+        roles:groupRoles
       });
       addedUsers[id] = true;
     }
@@ -70,7 +75,7 @@ var initialUsers = (function(){
   return users;
 })();
 
-console.log(initialUsers);
+//console.log(initialUsers);
 
 /*initialUsers = [{
     id:0,
@@ -114,7 +119,7 @@ var initialRoles = (function(){
   }
 })();
 
-console.log(initialRoles);
+//console.log(initialRoles);
 
 var initialFieldsetRoles = [ // todo: move this to the store
   {
@@ -144,65 +149,101 @@ var initialFieldsetRoles = [ // todo: move this to the store
   }
 ];
 
+var initialQuickCreate = {
+  username:'',
+  givenName:'',
+  familyName:'',
+  email:'',
+  active:true,
+  sudo:true,
+  open:false,
+  updating:false,
+  id:undefined,
+  roles:(function(){
+    var o = {};
+    initialUserGroups.map((userGroup) => (
+      o[userGroup.id.toString()] = []
+    ))
+    return o;
+  })()
+};
+
 var initialState = {
   users:initialUsers,
   userGroups:initialUserGroups,
   fieldsetRoles:initialFieldsetRoles,
   roles:initialRoles,
-  quickCreate:{
-    username:'',
-    givenName:'',
-    familyName:'',
-    email:'',
-    active:true,
-    sudo:true,
-    open:false,
-    updating:false,
-    id:undefined,
-    roles:{}
-  }
+  quickCreate:initialQuickCreate
 };
+
+console.log('initialState');
+console.log(initialState);
 
 var usersReducer = function(state, action) {
   state = state || initialState.users;
-  //return state;
-  console.log(action);
 
   var index = 0;
   state.map((user,i) => {
       if(user.id == action.id) index = i;
   });
 
-  console.log(index);
-
   switch(action.type) {
     case actions.UPDATE_USER_SUCCESS:
+    console.log(actions.UPDATE_USER_SUCCESS, action.user);
     var newState =  update(state, {[index]: {$apply: (user) => {
       return update(user,{$merge:action.user})
     }} });
-    console.log(state,newState);
+    //console.log(state,newState);
     return newState;
     break;
 
     case actions.ADD_USER_TO_GROUP:
     return update(state, {[index]: {$apply: (user) => {
-      return update (user, {$merge: {userGroups: update(user.userGroups, {$push: [action.group]}) }})
+      return update (user, {$merge: {
+        userGroups: update(user.userGroups, {$push: [action.group]}) ,
+        roles:{$apply: (roles) => {
+          try {
+            if(!roles[action.group]) update(roles, {$merge: {
+              [action.group]:[]
+            }})
+          } catch (e) {}
+          return roles;
+        }}
+      }})
     }} })
     break;
 
     case actions.REMOVE_USER_FROM_GROUP:
+    console.log(actions.REMOVE_USER_FROM_GROUP,state[index]);
+
+    console.log(Object.assign({},state[index].roles,{
+      [action.group]:[]
+    }));
+
     return update(state, {[index]: {$apply: (user) => {
       return update(user, {$merge: {
         userGroups:(
           state[index].userGroups.map((group) => (
             (group !== action.group) ? group : undefined
           )).filter((group) => (group !== undefined))
-        )
+        ),
+        roles:Object.assign({},state[index].roles,{
+          [action.group]:[]
+        })
       } } )
     }} });
     break;
 
+    /*
+    return update(state, {'roles': {$apply: (roles) => (
+      update(roles, {[action.group]: {$apply: (group) => (
+        update(group, {$push: [action.role]})
+      )}})
+    ) } })
+    */
+
     case actions.ADD_USER_SUCCESS:
+    console.log(actions.ADD_USER_SUCCESS,action.data);
     if(action.user.id === undefined) {
       var nextIndex = 0;
       state.map((user,i) => {
@@ -214,7 +255,6 @@ var usersReducer = function(state, action) {
 
     case actions.DELETE_USER_SUCCESS:
     var newState = update(state, {$splice: [[index, 1]]});
-    console.log(newState);
     return newState;
 
     case actions.DELETE_USER_ERROR:
@@ -251,9 +291,34 @@ var quickCreateReducer = function(state, action) {
 
   switch(action.type) {
     case actions.UPDATE_QUICKCREATE:
-    console.log(actions.UPDATE_QUICKCREATE);
+    console.log(actions.UPDATE_QUICKCREATE, update(state, {$merge:action.quickCreate}));
     return update(state, {$merge:action.quickCreate});
-    break;
+
+    case actions.QUICKCREATE_ROLE_ADD:
+    if(!state.roles[action.group]) state.roles[action.group] = [];
+    if(state.roles[action.group].includes(action.role)) break;
+    return update(state, {'roles': {$apply: (roles) => (
+      update(roles, {[action.group]: {$apply: (group) => (
+        update(group, {$push: [action.role]})
+      )}})
+    ) } });
+
+
+
+
+    case actions.QUICKCREATE_ROLE_REMOVE:
+    return update(state, {'roles': {$apply: (roles) => (
+      update(roles, {[action.group]: {$apply: (group) => (
+        group.filter((role) => (
+          role.toString() !== action.role.toString()
+        ))
+      )} })
+    ) }});
+
+    case actions.FLUSH_QUICK_CREATE:
+    return update(state, {$set:initialQuickCreate});
+
+
   }
   return state;
 }
@@ -290,7 +355,7 @@ var rolesReducer = function(state, action) {
 
   switch(action.type) {
     case actions.SET_ROLES:
-    console.log('setting roles',update(state, {$set:action.roles}));
+    //console.log('setting roles',update(state, {$set:action.roles}));
     return update(state, {$set:action.roles});
   }
 

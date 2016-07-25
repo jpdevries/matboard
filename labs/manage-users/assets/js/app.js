@@ -200,7 +200,7 @@
 
 	var REMOVE_USER_FROM_GROUP = 'removeuserfromgroup';
 	var removeUserFromGroup = function removeUserFromGroup(user, group) {
-	  console.log('ru', user, group);
+	  //console.log('ru',user,group);
 	  return {
 	    type: REMOVE_USER_FROM_GROUP,
 	    id: user,
@@ -214,11 +214,12 @@
 	var UPDATE_USER = 'updateuser';
 	var UPDATE_USER_SUCCESS = 'updateusersuccess';
 	var UPDATE_USER_ERROR = 'updateusererror';
-	var updateUserSuccess = function updateUserSuccess(id, user) {
+	var updateUserSuccess = function updateUserSuccess(id, user, data) {
 	  return {
 	    type: UPDATE_USER_SUCCESS,
 	    user: user,
-	    id: id
+	    id: id,
+	    data: data
 	  };
 	};
 
@@ -249,7 +250,7 @@
 	    }).then(function (response) {
 	      return response.json();
 	    }).then(function (data) {
-	      return dispatch(updateUserSuccess(id, user));
+	      return dispatch(updateUserSuccess(id, user, data));
 	    }).catch(function (error) {
 	      return dispatch(updateUserError(id, user));
 	    });
@@ -265,10 +266,11 @@
 	var ADD_USER_SUCCESS = 'addusersuccess';
 	var ADD_USER_ERROR = 'addusererror';
 
-	var addUserSuccess = function addUserSuccess(user) {
+	var addUserSuccess = function addUserSuccess(user, data) {
 	  return {
 	    type: ADD_USER_SUCCESS,
-	    user: user
+	    user: user,
+	    data: data
 	  };
 	};
 
@@ -298,7 +300,7 @@
 	    }).then(function (response) {
 	      return response.json();
 	    }).then(function (data) {
-	      return dispatch(addUserSuccess(user));
+	      return dispatch(addUserSuccess(user, data));
 	    }).catch(function (error) {
 	      return dispatch(addUserError(user));
 	    });
@@ -378,7 +380,7 @@
 	};
 
 	var deleteUsers = function deleteUsers(users) {
-	  console.log('deleteUsers', users);
+	  //console.log('deleteUsers',users);
 	  return function (dispatch) {
 	    return fetch('/api/users/delete', {
 	      method: 'DELETE',
@@ -429,7 +431,7 @@
 	};
 
 	var activateUsers = function activateUsers(users) {
-	  console.log('activate', users);
+	  //console.log('activate',users);
 	  return function (dispatch) {
 	    return fetch('/api/users/activate', {
 	      method: 'post',
@@ -480,7 +482,7 @@
 	};
 
 	var deactivateUsers = function deactivateUsers(users) {
-	  console.log('activate', users);
+	  //console.log('activate',users);
 	  return function (dispatch) {
 	    return fetch('/api/users/deactivate', {
 	      method: 'post',
@@ -533,6 +535,40 @@
 
 	exports.SET_USER_GROUPS = SET_USER_GROUPS;
 	exports.setUserGroups = setUserGroups;
+
+	var QUICKCREATE_ROLE_ADD = "quickcreateroleadd";
+	var quickCreateRoleAdd = function quickCreateRoleAdd(group, role) {
+	  return {
+	    type: QUICKCREATE_ROLE_ADD,
+	    group: group,
+	    role: role
+	  };
+	};
+
+	exports.QUICKCREATE_ROLE_ADD = QUICKCREATE_ROLE_ADD;
+	exports.quickCreateRoleAdd = quickCreateRoleAdd;
+
+	var QUICKCREATE_ROLE_REMOVE = "quickcreateroleremove";
+	var quickCreateRoleRemove = function quickCreateRoleRemove(group, role) {
+	  return {
+	    type: QUICKCREATE_ROLE_REMOVE,
+	    group: group,
+	    role: role
+	  };
+	};
+
+	exports.QUICKCREATE_ROLE_REMOVE = QUICKCREATE_ROLE_REMOVE;
+	exports.quickCreateRoleRemove = quickCreateRoleRemove;
+
+	var FLUSH_QUICK_CREATE = 'flushquickcreate';
+	var flushQuickCreate = function flushQuickCreate() {
+	  return {
+	    type: FLUSH_QUICK_CREATE
+	  };
+	};
+
+	exports.FLUSH_QUICK_CREATE = FLUSH_QUICK_CREATE;
+	exports.flushQuickCreate = flushQuickCreate;
 
 /***/ },
 /* 5 */
@@ -1049,11 +1085,13 @@
 	    for (var i = 0; i < userGroupSections.length; i++) {
 	      var userGroup = userGroupSections[i],
 	          id = parseInt(userGroup.getAttribute('data-user-group-id')),
+	          slackChannel = userGroup.getAttribute('data-slackchannel'),
 	          title = userGroup.querySelector('.name').innerHTML;
 	      userGroups.push({
 	        id: id,
 	        title: title,
-	        name: title
+	        name: title,
+	        slackChannel: slackChannel
 	      });
 	    }
 	  } catch (e) {}
@@ -1074,6 +1112,7 @@
 	      }),
 	          username = userRow.querySelector('.username').innerHTML,
 	          email = userRow.getAttribute('data-email'),
+	          slack = userRow.getAttribute('data-slack') || undefined,
 	          id = userRow.getAttribute('data-user-id'),
 	          contextualSettings = userRow.nextElementSibling,
 	          givenName = contextualSettings.querySelector('.givenName').innerHTML,
@@ -1094,6 +1133,7 @@
 	      if (!addedUsers[id]) users.push({
 	        id: id,
 	        username: username,
+	        slack: slack,
 	        givenName: givenName,
 	        familyName: '',
 	        email: email,
@@ -1101,7 +1141,8 @@
 	        sudo: sudo,
 	        jobTitle: jobTitle,
 	        userGroups: userGroups,
-	        groupRoles: groupRoles
+	        groupRoles: groupRoles, // #remove
+	        roles: groupRoles
 	      });
 	      addedUsers[id] = true;
 	    }
@@ -1109,7 +1150,7 @@
 	  return users;
 	}();
 
-	console.log(initialUsers);
+	//console.log(initialUsers);
 
 	/*initialUsers = [{
 	    id:0,
@@ -1155,7 +1196,7 @@
 	  }
 	}();
 
-	console.log(initialRoles);
+	//console.log(initialRoles);
 
 	var initialFieldsetRoles = [// todo: move this to the store
 	{
@@ -1180,65 +1221,95 @@
 	  id: 5
 	}];
 
+	var initialQuickCreate = {
+	  username: '',
+	  givenName: '',
+	  familyName: '',
+	  email: '',
+	  active: true,
+	  sudo: true,
+	  open: false,
+	  updating: false,
+	  id: undefined,
+	  roles: function () {
+	    var o = {};
+	    initialUserGroups.map(function (userGroup) {
+	      return o[userGroup.id.toString()] = [];
+	    });
+	    return o;
+	  }()
+	};
+
 	var initialState = {
 	  users: initialUsers,
 	  userGroups: initialUserGroups,
 	  fieldsetRoles: initialFieldsetRoles,
 	  roles: initialRoles,
-	  quickCreate: {
-	    username: '',
-	    givenName: '',
-	    familyName: '',
-	    email: '',
-	    active: true,
-	    sudo: true,
-	    open: false,
-	    updating: false,
-	    id: undefined,
-	    roles: {}
-	  }
+	  quickCreate: initialQuickCreate
 	};
+
+	console.log('initialState');
+	console.log(initialState);
 
 	var usersReducer = function usersReducer(state, action) {
 	  state = state || initialState.users;
-	  //return state;
-	  console.log(action);
 
 	  var index = 0;
 	  state.map(function (user, i) {
 	    if (user.id == action.id) index = i;
 	  });
 
-	  console.log(index);
-
 	  switch (action.type) {
 	    case actions.UPDATE_USER_SUCCESS:
+	      console.log(actions.UPDATE_USER_SUCCESS, action.user);
 	      var newState = update(state, _defineProperty({}, index, { $apply: function $apply(user) {
 	          return update(user, { $merge: action.user });
 	        } }));
-	      console.log(state, newState);
+	      //console.log(state,newState);
 	      return newState;
 	      break;
 
 	    case actions.ADD_USER_TO_GROUP:
 	      return update(state, _defineProperty({}, index, { $apply: function $apply(user) {
-	          return update(user, { $merge: { userGroups: update(user.userGroups, { $push: [action.group] }) } });
+	          return update(user, { $merge: {
+	              userGroups: update(user.userGroups, { $push: [action.group] }),
+	              roles: { $apply: function $apply(roles) {
+	                  try {
+	                    if (!roles[action.group]) update(roles, { $merge: _defineProperty({}, action.group, []) });
+	                  } catch (e) {}
+	                  return roles;
+	                } }
+	            } });
 	        } }));
 	      break;
 
 	    case actions.REMOVE_USER_FROM_GROUP:
+	      console.log(actions.REMOVE_USER_FROM_GROUP, state[index]);
+
+	      console.log(Object.assign({}, state[index].roles, _defineProperty({}, action.group, [])));
+
 	      return update(state, _defineProperty({}, index, { $apply: function $apply(user) {
 	          return update(user, { $merge: {
 	              userGroups: state[index].userGroups.map(function (group) {
 	                return group !== action.group ? group : undefined;
 	              }).filter(function (group) {
 	                return group !== undefined;
-	              })
+	              }),
+	              roles: Object.assign({}, state[index].roles, _defineProperty({}, action.group, []))
 	            } });
 	        } }));
 	      break;
 
+	    /*
+	    return update(state, {'roles': {$apply: (roles) => (
+	      update(roles, {[action.group]: {$apply: (group) => (
+	        update(group, {$push: [action.role]})
+	      )}})
+	    ) } })
+	    */
+
 	    case actions.ADD_USER_SUCCESS:
+	      console.log(actions.ADD_USER_SUCCESS, action.data);
 	      if (action.user.id === undefined) {
 	        var nextIndex = 0;
 	        state.map(function (user, i) {
@@ -1250,7 +1321,6 @@
 
 	    case actions.DELETE_USER_SUCCESS:
 	      var newState = update(state, { $splice: [[index, 1]] });
-	      console.log(newState);
 	      return newState;
 
 	    case actions.DELETE_USER_ERROR:
@@ -1286,9 +1356,30 @@
 
 	  switch (action.type) {
 	    case actions.UPDATE_QUICKCREATE:
-	      console.log(actions.UPDATE_QUICKCREATE);
+	      console.log(actions.UPDATE_QUICKCREATE, update(state, { $merge: action.quickCreate }));
 	      return update(state, { $merge: action.quickCreate });
-	      break;
+
+	    case actions.QUICKCREATE_ROLE_ADD:
+	      if (!state.roles[action.group]) state.roles[action.group] = [];
+	      if (state.roles[action.group].includes(action.role)) break;
+	      return update(state, { 'roles': { $apply: function $apply(roles) {
+	            return update(roles, _defineProperty({}, action.group, { $apply: function $apply(group) {
+	                return update(group, { $push: [action.role] });
+	              } }));
+	          } } });
+
+	    case actions.QUICKCREATE_ROLE_REMOVE:
+	      return update(state, { 'roles': { $apply: function $apply(roles) {
+	            return update(roles, _defineProperty({}, action.group, { $apply: function $apply(group) {
+	                return group.filter(function (role) {
+	                  return role.toString() !== action.role.toString();
+	                });
+	              } }));
+	          } } });
+
+	    case actions.FLUSH_QUICK_CREATE:
+	      return update(state, { $set: initialQuickCreate });
+
 	  }
 	  return state;
 	};
@@ -1325,7 +1416,7 @@
 
 	  switch (action.type) {
 	    case actions.SET_ROLES:
-	      console.log('setting roles', update(state, { $set: action.roles }));
+	      //console.log('setting roles',update(state, {$set:action.roles}));
 	      return update(state, { $set: action.roles });
 	  }
 
@@ -1825,8 +1916,6 @@
 
 	'use strict';
 
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 	var actions = __webpack_require__(4);
 	var store = __webpack_require__(7);
 
@@ -1845,14 +1934,15 @@
 	  render: function render() {
 	    var _this = this;
 
-	    var props = this.props;
+	    var props = this.props,
+	        expanded = this.state.filterBy !== undefined;
 
 	    var sections = props.userGroups.filter(function (userGroup) {
 	      return _this.state.filterBy === undefined ? true : _this.state.filterBy == userGroup.id;
 	    }).map(function (userGroup) {
-	      return React.createElement(SettingsGridSection, _defineProperty({ bulkActions: true, userGroup: userGroup, key: userGroup.id, filter: _this.state.filter, users: props.users.filter(function (user) {
+	      return React.createElement(SettingsGridSection, { bulkActions: true, userGroup: userGroup, key: userGroup.id, expanded: expanded, filter: _this.state.filter, users: props.users.filter(function (user) {
 	          return user.userGroups.includes(userGroup.id);
-	        }), title: userGroup.title }, 'userGroup', userGroup));
+	        }), title: userGroup.title });
 	    });
 
 	    return React.createElement(
@@ -1888,12 +1978,15 @@
 
 	'use strict';
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	var actions = __webpack_require__(4);
 	var store = __webpack_require__(7);
 	var ReactFormData = __webpack_require__(19);
 	var QuickCreateFieldset = __webpack_require__(21);
+	var update = __webpack_require__(10);
 
 	var CreateSettingsForm = React.createClass({
 	  displayName: 'CreateSettingsForm',
@@ -1901,7 +1994,8 @@
 	  mixins: [ReactFormData],
 	  getInitialState: function getInitialState() {
 	    return {
-	      quickCreateOpen: false
+	      quickCreateOpen: false,
+	      formMethod: ''
 	    };
 	  },
 	  componentWillMount: function componentWillMount() {
@@ -1911,27 +2005,44 @@
 	      _this.setState({ quickCreateOpen: store.getState().quickCreate.open });
 	    });
 	  },
+	  handleDeleteUser: function handleDeleteUser(event) {
+	    console.log('handleDeleteUser', event);
+	    this.setState({ formMethod: 'delete' });
+	  },
 	  render: function render() {
 	    var _this2 = this;
 
 	    var props = this.props;
-	    console.log(props);
+	    //console.log(props);
 	    var quickCreateUserBtn = this.state.quickCreateOpen ? false : React.createElement(
-	      'button',
-	      { onClick: function onClick(event) {
-	          return _this2.setState({ quickCreateOpen: true });
+	      'a',
+	      { href: '/add/user', className: 'button', onClick: function onClick(event) {
+	          event.preventDefault();
+	          store.dispatch(actions.updateQuickCreate({ open: true }));
 	        } },
 	      'Quick ',
 	      props.quickCreate.updating ? 'Update' : 'Create',
 	      ' User'
 	    );
 
-	    var quickCreate = this.state.quickCreateOpen ? React.createElement(QuickCreateFieldset, props) : false;
+	    var quickCreate = this.state.quickCreateOpen ? React.createElement(QuickCreateFieldset, _extends({}, props, { handleDeleteUser: this.handleDeleteUser })) : false;
 
 	    return React.createElement(
 	      'form',
 	      { ref: 'createSettingForm', action: props.quickCreate.updating ? "/update/user/" + props.quickCreate.id : "/add/user", method: 'post', className: 'create-setting-form', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
 	          event.preventDefault();
+	          console.log('onSubmit', _this2.state.formMethod, props.quickCreate);
+
+	          switch (_this2.state.formMethod) {
+	            case 'delete':
+	              store.dispatch(actions.deleteUser(update({}, { $merge: {
+	                  user_id: props.quickCreate.id,
+	                  id: props.quickCreate.id
+	                } }))).then(function () {
+	                return closeQuickCreate(_this2);
+	              });
+	              return;
+	          }
 
 	          var user = {};
 	          var userGroups = [];
@@ -1948,7 +2059,9 @@
 	                var pair = _step.value;
 
 	                user[pair[0]] = pair[1];
-	                if (pair[0].indexOf('-role') > -1) userGroups.push(parseInt(pair[1].split('|')[0]));
+	                if (pair[0].indexOf('-role') > -1) {
+	                  userGroups.push(parseInt(pair[1].split('|')[0]));
+	                }
 	              }
 	            } catch (err) {
 	              _didIteratorError = true;
@@ -1966,8 +2079,9 @@
 	            }
 	          } catch (e) {
 	            // fallback to react-form-data
+	            console.log(_this2.formData);
 	            for (var key in _this2.formData) {
-	              console.log(key);
+	              //console.log(key);
 	              user[key] = _this2.formData[key];
 	              if (key.indexOf('-role') > -1) {
 	                _this2.formData[key].map(function (pair, index) {
@@ -1977,7 +2091,28 @@
 	            }
 	          }
 
+	          for (var group in props.quickCreate.roles) {
+	            console.log('group', group, props.quickCreate.roles[group]);
+	            userGroups.push(parseInt(group));
+	          }
+
 	          userGroups = [].concat(_toConsumableArray(new Set(userGroups))); // remove duplicates
+
+	          userGroups = userGroups.map(function (userGroup) {
+	            return (// make sure sure sure they are numbers #consider changing
+	              parseInt(userGroup)
+	            );
+	          });
+
+	          console.log('userGroups', userGroups);
+
+	          userGroups = userGroups.filter(function (userGroup) {
+	            return (// kinda weird to have to do this, expected userGroups to be removed, maybe a formData bug with the React mixin (polyfill)
+	              props.quickCreate.roles[userGroup] !== undefined && props.quickCreate.roles[userGroup].length ? true : false
+	            );
+	          });
+
+	          console.log('userGroups', userGroups, 'props.quickCreate.roles', props.quickCreate.roles);
 
 	          var userParams = {
 	            id: props.quickCreate.id,
@@ -1987,12 +2122,18 @@
 	            email: props.quickCreate.email,
 	            active: props.quickCreate.active,
 	            sudo: props.quickCreate.sudo,
+	            roles: props.quickCreate.roles,
 	            userGroups: userGroups
 	          };
 
-	          if (props.quickCreate.updating) store.dispatch(actions.updateUser(props.quickCreate.id, userParams));else store.dispatch(actions.addUser(userParams));
+	          (props.quickCreate.updating ? store.dispatch(actions.updateUser(props.quickCreate.id, userParams)) : store.dispatch(actions.addUser(userParams))).then(function () {
+	            return closeQuickCreate(_this2);
+	          });
 
-	          //this.setState({quickCreateOpen:false});
+	          function closeQuickCreate(that) {
+	            that.setState({ quickCreateOpen: false });
+	            store.dispatch(actions.flushQuickCreate());
+	          }
 	        } },
 	      React.createElement(
 	        'div',
@@ -2250,8 +2391,8 @@
 	      var userGroupsMarkup = [];
 	      var userRoles = props.quickCreate.roles; // an object containing what roles the user is in per group
 
-	      console.log('userGroups', userGroups);
-	      console.log('userRoles', userRoles);
+	      //console.log('userGroups',userGroups);
+	      //console.log('userRoles',userRoles);
 	      try {
 	        userGroups.map(function (group, index) {
 	          var rolesMarkup = [];
@@ -2267,7 +2408,13 @@
 	            rolesMarkup.push(React.createElement(
 	              'label',
 	              { key: index, htmlFor: 'user-group-' + group.id + '-roles[]' },
-	              React.createElement('input', { type: 'checkbox', checked: roleChecked, ref: 'userGroupEditorRoles', name: 'user-group-' + group.id + '-roles[]', value: group.id + '|' + role.id }),
+	              React.createElement('input', { type: 'checkbox', onChange: function onChange(event) {
+	                  if (event.target.checked) {
+	                    store.dispatch(actions.quickCreateRoleAdd(group.id, role.id));
+	                  } else {
+	                    store.dispatch(actions.quickCreateRoleRemove(group.id, role.id));
+	                  }
+	                }, checked: roleChecked, name: 'user-group-' + group.id + '-roles[]', value: group.id + '|' + role.id }),
 	              ' ',
 	              role.name
 	            ));
@@ -2298,7 +2445,7 @@
 	          ),
 	          React.createElement(
 	            'button',
-	            { type: 'submit', className: 'dangerous', formaction: '/user/delete', formMethod: 'delete' },
+	            { type: 'submit', onClick: this.props.handleDeleteUser, className: 'dangerous', formAction: '/user/delete', formMethod: 'post' },
 	            'Delete User'
 	          )
 	        ),
@@ -2335,7 +2482,11 @@
 	              { htmlFor: 'username', id: 'username-label' },
 	              'Username'
 	            ),
-	            React.createElement('input', { type: 'text', value: props.quickCreate.username, ref: 'quickCreateUsername', autoFocus: !props.quickCreate.updating, 'aria-describedby': 'username-label', name: 'username', id: 'username', className: 'nickname', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
+	            React.createElement('input', { type: 'text', autoComplete: 'off', value: props.quickCreate.username, disabled: props.quickCreate.updating, onChange: function onChange(event) {
+	                store.dispatch(actions.updateQuickCreate({
+	                  username: event.target.value
+	                }));
+	              }, ref: 'quickCreateUsername', autoFocus: !props.quickCreate.updating, 'aria-describedby': 'username-label', name: 'username', id: 'username', className: 'nickname', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
 	          ),
 	          React.createElement(
 	            'div',
@@ -2487,10 +2638,8 @@
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	var update = __webpack_require__(10);
-
 	var store = __webpack_require__(7);
 	var actions = __webpack_require__(4);
-
 	var ReactFormData = __webpack_require__(19);
 
 	// can't use this until a future version of React
@@ -2507,6 +2656,7 @@
 
 	    var props = this.props;
 	    var user = props.user;
+	    console.log('user', user);
 	    //<SettingsTableRowForm user={user} colspan="2" />
 	    return React.createElement(SettingsTableRow, { user: user, className: 'contextual-setting',
 	      handleBlur: function handleBlur(event) {
@@ -2623,7 +2773,7 @@
 	        ),
 	        React.createElement(
 	          'a',
-	          { className: 'button', disabled: !props.emails.length, href: 'https://modxcommunity.slack.com/messages/@' + props.usernames.join(','), target: '_blank' },
+	          { className: 'button', disabled: !props.emails.length, href: 'https://' + props.slackChannel + '.slack.com/messages/@' + props.slackHandles.join(','), target: '_blank' },
 	          'Slack DM'
 	        )
 	      )
@@ -2672,7 +2822,7 @@
 	            props.handleBulkToggle(id, checked);
 	          } catch (e) {}
 	        }
-	      }), _this3.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { handleQuickEdit: _this3.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
+	      }), _this3.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { slackChannel: props.userGroup.slackChannel, handleQuickEdit: _this3.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
 	    });
 
 	    return React.createElement(
@@ -2727,10 +2877,10 @@
 	      return email;
 	    });
 
-	    var usernames = users.map(function (user) {
-	      return _this4.state.bulkToggledUsers[user.id] ? user.username : undefined;
-	    }).filter(function (email) {
-	      return email;
+	    var slackHandles = users.map(function (user) {
+	      return _this4.state.bulkToggledUsers[user.id] ? user.slack : undefined;
+	    }).filter(function (slack) {
+	      return slack;
 	    });
 
 	    if (props.filter !== undefined && props.filter.length) {
@@ -2740,8 +2890,11 @@
 	      });
 	    }
 
-	    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails, usernames: usernames }) : false;
-	    var viewAll = users.length >= minimumUsersBulkAction ? React.createElement(
+	    console.log(props.userGroup.slackChannel);
+
+	    var paginationAmount = 12,
+	        bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails, slackChannel: props.userGroup.slackChannel, slackHandles: slackHandles }) : false,
+	        viewAll = this.props.expanded ? false : users.length > paginationAmount ? React.createElement(
 	      'p',
 	      null,
 	      React.createElement(
@@ -2751,9 +2904,10 @@
 	        props.title,
 	        ' users'
 	      )
-	    ) : false;
+	    ) : false,
+	        paginatedUsers = this.props.expanded ? users : users.slice(0, paginationAmount);
 
-	    return users.length ? React.createElement(
+	    return paginatedUsers.length ? React.createElement(
 	      'section',
 	      { id: "user-group-" + props.userGroup.id },
 	      React.createElement(
@@ -2781,14 +2935,14 @@
 	          'div',
 	          null,
 	          bulkActionsFieldset,
-	          React.createElement(SettingsTable, { bulkActions: users.length >= minimumUsersBulkAction ? props.bulkActions : false, users: users, bulkToggledUsers: this.state.bulkToggledUsers, userGroup: props.userGroup, handleBulkToggle: function handleBulkToggle(id, checked) {
+	          React.createElement(SettingsTable, { slackChannel: props.userGroup.slackChannel, bulkActions: paginatedUsers.length >= minimumUsersBulkAction ? props.bulkActions : false, users: paginatedUsers, bulkToggledUsers: this.state.bulkToggledUsers, userGroup: props.userGroup, handleBulkToggle: function handleBulkToggle(id, checked) {
 	              _this4.setState({
 	                bulkToggledUsers: update(_this4.state.bulkToggledUsers, _defineProperty({}, id, { $set: checked }))
 	              });
 	            }, handleBulkAllCheck: function handleBulkAllCheck(allChecked) {
 	              var all = {};
 	              if (allChecked) {
-	                users.map(function (user) {
+	                paginatedUsers.map(function (user) {
 	                  all[user.id] = true;
 	                });
 	              }
@@ -2883,8 +3037,8 @@
 	    var user = props.user;
 	    var userGroup = props.userGroup;
 
-	    console.log('SettingsTableRowForm');
-	    console.log(user);
+	    //console.log('SettingsTableRowForm');
+	    //console.log(user);
 
 	    return React.createElement(
 	      'tr',
@@ -2943,7 +3097,7 @@
 	              { className: 'button', href: "/update/user/" + user.id, onClick: function onClick(event) {
 	                  event.preventDefault();
 	                  //event.stopPropagation();
-
+	                  console.log('quick edit clicked', user);
 	                  store.dispatch(actions.updateQuickCreate({
 	                    username: user.username,
 	                    givenName: user.givenName,
@@ -2954,7 +3108,7 @@
 	                    open: true,
 	                    updating: true,
 	                    id: user.id,
-	                    roles: user.groupRoles
+	                    roles: user.roles
 	                  }));
 	                } },
 	              'Quick Edit'
@@ -2995,7 +3149,7 @@
 	            null,
 	            React.createElement(
 	              'a',
-	              { className: 'button', href: "https://modxcommunity.slack.com/messages/@" + user.username, target: '_blank' },
+	              { className: 'button', href: "https://" + props.slackChannel + ".slack.com/messages/@" + user.username, target: '_blank' },
 	              'Slack DM'
 	            )
 	          ),

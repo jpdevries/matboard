@@ -10,7 +10,7 @@
         <table>
           <caption style="text-align:left">
             <p>
-              <mark>The following users were {{ deleted|default('deleted')|lower }}</mark>. This action is&nbsp;irreversible.<br>
+              <mark>The following user{% if users|length > 1 %}s{% endif %} were {{ deleted|default('deleted')|lower }}</mark>. This action is&nbsp;irreversible.<br>
               If you need support <a href="mailto:master@web.com?subject=Uh%20oh">contact your Web Master</a> or <a href="#">schedule a&nbsp;consult</a>.
             </p>
           </caption>

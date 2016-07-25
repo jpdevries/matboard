@@ -12,8 +12,8 @@ export default class QuickCreateFieldset extends React.Component {
     var userGroupsMarkup = [];
     var userRoles = props.quickCreate.roles; // an object containing what roles the user is in per group
 
-    console.log('userGroups',userGroups);
-    console.log('userRoles',userRoles);
+    //console.log('userGroups',userGroups);
+    //console.log('userRoles',userRoles);
     try {
       userGroups.map(function(group,index){
         var rolesMarkup = [];
@@ -27,7 +27,15 @@ export default class QuickCreateFieldset extends React.Component {
             }
           })();
           rolesMarkup.push(
-            <label key={index} htmlFor={'user-group-' + (group.id) + '-roles[]'}><input type="checkbox" checked={roleChecked} ref="userGroupEditorRoles" name={'user-group-' + (group.id) + '-roles[]'} value={group.id + '|' + role.id} />&nbsp;{role.name}</label>
+            <label key={index} htmlFor={'user-group-' + (group.id) + '-roles[]'}>
+              <input type="checkbox" onChange={(event) => {
+                  if(event.target.checked) {
+                    store.dispatch(actions.quickCreateRoleAdd(group.id,role.id));
+                  } else {
+                    store.dispatch(actions.quickCreateRoleRemove(group.id,role.id));
+                  }
+                }} checked={roleChecked} name={'user-group-' + (group.id) + '-roles[]'} value={group.id + '|' + role.id} />&nbsp;{role.name}
+            </label>
           );
         });
         userGroupsMarkup.push((
@@ -43,7 +51,7 @@ export default class QuickCreateFieldset extends React.Component {
       <div>
         <div>
           <button type="submit" formaction="/duplicate/user" formMethod="put">Duplicate User</button>
-          <button type="submit" className="dangerous" formaction="/user/delete" formMethod="delete">Delete User</button>
+          <button type="submit" onClick={this.props.handleDeleteUser} className="dangerous" formAction="/user/delete" formMethod="post">Delete User</button>
         </div>
         <div>
           <a className="button" href={"mailto:" + props.quickCreate.email + "?subject=MODX%20Next"}>Email User</a>
@@ -58,7 +66,11 @@ export default class QuickCreateFieldset extends React.Component {
             <div className="n field-group">
               <div className="field-username">
                 <label htmlFor="username" id="username-label">Username</label>
-                <input type="text" value={props.quickCreate.username} ref="quickCreateUsername" autoFocus={!props.quickCreate.updating} aria-describedby="username-label" name="username" id="username" className="nickname" aria-required="true"  aria-invalid="false" required />
+                <input type="text" autoComplete="off" value={props.quickCreate.username} disabled={props.quickCreate.updating} onChange={(event) => {
+                  store.dispatch(actions.updateQuickCreate({
+                    username:event.target.value
+                  }))
+                }} ref="quickCreateUsername" autoFocus={!props.quickCreate.updating} aria-describedby="username-label" name="username" id="username" className="nickname" aria-required="true"  aria-invalid="false" required />
               </div>
               <div className="field-given-name">
                 <label htmlFor="given-name">First Name</label>

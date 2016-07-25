@@ -2,12 +2,14 @@ var actions = require('./../model/actions');
 var store = require('./../model/store');
 var ReactFormData = require('react-form-data');
 var QuickCreateFieldset = require('./quickcreatefieldset');
+var update = require('react-addons-update');
 
 var CreateSettingsForm = React.createClass({
   mixins: [ ReactFormData ],
   getInitialState:function(){
     return {
-      quickCreateOpen:false
+      quickCreateOpen:false,
+      formMethod:''
     }
   },
   componentWillMount: function() {
@@ -15,22 +17,41 @@ var CreateSettingsForm = React.createClass({
       this.setState({quickCreateOpen:store.getState().quickCreate.open})
     });
   },
+  handleDeleteUser:function(event) {
+    console.log('handleDeleteUser',event);
+    this.setState({formMethod:'delete'});
+  },
   render:function() {
     var props = this.props;
-    console.log(props);
+    //console.log(props);
     var quickCreateUserBtn = this.state.quickCreateOpen ? false : (
-      <button onClick={(event) => (
-        this.setState({quickCreateOpen:true})
-      )}>Quick {props.quickCreate.updating ? 'Update' : 'Create'} User</button>
+      <a href="/add/user" className="button" onClick={(event) => {
+        event.preventDefault();
+        store.dispatch(actions.updateQuickCreate({open:true}));
+      }}>Quick {props.quickCreate.updating ? 'Update' : 'Create'} User</a>
     );
 
     var quickCreate = this.state.quickCreateOpen ? (
-      <QuickCreateFieldset  {...props} />
+      <QuickCreateFieldset  {...props} handleDeleteUser={this.handleDeleteUser} />
     ) : false;
 
     return(
       <form ref="createSettingForm" action={props.quickCreate.updating ? "/update/user/" + props.quickCreate.id : "/add/user"} method="post" className="create-setting-form" onChange={this.updateFormData} onSubmit={(event) => {
         event.preventDefault();
+        console.log('onSubmit',this.state.formMethod,props.quickCreate);
+
+        switch(this.state.formMethod) {
+          case 'delete':
+          store.dispatch(actions.deleteUser(
+            update({},{$merge:{
+              user_id:props.quickCreate.id,
+              id:props.quickCreate.id
+            }})
+          )).then(() => (
+          closeQuickCreate(this)
+        ));
+          return;
+        }
 
         var user = {};
         var userGroups = [];
@@ -39,11 +60,14 @@ var CreateSettingsForm = React.createClass({
           var formData = new FormData(this.refs.createSettingForm);
           for(var pair of formData.entries()) {
             user[pair[0]] = pair[1];
-            if(pair[0].indexOf('-role') > -1) userGroups.push(parseInt(pair[1].split('|')[0]));
+            if(pair[0].indexOf('-role') > -1) {
+              userGroups.push(parseInt(pair[1].split('|')[0]));
+            }
           }
         } catch(e) { // fallback to react-form-data
+          console.log(this.formData)
           for (var key in this.formData) {
-            console.log(key);
+            //console.log(key);
             user[key] = this.formData[key];
             if(key.indexOf('-role') > -1) {
                 this.formData[key].map(function(pair,index){
@@ -53,7 +77,24 @@ var CreateSettingsForm = React.createClass({
           }
         }
 
+        for(var group in props.quickCreate.roles) {
+          console.log('group',group,props.quickCreate.roles[group]);
+          userGroups.push(parseInt(group));
+        }
+
         userGroups = [...new Set(userGroups)]; // remove duplicates
+
+        userGroups = userGroups.map((userGroup) => ( // make sure sure sure they are numbers #consider changing
+          parseInt(userGroup)
+        ));
+
+        console.log('userGroups',userGroups);
+
+        userGroups = userGroups.filter((userGroup) => ( // kinda weird to have to do this, expected userGroups to be removed, maybe a formData bug with the React mixin (polyfill)
+          (props.quickCreate.roles[userGroup] !== undefined && props.quickCreate.roles[userGroup].length) ? true : false
+        ));
+
+        console.log('userGroups',userGroups,'props.quickCreate.roles',props.quickCreate.roles);
 
         var userParams = {
           id:props.quickCreate.id,
@@ -63,14 +104,21 @@ var CreateSettingsForm = React.createClass({
           email:props.quickCreate.email,
           active:props.quickCreate.active,
           sudo:props.quickCreate.sudo,
+          roles:props.quickCreate.roles,
           userGroups:userGroups
         };
 
-        if(props.quickCreate.updating) store.dispatch(actions.updateUser(props.quickCreate.id,userParams));
-        else store.dispatch(actions.addUser(userParams));
 
+        (
+          (props.quickCreate.updating) ? store.dispatch(actions.updateUser(props.quickCreate.id,userParams)) : store.dispatch(actions.addUser(userParams))
+        ).then(() => (
+          closeQuickCreate(this)
+        ));
 
-        //this.setState({quickCreateOpen:false});
+        function closeQuickCreate(that) {
+          that.setState({quickCreateOpen:false});
+          store.dispatch(actions.flushQuickCreate());
+        }
     }}>
       <div className="top-bar">
         {quickCreateUserBtn}
