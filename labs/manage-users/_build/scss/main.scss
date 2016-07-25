@@ -3,6 +3,132 @@
 
 @import "spec/tacular";
 
+$black:rgb(8,8,8);
+$white:white;
+$link:rgb(0, 0, 238); // default link blue
+$active:rgb(255,0,0); // default link red
+$go:darken(#55AE3D,12%); // MODX green
+
+@import "highcontrast";
+
+%bright-padded-module {
+  background:$white;
+  padding:1rem;
+  margin-bottom:1em;
+  border:1px solid rgb(200,200,200);
+}
+
+.accessibly-hidden {
+  @extend %accessibly-hidden;
+}
+
+.shy.checkbox {
+  width:1em;
+}
+
+.oblique {
+  font-style:italic;
+}
+
+.micro-page {
+  text-align:center;
+  > * {
+    text-align:left;
+    max-width:42em;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  table {
+    width:100%;
+  }
+}
+
+/*%button-apperance {
+  appearance: button;
+}
+
+.button {
+  @extend %button-apperance;
+}*/
+
+button, .button {
+  display: inline-block;
+  appearance: none;
+  //margin: 10px 0;
+  padding: 0px;
+  //height: 50px;
+  border-width: 0;
+  background-color: Red;
+  color: White;
+  font-family: sans-serif;
+  font-weight: normal;
+  font-size: inherit;
+  text-decoration: none;
+  //line-height: 50px;
+  cursor: pointer;
+  font-size: 100%;
+}
+button {
+  //#width:0px;
+  overflow: visible;
+}
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+button, .button {
+  font-size:0.8rem;
+  appearance:none;
+  display:inline-block;
+  padding:0.2rem 0.5rem;
+  text-align:center;
+  border:1px solid rgb(120,120,120);
+  background:rgb(240,240,240);
+  color:rgb(60,60,60);
+  border-radius:0.2rem;
+  text-decoration:none;
+  margin:0.2rem;
+  transition:all 240ms ease;
+
+  html:not(.react) .contextual-setting & {
+    background:$white;
+  }
+
+  &:hover,&:focus {
+    color:$link;
+    border-color:$link;
+  }
+  &:active {
+    color:$active;
+    border-color:$active;
+  }
+  &.go {
+    &:hover,&:focus {
+      color:$go;
+      border-color:$go;
+    }
+  }
+  &[formaction="/users/delete"], &[formmethod="delete"], &.delete, &.danger, &.dangerous {
+    &:hover,&:focus {
+      color:$active;
+      border-color:$active;
+    }
+  }
+  &[disabled] {
+    opacity:0.6;
+    cursor:not-allowed;
+
+    color:rgb(60,60,60) !important;
+    border:1px solid rgb(120,120,120) !important;
+    background:rgb(240,240,240) !important;
+  }
+}
+
+fieldset {
+  border:1px solid rgb(200,200,200);
+}
+
 html.js {
   [js-hidden] {
     display:none;
@@ -12,13 +138,57 @@ html.js {
   }
 }
 
+body {
+  background:rgb(240,240,240);
+  padding-top:1rem;
+  color:rgb(8,8,8);
+}
+
 .top-bar {
-  padding-left:1em;
-  padding-left:1em;
+  //padding-left:1rem;
+  //padding-right:1rem;
+  margin-bottom:1rem;
+  a,button {
+    margin-right:1rem;
+  }
+}
+
+.horizontally-padded {
+  padding-left:1rem;
+  padding-right:1rem;
+}
+
+.bright.padded {
+  @extend %bright-padded-module;
 }
 
 #manage-users-form {
-  padding:0 0.5rem;
+  > div {
+  }
+  #manage-user-form__header header {
+    @extend %bright-padded-module;
+    h1 {
+
+    }
+  }
+}
+
+header, aside, .padded {
+  > h1 {
+    &:first-of-type {
+      margin-top:0;
+    }
+  }
+}
+
+.settings-grid > section {
+  > div {
+    @extend %bright-padded-module;
+  }
+  //margin-right:1em;
+  &:last-of-type {
+    //margin-right:0;
+  }
 }
 
 .subtle {
@@ -57,19 +227,22 @@ h1 {
 }
 
 %settings-table {
-    background:rgb(242,242,242);
+    //background:rgb(242,242,242);
     label {
-      display:block;
+      //display:block;
     }
     td,th {
         padding:0.2em 0.4em;
     }
     thead {
       font-weight:bold;
-        background:rgb(224,224,224);
+        //background:rgb(224,224,224);
         > tr {
             > th {
                 border:1px solid rgb(200,200,200);
+                &:first-of-type {
+                  text-align:left;
+                }
             }
         }
     }
@@ -79,7 +252,7 @@ h1 {
                 border:1px solid rgb(200,200,200);
             }
             &:nth-of-type(even) {
-                background:rgba(40,40,40,0.1);
+                background:rgb(244,244,244);
             }
             &.open + .contextual-setting, &:focus + .contextual-setting {
                 display:table-row !important; /* display the setting form for open rows */
@@ -90,6 +263,13 @@ h1 {
                 }
             }
         }
+    }
+    &.settings-table {
+      thead th, tbody tr td {
+        &:first-of-type, &:last-of-type {
+          width:1em;
+        }
+      }
     }
     .contextual-setting {
         html.js & {
@@ -118,6 +298,15 @@ h1 {
   margin-bottom:1em;
 }
 
+.balanced {
+  text-align:center;
+}
+
+.comfortably {
+  padding-left:2em;
+  padding-right:2em;
+}
+
 .create-setting-form, .create-user-form {
   input[type="text"], input[type="email"], input[type="password"], textarea {
     @extend %very-greedy;
@@ -125,8 +314,14 @@ h1 {
   footer {
     text-align:center;
     > div {
-      text-align:left;
-      margin:1em 0;
+      //text-align:left;
+      //margin:1em 0;
+      button {
+        margin-right:1em;
+        &:last-of-type {
+          margin-right:0
+        }
+      }
     }
     button {
       margin-left:auto;
@@ -153,13 +348,22 @@ h1 {
       }
     }
   }
-
-
-
 }
 
-.settings-table {
+#manage-user-form__header {
+  padding-left:.5rem;
+  padding-right:.5rem;
+  @include media($gtMobile) {
+    padding-left:1rem;
+    padding-right:1rem;
+  }
+}
+
+table { // .settings-table
     @extend %settings-table;
+    .username {
+      width:100% !important; //#janky
+    }
 }
 
 .settings-grid {
@@ -167,12 +371,23 @@ h1 {
   flex-wrap:wrap;
 
   align-content:center;
+  justify-content:center;
+
+  padding-left:.5rem;
+  padding-right:.5rem;
 
   > * {
     flex:1 1 24em;
+    max-width:40em;
+
     @include media($gtMobile) {
-      padding-left:1rem;
-      padding-right:1rem;
+      display:flex;
+      flex-direction:column;
+      padding-left:.5rem;
+      padding-right:.5rem;
+      > * {
+        flex:1 0 auto;
+      }
     }
   }
 
@@ -208,10 +423,18 @@ form.search-settings, form.search-users {
   > label {
     flex-grow:1;
     max-width:50vw;
+    //padding-left:1em;
     margin-right:.5em;
   }
   > label, > button {
 
+  }
+  > label[for="filter-by"], #filter-by {
+    text-align:right;
+    margin-top:1.6rem;
+  }
+  > div {
+    //padding-top:1em;
   }
   button {
     @include media($mobile) {
@@ -224,9 +447,18 @@ form.search-settings, form.search-users {
   }
 }
 
+[a11y-hidden] {
+  @extend %accessibly-hidden;
+}
+
 input[name="search-settings"], input[name="search-users"] {
   @extend %very-greedy;
-  margin-bottom:1em;
+  //margin-bottom:1em;
+  line-height:1.6rem;
+}
+
+#search-users {
+  margin-bottom:0.2em;
 }
 
 label[for="filter-by"] {
@@ -247,3 +479,10 @@ label[for="filter-by"] {
     text-align:center;
   }
 }
+
+/*$sterc:#de007a;
+#user-group-4 {
+  h1,h2,h3,h4,h5,h6 {
+    color:$sterc;
+  }
+}*/

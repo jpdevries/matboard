@@ -1,0 +1,37 @@
+{% include 'header.twig' with {
+  'base':'/',
+  'title':'Update User'
+} %}
+<body class="micro-page">
+  <div id="manage-users-form">
+    <div id="manage-user-form__header">
+      <header>
+        <h1>{% if updated %}Updated {% else %}Update {% endif %}User {{ user.username }} ({{ user.id }})</h1>
+        {% if updated %}
+        <p><mark>Your updates have successful been saved</mark>. The changes you made are reflected&nbsp;below. Return to <a href="/">Manage Users</a>.</p>
+        <hr style="margin-bottom:1em">
+      {% endif %}
+        <div class="create-user-module">
+          <form action="/update/user/{{ user.id }}" method="post" class="create-setting-form">
+              {{ react }}
+          </form>
+        </div>
+      </header>
+    </div>
+    <div class="horizontally-padded">
+      <aside class="bright oblique balanced padded">
+        <p>
+          {{ user.fullname }} last logged in 12 days&nbsp;ago.
+        </p>
+      </aside>
+    </div>
+    <div class="horizontally-padded">
+      <aside class="bright padded">
+        <h1>Manage Users</h1>
+        <p>
+          Return to <a href="/">Manage Users</a>.
+        </p>
+      </aside>
+    </div>
+  </div>
+</body>

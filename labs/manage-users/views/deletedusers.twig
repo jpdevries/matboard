@@ -1,0 +1,48 @@
+{% include 'header.twig' with {
+  'base':'/',
+  'title':'Deleted Users'
+} %}
+<body class="micro-page">
+  <div id="deleted-users">
+    <div class="horizontally-padded">
+      <main class="bright padded">
+        <h1>{{ deleted|default('Deleted') }} Users</h1>
+        <table>
+          <caption style="text-align:left">
+            <p>
+              <mark>The following user{% if users|length > 1 %}s{% endif %} were {{ deleted|default('deleted')|lower }}</mark>. This action is&nbsp;irreversible.<br>
+              If you need support <a href="mailto:master@web.com?subject=Uh%20oh">contact your Web Master</a> or <a href="#">schedule a&nbsp;consult</a>.
+            </p>
+          </caption>
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>username</th>
+              <th>fullname</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>{{ user.user_id }}</td>
+                <td><a href="/">{{ user.username }}</a></td>
+                <td>{{ user.fullname }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </main>
+      <aside class="balanced bright padded">
+        <p class="oblique">
+          <a href="https://support.modx.com/hc/en-us/articles/216758398-Snapshots-Overview" target="_blank">Learn more about backing up snapshots</a> of your MODX&nbsp;database.
+        </p>
+      </aside>
+      <aside class="bright padded">
+        <h1>Manage Users</h1>
+        <p>
+          Return to <a href="/">Manage Users</a>.
+        </p>
+      </aside>
+    </div>
+  </div>
+</body>

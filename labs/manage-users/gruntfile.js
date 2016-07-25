@@ -2,12 +2,13 @@ module.exports = function(grunt) {
   var webpackConfig = require('./webpack.config.js');
   grunt.initConfig({
     dirs:{
-      theme:'../',
+      build:'_build/',
+      theme:'./',
       lib:'./lib/',
       assets:'assets/',
       js:'./js/',
       css:'./css/',
-      scss:'./scss/'
+      scss:'_build/scss/'
     },
     bower: {
         install: {
@@ -127,6 +128,26 @@ module.exports = function(grunt) {
 				}
 			}
     },
+    postcss: {
+      options: {
+        map: true, // inline sourcemaps
+
+        // or
+        map: {
+            inline: false, // save all sourcemaps as separate files...
+            //annotation: 'dist/css/maps/' // ...to the specified directory
+        },
+
+        processors: [
+          require('pixrem')(), // add fallbacks for rem units
+          require('autoprefixer')({browsers: 'last 2 versions'}), // add vendor prefixes
+          require('cssnano')() // minify the result
+        ]
+      },
+      dist: {
+        src: '<%= dirs.theme %><%= dirs.assets %><%= dirs.css %>*.css'
+      }
+    },
     cssmin:{
       ship: {
         options:{
@@ -185,7 +206,7 @@ module.exports = function(grunt) {
           tasks: ['sass:dev', 'growl:sass']
       },
       js: {
-          files: ['<%= dirs.js %>**/*.js'],
+          files: ['<%= dirs.build %><%= dirs.js %>**/*.js'],
           tasks: ['webpack','uglify', 'growl:uglify']
       }
     },
@@ -200,6 +221,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-webpack');
+  grunt.loadNpmTasks('grunt-postcss');
 
-  grunt.registerTask('build',['bower','copy','modernizr','webpack','uglify','sass','growl:build']);
+  grunt.registerTask('build',['bower','copy','modernizr','webpack','uglify','sass','postcss','growl:build']);
 };

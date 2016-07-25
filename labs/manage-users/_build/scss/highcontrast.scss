@@ -1,0 +1,16 @@
+$yellow:rgb(255,255,0);
+
+html.highcontrast {
+  * {
+    background:$black !important;
+    color:$white !important;
+    border-color:$white !important;
+    &:focus {
+      outline-color:$yellow;
+      outline-style:double;
+    }
+    input[type="checkbox"] { /* change "blue" browser chrome to yellow */
+      filter: invert(100%) hue-rotate(18deg) brightness(1.7);
+    }
+  }
+}

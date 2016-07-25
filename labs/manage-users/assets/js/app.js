@@ -46,10 +46,43 @@
 
 	'use strict';
 
+	if (!Array.prototype.includes) {
+	  Array.prototype.includes = function (searchElement /*, fromIndex*/) {
+	    'use strict';
+
+	    var O = Object(this);
+	    var len = parseInt(O.length, 10) || 0;
+	    if (len === 0) {
+	      return false;
+	    }
+	    var n = parseInt(arguments[1], 10) || 0;
+	    var k;
+	    if (n >= 0) {
+	      k = n;
+	    } else {
+	      k = len + n;
+	      if (k < 0) {
+	        k = 0;
+	      }
+	    }
+	    var currentElement;
+	    while (k < len) {
+	      currentElement = O[k];
+	      if (searchElement === currentElement || searchElement !== searchElement && currentElement !== currentElement) {
+	        // NaN !== NaN
+	        return true;
+	      }
+	      k++;
+	    }
+	    return false;
+	  };
+	}
+
 	var manageUsers = __webpack_require__(1);
 
 	document.addEventListener('DOMContentLoaded', function () {
-	    var app = new manageUsers.ManageUsers();
+	  var app = new manageUsers.ManageUsers();
+	  document.querySelector('html').classList.add('react');
 	});
 
 /***/ },
@@ -63,40 +96,42 @@
 	var _reactRedux = __webpack_require__(3);
 
 	var actions = __webpack_require__(4);
-	var store = __webpack_require__(5);
+	var store = __webpack_require__(7);
 
-	var ManageUsersForm = __webpack_require__(13);
+	var ManageUsersForm = __webpack_require__(17);
 
 	var ManageUsers = function ManageUsers() {
 	  store.subscribe(function () {
 	    console.log(store.getState());
 	  });
 
-	  store.dispatch(actions.addUserGroup({
-	    title: 'modmore'
+	  /*store.dispatch(actions.addUserGroup({
+	    title:'modmore'
 	  }));
+	   store.dispatch(actions.addUser({
+	    username:'marcjenkins',
+	    givenName:'Marc',
+	    familyName:'Jenkins',
+	    email:'marc@modmore.com',
+	    active:true,
+	    sudo:true,
+	    jobTitle:'Marketing Director',
+	    userGroups:[1]
+	  }));*/
 
-	  store.dispatch(actions.addUser({
-	    username: 'marcjenkins',
-	    givenName: 'Marc',
-	    familyName: 'Jenkins',
-	    email: 'marc@modmore.com',
-	    active: true,
-	    sudo: true,
-	    jobTitle: 'Marketing Director',
-	    userGroups: [1]
-	  }));
-
-	  store.dispatch(actions.addUserToGroup(0, 2));
+	  //store.dispatch(actions.addUserToGroup(0,2));
 
 	  var ManageUsersFormController = (0, _reactRedux.connect)(function (state, props) {
 	    return {
+	      quickCreate: state.quickCreate,
 	      users: state.users.sort(function (a, b) {
 	        return (// sort alphabetically
 	          a.username > b.username ? 1 : -1
 	        );
 	      }),
-	      userGroups: state.userGroups
+	      userGroups: state.userGroups,
+	      roles: state.roles,
+	      fieldsetRoles: state.fieldsetRoles
 	    };
 	  })(ManageUsersForm);
 
@@ -123,21 +158,22 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var UPDATE_USER = 'updateuser';
-	var updateUser = function updateUser(id, user) {
+	__webpack_require__(5);
+
+	var UPDATE_QUICKCREATE = 'update_quickcreate';
+	var updateQuickCreate = function updateQuickCreate(quickCreate) {
 	  return {
-	    type: UPDATE_USER,
-	    id: id,
-	    user: user
+	    type: UPDATE_QUICKCREATE,
+	    quickCreate: quickCreate
 	  };
 	};
 
-	exports.UPDATE_USER = UPDATE_USER;
-	exports.updateUser = updateUser;
+	exports.UPDATE_QUICKCREATE = UPDATE_QUICKCREATE;
+	exports.updateQuickCreate = updateQuickCreate;
 
 	var ADD_USER_GROUP = 'addusergroup';
 	var addUserGroup = function addUserGroup(userGroup) {
@@ -164,7 +200,7 @@
 
 	var REMOVE_USER_FROM_GROUP = 'removeuserfromgroup';
 	var removeUserFromGroup = function removeUserFromGroup(user, group) {
-	  console.log('ru', user, group);
+	  //console.log('ru',user,group);
 	  return {
 	    type: REMOVE_USER_FROM_GROUP,
 	    id: user,
@@ -175,34 +211,863 @@
 	exports.REMOVE_USER_FROM_GROUP = REMOVE_USER_FROM_GROUP;
 	exports.removeUserFromGroup = removeUserFromGroup;
 
-	var ADD_USER = 'adduser';
-	var addUser = function addUser(user) {
+	var UPDATE_USER = 'updateuser';
+	var UPDATE_USER_SUCCESS = 'updateusersuccess';
+	var UPDATE_USER_ERROR = 'updateusererror';
+	var updateUserSuccess = function updateUserSuccess(id, user, data) {
 	  return {
-	    type: ADD_USER,
+	    type: UPDATE_USER_SUCCESS,
+	    user: user,
+	    id: id,
+	    data: data
+	  };
+	};
+
+	var updateUserError = function updateUserError(id, user) {
+	  return {
+	    type: UPDATE_USER_ERROR,
+	    user: user,
+	    id: id
+	  };
+	};
+
+	var updateUser = function updateUser(id, user) {
+	  return function (dispatch) {
+	    return fetch('/api/user/update', {
+	      method: 'POST',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify(user)
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(updateUserSuccess(id, user, data));
+	    }).catch(function (error) {
+	      return dispatch(updateUserError(id, user));
+	    });
+	  };
+	};
+
+	exports.UPDATE_USER = UPDATE_USER;
+	exports.UPDATE_USER_SUCCESS = UPDATE_USER_SUCCESS;
+	exports.UPDATE_USER_ERROR = UPDATE_USER_ERROR;
+	exports.updateUser = updateUser;
+
+	var ADD_USER = 'adduser';
+	var ADD_USER_SUCCESS = 'addusersuccess';
+	var ADD_USER_ERROR = 'addusererror';
+
+	var addUserSuccess = function addUserSuccess(user, data) {
+	  return {
+	    type: ADD_USER_SUCCESS,
+	    user: user,
+	    data: data
+	  };
+	};
+
+	var addUserError = function addUserError(user) {
+	  return {
+	    type: ADD_USER_ERROR,
 	    user: user
 	  };
 	};
 
-	exports.ADD_USER = ADD_USER;
+	var addUser = function addUser(user) {
+	  return function (dispatch) {
+	    return fetch('/api/user/add', {
+	      method: 'POST',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify(user)
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(addUserSuccess(user, data));
+	    }).catch(function (error) {
+	      return dispatch(addUserError(user));
+	    });
+	  };
+	};
+
+	exports.ADD_USER_SUCCESS = ADD_USER_SUCCESS;
+	exports.ADD_USER_ERROR = ADD_USER_ERROR;
 	exports.addUser = addUser;
+
+	var DELETE_USER = 'deleteuser';
+	var DELETE_USER_SUCCESS = 'deleteusersuccess';
+	var DELETE_USER_ERROR = 'deleteusererror';
+
+	var deleteUserSuccess = function deleteUserSuccess(user) {
+	  return {
+	    type: DELETE_USER_SUCCESS,
+	    user: user,
+	    id: user.id
+	  };
+	};
+
+	var deleteUserError = function deleteUserError(user) {
+	  return {
+	    type: ADD_USER_ERROR,
+	    user: user,
+	    id: user.id
+	  };
+	};
+
+	var deleteUser = function deleteUser(user) {
+	  return function (dispatch) {
+	    return fetch('/api/user/delete', {
+	      method: 'DELETE',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify(user)
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(deleteUserSuccess(user));
+	    }).catch(function (error) {
+	      return dispatch(deleteUserError(user));
+	    });
+	  };
+	};
+
+	exports.DELETE_USER_SUCCESS = DELETE_USER_SUCCESS;
+	exports.DELETE_USER_ERROR = DELETE_USER_ERROR;
+	exports.deleteUser = deleteUser;
+
+	var DELETE_USERS = 'deleteusers';
+	var DELETE_USERS_SUCCESS = 'deleteuserssuccess';
+	var DELETE_USERS_ERROR = 'deleteuserserror';
+
+	var deleteUsersSuccess = function deleteUsersSuccess(users) {
+	  return {
+	    type: DELETE_USERS_SUCCESS,
+	    users: users
+	  };
+	};
+
+	var deleteUsersError = function deleteUsersError(users) {
+	  return {
+	    type: DELETE_USERS_ERROR,
+	    users: users
+	  };
+	};
+
+	var deleteUsers = function deleteUsers(users) {
+	  //console.log('deleteUsers',users);
+	  return function (dispatch) {
+	    return fetch('/api/users/delete', {
+	      method: 'DELETE',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({
+	        users: users
+	      })
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(deleteUsersSuccess(users));
+	    }).catch(function (error) {
+	      return dispatch(deleteUsersError(users));
+	    });
+	  };
+	};
+
+	exports.DELETE_USERS_SUCCESS = DELETE_USERS_SUCCESS;
+	exports.DELETE_USERS_ERROR = DELETE_USERS_ERROR;
+	exports.deleteUsers = deleteUsers;
+
+	var ACTIVATE_USERS = 'activateusers';
+	var ACTIVATE_USERS_SUCCESS = 'activateuserssuccess';
+	var ACTIVATE_USERS_ERROR = 'activateuserserror';
+
+	var activateUsersSuccess = function activateUsersSuccess(users) {
+	  return {
+	    type: ACTIVATE_USERS_SUCCESS,
+	    users: users
+	  };
+	};
+
+	var activateUsersError = function activateUsersError(users) {
+	  return {
+	    type: ACTIVATE_USERS_ERROR,
+	    users: users
+	  };
+	};
+
+	var activateUsers = function activateUsers(users) {
+	  //console.log('activate',users);
+	  return function (dispatch) {
+	    return fetch('/api/users/activate', {
+	      method: 'post',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({
+	        users: users
+	      })
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(activateUsersSuccess(users));
+	    }).catch(function (error) {
+	      return dispatch(activateUsersError(users));
+	    });
+	  };
+	};
+
+	exports.ACTIVATE_USERS_SUCCESS = ACTIVATE_USERS_SUCCESS;
+	exports.ACTIVATE_USERS_ERROR = ACTIVATE_USERS_ERROR;
+	exports.activateUsers = activateUsers;
+
+	var DEACTIVATE_USERS = 'deactivateusers';
+	var DEACTIVATE_USERS_SUCCESS = 'deactivateuserssuccess';
+	var DEACTIVATE_USERS_ERROR = 'deactivateuserserror';
+
+	var deactivateUsersSuccess = function deactivateUsersSuccess(users) {
+	  return {
+	    type: DEACTIVATE_USERS_SUCCESS,
+	    users: users
+	  };
+	};
+
+	var deactivateUsersError = function deactivateUsersError(users) {
+	  return {
+	    type: DEACTIVATE_USERS_ERROR,
+	    users: users
+	  };
+	};
+
+	var deactivateUsers = function deactivateUsers(users) {
+	  //console.log('activate',users);
+	  return function (dispatch) {
+	    return fetch('/api/users/deactivate', {
+	      method: 'post',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({
+	        users: users
+	      })
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(deactivateUsersSuccess(users));
+	    }).catch(function (error) {
+	      return dispatch(deactivateUsersError(users));
+	    });
+	  };
+	};
+
+	exports.DEACTIVATE_USERS_SUCCESS = DEACTIVATE_USERS_SUCCESS;
+	exports.DEACTIVATE_USERS_ERROR = DEACTIVATE_USERS_ERROR;
+	exports.deactivateUsers = deactivateUsers;
+
+	var SET_ROLES = 'setroles';
+	var setRoles = function setRoles(roles) {
+	  return {
+	    type: SET_ROLES,
+	    roles: roles
+	  };
+	};
+
+	exports.SET_ROLES = SET_ROLES;
+	exports.setRoles = setRoles;
+
+	var SET_USER_GROUPS = 'setusergroups';
+	var setUserGroups = function setUserGroups(userGroups) {
+	  return {
+	    type: SET_USER_GROUPS,
+	    userGroups: userGroups
+	  };
+	};
+
+	exports.SET_USER_GROUPS = SET_USER_GROUPS;
+	exports.setUserGroups = setUserGroups;
+
+	var QUICKCREATE_ROLE_ADD = "quickcreateroleadd";
+	var quickCreateRoleAdd = function quickCreateRoleAdd(group, role) {
+	  return {
+	    type: QUICKCREATE_ROLE_ADD,
+	    group: group,
+	    role: role
+	  };
+	};
+
+	exports.QUICKCREATE_ROLE_ADD = QUICKCREATE_ROLE_ADD;
+	exports.quickCreateRoleAdd = quickCreateRoleAdd;
+
+	var QUICKCREATE_ROLE_REMOVE = "quickcreateroleremove";
+	var quickCreateRoleRemove = function quickCreateRoleRemove(group, role) {
+	  return {
+	    type: QUICKCREATE_ROLE_REMOVE,
+	    group: group,
+	    role: role
+	  };
+	};
+
+	exports.QUICKCREATE_ROLE_REMOVE = QUICKCREATE_ROLE_REMOVE;
+	exports.quickCreateRoleRemove = quickCreateRoleRemove;
+
+	var FLUSH_QUICK_CREATE = 'flushquickcreate';
+	var flushQuickCreate = function flushQuickCreate() {
+	  return {
+	    type: FLUSH_QUICK_CREATE
+	  };
+	};
+
+	exports.FLUSH_QUICK_CREATE = FLUSH_QUICK_CREATE;
+	exports.flushQuickCreate = flushQuickCreate;
 
 /***/ },
 /* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// the whatwg-fetch polyfill installs the fetch() function
+	// on the global object (window or self)
+	//
+	// Return that as the export for use in Webpack, Browserify etc.
+	__webpack_require__(6);
+	module.exports = self.fetch.bind(self);
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	(function(self) {
+	  'use strict';
+
+	  if (self.fetch) {
+	    return
+	  }
+
+	  var support = {
+	    searchParams: 'URLSearchParams' in self,
+	    iterable: 'Symbol' in self && 'iterator' in Symbol,
+	    blob: 'FileReader' in self && 'Blob' in self && (function() {
+	      try {
+	        new Blob()
+	        return true
+	      } catch(e) {
+	        return false
+	      }
+	    })(),
+	    formData: 'FormData' in self,
+	    arrayBuffer: 'ArrayBuffer' in self
+	  }
+
+	  function normalizeName(name) {
+	    if (typeof name !== 'string') {
+	      name = String(name)
+	    }
+	    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+	      throw new TypeError('Invalid character in header field name')
+	    }
+	    return name.toLowerCase()
+	  }
+
+	  function normalizeValue(value) {
+	    if (typeof value !== 'string') {
+	      value = String(value)
+	    }
+	    return value
+	  }
+
+	  // Build a destructive iterator for the value list
+	  function iteratorFor(items) {
+	    var iterator = {
+	      next: function() {
+	        var value = items.shift()
+	        return {done: value === undefined, value: value}
+	      }
+	    }
+
+	    if (support.iterable) {
+	      iterator[Symbol.iterator] = function() {
+	        return iterator
+	      }
+	    }
+
+	    return iterator
+	  }
+
+	  function Headers(headers) {
+	    this.map = {}
+
+	    if (headers instanceof Headers) {
+	      headers.forEach(function(value, name) {
+	        this.append(name, value)
+	      }, this)
+
+	    } else if (headers) {
+	      Object.getOwnPropertyNames(headers).forEach(function(name) {
+	        this.append(name, headers[name])
+	      }, this)
+	    }
+	  }
+
+	  Headers.prototype.append = function(name, value) {
+	    name = normalizeName(name)
+	    value = normalizeValue(value)
+	    var list = this.map[name]
+	    if (!list) {
+	      list = []
+	      this.map[name] = list
+	    }
+	    list.push(value)
+	  }
+
+	  Headers.prototype['delete'] = function(name) {
+	    delete this.map[normalizeName(name)]
+	  }
+
+	  Headers.prototype.get = function(name) {
+	    var values = this.map[normalizeName(name)]
+	    return values ? values[0] : null
+	  }
+
+	  Headers.prototype.getAll = function(name) {
+	    return this.map[normalizeName(name)] || []
+	  }
+
+	  Headers.prototype.has = function(name) {
+	    return this.map.hasOwnProperty(normalizeName(name))
+	  }
+
+	  Headers.prototype.set = function(name, value) {
+	    this.map[normalizeName(name)] = [normalizeValue(value)]
+	  }
+
+	  Headers.prototype.forEach = function(callback, thisArg) {
+	    Object.getOwnPropertyNames(this.map).forEach(function(name) {
+	      this.map[name].forEach(function(value) {
+	        callback.call(thisArg, value, name, this)
+	      }, this)
+	    }, this)
+	  }
+
+	  Headers.prototype.keys = function() {
+	    var items = []
+	    this.forEach(function(value, name) { items.push(name) })
+	    return iteratorFor(items)
+	  }
+
+	  Headers.prototype.values = function() {
+	    var items = []
+	    this.forEach(function(value) { items.push(value) })
+	    return iteratorFor(items)
+	  }
+
+	  Headers.prototype.entries = function() {
+	    var items = []
+	    this.forEach(function(value, name) { items.push([name, value]) })
+	    return iteratorFor(items)
+	  }
+
+	  if (support.iterable) {
+	    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+	  }
+
+	  function consumed(body) {
+	    if (body.bodyUsed) {
+	      return Promise.reject(new TypeError('Already read'))
+	    }
+	    body.bodyUsed = true
+	  }
+
+	  function fileReaderReady(reader) {
+	    return new Promise(function(resolve, reject) {
+	      reader.onload = function() {
+	        resolve(reader.result)
+	      }
+	      reader.onerror = function() {
+	        reject(reader.error)
+	      }
+	    })
+	  }
+
+	  function readBlobAsArrayBuffer(blob) {
+	    var reader = new FileReader()
+	    reader.readAsArrayBuffer(blob)
+	    return fileReaderReady(reader)
+	  }
+
+	  function readBlobAsText(blob) {
+	    var reader = new FileReader()
+	    reader.readAsText(blob)
+	    return fileReaderReady(reader)
+	  }
+
+	  function Body() {
+	    this.bodyUsed = false
+
+	    this._initBody = function(body) {
+	      this._bodyInit = body
+	      if (typeof body === 'string') {
+	        this._bodyText = body
+	      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+	        this._bodyBlob = body
+	      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+	        this._bodyFormData = body
+	      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+	        this._bodyText = body.toString()
+	      } else if (!body) {
+	        this._bodyText = ''
+	      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
+	        // Only support ArrayBuffers for POST method.
+	        // Receiving ArrayBuffers happens via Blobs, instead.
+	      } else {
+	        throw new Error('unsupported BodyInit type')
+	      }
+
+	      if (!this.headers.get('content-type')) {
+	        if (typeof body === 'string') {
+	          this.headers.set('content-type', 'text/plain;charset=UTF-8')
+	        } else if (this._bodyBlob && this._bodyBlob.type) {
+	          this.headers.set('content-type', this._bodyBlob.type)
+	        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+	          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
+	        }
+	      }
+	    }
+
+	    if (support.blob) {
+	      this.blob = function() {
+	        var rejected = consumed(this)
+	        if (rejected) {
+	          return rejected
+	        }
+
+	        if (this._bodyBlob) {
+	          return Promise.resolve(this._bodyBlob)
+	        } else if (this._bodyFormData) {
+	          throw new Error('could not read FormData body as blob')
+	        } else {
+	          return Promise.resolve(new Blob([this._bodyText]))
+	        }
+	      }
+
+	      this.arrayBuffer = function() {
+	        return this.blob().then(readBlobAsArrayBuffer)
+	      }
+
+	      this.text = function() {
+	        var rejected = consumed(this)
+	        if (rejected) {
+	          return rejected
+	        }
+
+	        if (this._bodyBlob) {
+	          return readBlobAsText(this._bodyBlob)
+	        } else if (this._bodyFormData) {
+	          throw new Error('could not read FormData body as text')
+	        } else {
+	          return Promise.resolve(this._bodyText)
+	        }
+	      }
+	    } else {
+	      this.text = function() {
+	        var rejected = consumed(this)
+	        return rejected ? rejected : Promise.resolve(this._bodyText)
+	      }
+	    }
+
+	    if (support.formData) {
+	      this.formData = function() {
+	        return this.text().then(decode)
+	      }
+	    }
+
+	    this.json = function() {
+	      return this.text().then(JSON.parse)
+	    }
+
+	    return this
+	  }
+
+	  // HTTP methods whose capitalization should be normalized
+	  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+	  function normalizeMethod(method) {
+	    var upcased = method.toUpperCase()
+	    return (methods.indexOf(upcased) > -1) ? upcased : method
+	  }
+
+	  function Request(input, options) {
+	    options = options || {}
+	    var body = options.body
+	    if (Request.prototype.isPrototypeOf(input)) {
+	      if (input.bodyUsed) {
+	        throw new TypeError('Already read')
+	      }
+	      this.url = input.url
+	      this.credentials = input.credentials
+	      if (!options.headers) {
+	        this.headers = new Headers(input.headers)
+	      }
+	      this.method = input.method
+	      this.mode = input.mode
+	      if (!body) {
+	        body = input._bodyInit
+	        input.bodyUsed = true
+	      }
+	    } else {
+	      this.url = input
+	    }
+
+	    this.credentials = options.credentials || this.credentials || 'omit'
+	    if (options.headers || !this.headers) {
+	      this.headers = new Headers(options.headers)
+	    }
+	    this.method = normalizeMethod(options.method || this.method || 'GET')
+	    this.mode = options.mode || this.mode || null
+	    this.referrer = null
+
+	    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+	      throw new TypeError('Body not allowed for GET or HEAD requests')
+	    }
+	    this._initBody(body)
+	  }
+
+	  Request.prototype.clone = function() {
+	    return new Request(this)
+	  }
+
+	  function decode(body) {
+	    var form = new FormData()
+	    body.trim().split('&').forEach(function(bytes) {
+	      if (bytes) {
+	        var split = bytes.split('=')
+	        var name = split.shift().replace(/\+/g, ' ')
+	        var value = split.join('=').replace(/\+/g, ' ')
+	        form.append(decodeURIComponent(name), decodeURIComponent(value))
+	      }
+	    })
+	    return form
+	  }
+
+	  function headers(xhr) {
+	    var head = new Headers()
+	    var pairs = (xhr.getAllResponseHeaders() || '').trim().split('\n')
+	    pairs.forEach(function(header) {
+	      var split = header.trim().split(':')
+	      var key = split.shift().trim()
+	      var value = split.join(':').trim()
+	      head.append(key, value)
+	    })
+	    return head
+	  }
+
+	  Body.call(Request.prototype)
+
+	  function Response(bodyInit, options) {
+	    if (!options) {
+	      options = {}
+	    }
+
+	    this.type = 'default'
+	    this.status = options.status
+	    this.ok = this.status >= 200 && this.status < 300
+	    this.statusText = options.statusText
+	    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
+	    this.url = options.url || ''
+	    this._initBody(bodyInit)
+	  }
+
+	  Body.call(Response.prototype)
+
+	  Response.prototype.clone = function() {
+	    return new Response(this._bodyInit, {
+	      status: this.status,
+	      statusText: this.statusText,
+	      headers: new Headers(this.headers),
+	      url: this.url
+	    })
+	  }
+
+	  Response.error = function() {
+	    var response = new Response(null, {status: 0, statusText: ''})
+	    response.type = 'error'
+	    return response
+	  }
+
+	  var redirectStatuses = [301, 302, 303, 307, 308]
+
+	  Response.redirect = function(url, status) {
+	    if (redirectStatuses.indexOf(status) === -1) {
+	      throw new RangeError('Invalid status code')
+	    }
+
+	    return new Response(null, {status: status, headers: {location: url}})
+	  }
+
+	  self.Headers = Headers
+	  self.Request = Request
+	  self.Response = Response
+
+	  self.fetch = function(input, init) {
+	    return new Promise(function(resolve, reject) {
+	      var request
+	      if (Request.prototype.isPrototypeOf(input) && !init) {
+	        request = input
+	      } else {
+	        request = new Request(input, init)
+	      }
+
+	      var xhr = new XMLHttpRequest()
+
+	      function responseURL() {
+	        if ('responseURL' in xhr) {
+	          return xhr.responseURL
+	        }
+
+	        // Avoid security warnings on getResponseHeader when not allowed by CORS
+	        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+	          return xhr.getResponseHeader('X-Request-URL')
+	        }
+
+	        return
+	      }
+
+	      xhr.onload = function() {
+	        var options = {
+	          status: xhr.status,
+	          statusText: xhr.statusText,
+	          headers: headers(xhr),
+	          url: responseURL()
+	        }
+	        var body = 'response' in xhr ? xhr.response : xhr.responseText
+	        resolve(new Response(body, options))
+	      }
+
+	      xhr.onerror = function() {
+	        reject(new TypeError('Network request failed'))
+	      }
+
+	      xhr.ontimeout = function() {
+	        reject(new TypeError('Network request failed'))
+	      }
+
+	      xhr.open(request.method, request.url, true)
+
+	      if (request.credentials === 'include') {
+	        xhr.withCredentials = true
+	      }
+
+	      if ('responseType' in xhr && support.blob) {
+	        xhr.responseType = 'blob'
+	      }
+
+	      request.headers.forEach(function(value, name) {
+	        xhr.setRequestHeader(name, value)
+	      })
+
+	      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+	    })
+	  }
+	  self.fetch.polyfill = true
+	})(typeof self !== 'undefined' ? self : this);
+
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var redux = __webpack_require__(2);
 	var createStore = redux.createStore;
+	var applyMiddleware = redux.applyMiddleware;
+	var thunk = __webpack_require__(8).default;
 
-	var reducers = __webpack_require__(6);
+	var reducers = __webpack_require__(9);
 
-	var store = createStore(reducers.manageUsersReducer);
+	var store = createStore(reducers.manageUsersReducer, applyMiddleware(thunk));
 
 	module.exports = store;
 
 /***/ },
-/* 6 */
+/* 8 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	function createThunkMiddleware(extraArgument) {
+	  return function (_ref) {
+	    var dispatch = _ref.dispatch;
+	    var getState = _ref.getState;
+	    return function (next) {
+	      return function (action) {
+	        if (typeof action === 'function') {
+	          return action(dispatch, getState, extraArgument);
+	        }
+
+	        return next(action);
+	      };
+	    };
+	  };
+	}
+
+	var thunk = createThunkMiddleware();
+	thunk.withExtraArgument = createThunkMiddleware;
+
+	exports['default'] = thunk;
+
+/***/ },
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -211,51 +1076,183 @@
 
 	var actions = __webpack_require__(4);
 	var combineReducers = __webpack_require__(2).combineReducers;
-	var update = __webpack_require__(7);
+	var update = __webpack_require__(10);
+
+	var initialUserGroups = function () {
+	  var userGroups = [];
+	  try {
+	    var userGroupSections = document.querySelectorAll('section.user-group');
+	    for (var i = 0; i < userGroupSections.length; i++) {
+	      var userGroup = userGroupSections[i],
+	          id = parseInt(userGroup.getAttribute('data-user-group-id')),
+	          slackChannel = userGroup.getAttribute('data-slackchannel'),
+	          title = userGroup.querySelector('.name').innerHTML;
+	      userGroups.push({
+	        id: id,
+	        title: title,
+	        name: title,
+	        slackChannel: slackChannel
+	      });
+	    }
+	  } catch (e) {}
+	  return userGroups;
+	}();
+
+	console.log('initialUserGroups', initialUserGroups);
+
+	var initialUsers = function () {
+	  var users = [];
+	  try {
+	    var userRows = document.querySelectorAll('tr.user-row');
+	    var addedUsers = [];
+	    for (var i = 0; i < userRows.length; i++) {
+	      var userRow = userRows[i],
+	          userGroups = userRow.getAttribute('data-user-groups').split(',').map(function (groupId) {
+	        return parseInt(groupId);
+	      }),
+	          username = userRow.querySelector('.username').innerHTML,
+	          email = userRow.getAttribute('data-email'),
+	          slack = userRow.getAttribute('data-slack') || undefined,
+	          id = userRow.getAttribute('data-user-id'),
+	          contextualSettings = userRow.nextElementSibling,
+	          givenName = contextualSettings.querySelector('.givenName').innerHTML,
+	          sudo = contextualSettings.querySelector('input.sudo').checked,
+	          active = contextualSettings.querySelector('input.active').checked,
+	          jobTitle = contextualSettings.querySelector('.jobTitle').innerHTML;
+	      //console.log(id,username,userGroups,email,givenName,jobTitle,sudo,active);
+
+	      var groupRoles = {};
+	      Array.prototype.map.call(userRow.nextElementSibling.querySelectorAll('input[name="grouproles[]"]'), function (input) {
+	        var group = input.getAttribute('data-group'),
+	            role = input.getAttribute('data-role');
+
+	        if (!groupRoles[group]) groupRoles[group] = [];
+	        groupRoles[group].push(role);
+	      });
+
+	      if (!addedUsers[id]) users.push({
+	        id: id,
+	        username: username,
+	        slack: slack,
+	        givenName: givenName,
+	        familyName: '',
+	        email: email,
+	        active: active,
+	        sudo: sudo,
+	        jobTitle: jobTitle,
+	        userGroups: userGroups,
+	        groupRoles: groupRoles, // #remove
+	        roles: groupRoles
+	      });
+	      addedUsers[id] = true;
+	    }
+	  } catch (e) {}
+	  return users;
+	}();
+
+	//console.log(initialUsers);
+
+	/*initialUsers = [{
+	    id:0,
+	    username:'jpdevries',
+	    givenName:'John-Paul',
+	    familyName:'de Vries',
+	    email:'mail@devries.jp',
+	    active:true,
+	    sudo:false,
+	    jobTitle:'Redactor Lead Developer',
+	    userGroups:[1]
+	  },{
+	    id:1,
+	    username:'markh',
+	    givenName:'Mark',
+	    familyName:'Hamstra',
+	    email:'mark@modmore.com',
+	    active:true,
+	    sudo:true,
+	    jobTitle:'modmore Founder',
+	    userGroups:[0,1]
+	}];*/
+
+	/*initialUserGroups = [{
+	  id:0,
+	  title:'Administrators'
+	},{
+	  id:1,
+	  title:'Editors'
+	}];*/
+
+	var initialRoles = function () {
+	  try {
+	    return Array.prototype.map.call(document.querySelector('.create-setting-form .field-group fieldset fieldset').querySelectorAll('label'), function (fieldsetLabel) {
+	      return {
+	        name: fieldsetLabel.querySelector('span').innerHTML,
+	        id: fieldsetLabel.querySelector('input').getAttribute('data-role-id'),
+	        key: fieldsetLabel.querySelector('input').getAttribute('data-role-id')
+	      };
+	    });
+	  } catch (e) {
+	    return [];
+	  }
+	}();
+
+	//console.log(initialRoles);
+
+	var initialFieldsetRoles = [// todo: move this to the store
+	{
+	  key: 'administrator',
+	  title: 'Administrator',
+	  id: 1
+	}, {
+	  key: 'modmore',
+	  title: 'modmore',
+	  id: 2
+	}, {
+	  key: 'mgab',
+	  title: 'MGAB',
+	  id: 3
+	}, {
+	  key: 'sterc',
+	  title: 'Sterc',
+	  id: 4
+	}, {
+	  key: 'sitebuilders',
+	  title: 'Site Builders',
+	  id: 5
+	}];
+
+	var initialQuickCreate = {
+	  username: '',
+	  givenName: '',
+	  familyName: '',
+	  email: '',
+	  active: true,
+	  sudo: true,
+	  open: false,
+	  updating: false,
+	  id: undefined,
+	  roles: function () {
+	    var o = {};
+	    initialUserGroups.map(function (userGroup) {
+	      return o[userGroup.id.toString()] = [];
+	    });
+	    return o;
+	  }()
+	};
 
 	var initialState = {
-	  users: [{
-	    id: 0,
-	    username: 'jpdevries',
-	    givenName: 'John-Paul',
-	    familyName: 'de Vries',
-	    email: 'mail@devries.jp',
-	    active: true,
-	    sudo: false,
-	    jobTitle: 'Redactor Lead Developer',
-	    userGroups: [1]
-	  }, {
-	    id: 1,
-	    username: 'markh',
-	    givenName: 'Mark',
-	    familyName: 'Hamstra',
-	    email: 'mark@modmore.com',
-	    active: true,
-	    sudo: true,
-	    jobTitle: 'modmore Founder',
-	    userGroups: [0, 1]
-	  }],
-	  userGroups: [{
-	    id: 0,
-	    title: 'Administrators'
-	  }, {
-	    id: 1,
-	    title: 'Editors'
-	  }],
-	  quickCreate: {
-	    username: 'jpdevries',
-	    givenName: 'John-Paul',
-	    familyName: 'de Vries',
-	    email: 'mail@devries.jp',
-	    active: true,
-	    sudo: true
-	  }
+	  users: initialUsers,
+	  userGroups: initialUserGroups,
+	  fieldsetRoles: initialFieldsetRoles,
+	  roles: initialRoles,
+	  quickCreate: initialQuickCreate
 	};
+
+	console.log('initialState');
+	console.log(initialState);
 
 	var usersReducer = function usersReducer(state, action) {
 	  state = state || initialState.users;
-	  //return state;
-	  console.log(action);
 
 	  var index = 0;
 	  state.map(function (user, i) {
@@ -263,29 +1260,56 @@
 	  });
 
 	  switch (action.type) {
-	    case actions.UPDATE_USER:
-	      return update(state, _defineProperty({}, index, { $merge: action.user }));
+	    case actions.UPDATE_USER_SUCCESS:
+	      console.log(actions.UPDATE_USER_SUCCESS, action.user);
+	      var newState = update(state, _defineProperty({}, index, { $apply: function $apply(user) {
+	          return update(user, { $merge: action.user });
+	        } }));
+	      //console.log(state,newState);
+	      return newState;
 	      break;
 
 	    case actions.ADD_USER_TO_GROUP:
 	      return update(state, _defineProperty({}, index, { $apply: function $apply(user) {
-	          return update(user, { $merge: { userGroups: update(user.userGroups, { $push: [action.group] }) } });
+	          return update(user, { $merge: {
+	              userGroups: update(user.userGroups, { $push: [action.group] }),
+	              roles: { $apply: function $apply(roles) {
+	                  try {
+	                    if (!roles[action.group]) update(roles, { $merge: _defineProperty({}, action.group, []) });
+	                  } catch (e) {}
+	                  return roles;
+	                } }
+	            } });
 	        } }));
 	      break;
 
 	    case actions.REMOVE_USER_FROM_GROUP:
+	      console.log(actions.REMOVE_USER_FROM_GROUP, state[index]);
+
+	      console.log(Object.assign({}, state[index].roles, _defineProperty({}, action.group, [])));
+
 	      return update(state, _defineProperty({}, index, { $apply: function $apply(user) {
 	          return update(user, { $merge: {
 	              userGroups: state[index].userGroups.map(function (group) {
 	                return group !== action.group ? group : undefined;
 	              }).filter(function (group) {
 	                return group !== undefined;
-	              })
+	              }),
+	              roles: Object.assign({}, state[index].roles, _defineProperty({}, action.group, []))
 	            } });
 	        } }));
 	      break;
 
-	    case actions.ADD_USER:
+	    /*
+	    return update(state, {'roles': {$apply: (roles) => (
+	      update(roles, {[action.group]: {$apply: (group) => (
+	        update(group, {$push: [action.role]})
+	      )}})
+	    ) } })
+	    */
+
+	    case actions.ADD_USER_SUCCESS:
+	      console.log(actions.ADD_USER_SUCCESS, action.data);
 	      if (action.user.id === undefined) {
 	        var nextIndex = 0;
 	        state.map(function (user, i) {
@@ -294,18 +1318,75 @@
 	        action.user.id = nextIndex + 1;
 	      }
 	      return update(state, { $push: [action.user] });
+
+	    case actions.DELETE_USER_SUCCESS:
+	      var newState = update(state, { $splice: [[index, 1]] });
+	      return newState;
+
+	    case actions.DELETE_USER_ERROR:
+	      return state;
+
+	    case actions.DELETE_USERS_SUCCESS:
+	      return update(state, { $set: state.map(function (user, i) {
+	          return !action.users.includes(user.id.toString()) ? user : undefined;
+	        }).filter(function (user) {
+	          return user !== undefined;
+	        })
+	      });
+
+	    case actions.ACTIVATE_USERS_SUCCESS:
+	      return update(state, { $set: state.map(function (user, i) {
+	          return action.users.includes(user.id.toString()) ? update(user, { $merge: { active: true } }) : user;
+	        })
+	      });
+
+	    case actions.DEACTIVATE_USERS_SUCCESS:
+	      return update(state, { $set: state.map(function (user, i) {
+	          return action.users.includes(user.id.toString()) ? update(user, { $merge: { active: false } }) : user;
+	        })
+	      });
+
+	    default:
+	      return state;
 	  }
-	  return state;
 	};
 
 	var quickCreateReducer = function quickCreateReducer(state, action) {
 	  state = state || initialState.quickCreate;
-	  return state;
+
 	  switch (action.type) {
-	    case actions.UPDATE_CONTENT:
-	      return action.content;
-	      break;
+	    case actions.UPDATE_QUICKCREATE:
+	      console.log(actions.UPDATE_QUICKCREATE, update(state, { $merge: action.quickCreate }));
+	      return update(state, { $merge: action.quickCreate });
+
+	    case actions.QUICKCREATE_ROLE_ADD:
+	      if (!state.roles[action.group]) state.roles[action.group] = [];
+	      if (state.roles[action.group].includes(action.role)) break;
+	      return update(state, { 'roles': { $apply: function $apply(roles) {
+	            return update(roles, _defineProperty({}, action.group, { $apply: function $apply(group) {
+	                return update(group, { $push: [action.role] });
+	              } }));
+	          } } });
+
+	    case actions.QUICKCREATE_ROLE_REMOVE:
+	      return update(state, { 'roles': { $apply: function $apply(roles) {
+	            return update(roles, _defineProperty({}, action.group, { $apply: function $apply(group) {
+	                return group.filter(function (role) {
+	                  return role.toString() !== action.role.toString();
+	                });
+	              } }));
+	          } } });
+
+	    case actions.FLUSH_QUICK_CREATE:
+	      return update(state, { $set: initialQuickCreate });
+
 	  }
+	  return state;
+	};
+
+	var fieldsetRolesReducer = function fieldsetRolesReducer(state, action) {
+	  state = state || initialState.fieldsetRoles;
+
 	  return state;
 	};
 
@@ -323,27 +1404,43 @@
 	      }
 
 	      return update(state, { $push: [action.userGroup] });
-	      break;
+
+	    case actions.SET_USER_GROUPS:
+	      return update(state, { $set: action.userGroups });
 	  }
+	  return state;
+	};
+
+	var rolesReducer = function rolesReducer(state, action) {
+	  state = state || initialState.roles;
+
+	  switch (action.type) {
+	    case actions.SET_ROLES:
+	      //console.log('setting roles',update(state, {$set:action.roles}));
+	      return update(state, { $set: action.roles });
+	  }
+
 	  return state;
 	};
 
 	var manageUsersReducer = combineReducers({
 	  quickCreate: quickCreateReducer,
 	  users: usersReducer,
-	  userGroups: userGroupsReducer
+	  userGroups: userGroupsReducer,
+	  fieldsetRoles: fieldsetRolesReducer,
+	  roles: rolesReducer
 	});
 
 	exports.manageUsersReducer = manageUsersReducer;
 
 /***/ },
-/* 7 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(8);
+	module.exports = __webpack_require__(11);
 
 /***/ },
-/* 8 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -361,10 +1458,11 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(10);
+	var _prodInvariant = __webpack_require__(13),
+	    _assign = __webpack_require__(14);
 
-	var keyOf = __webpack_require__(11);
-	var invariant = __webpack_require__(12);
+	var keyOf = __webpack_require__(15);
+	var invariant = __webpack_require__(16);
 	var hasOwnProperty = {}.hasOwnProperty;
 
 	function shallowCopy(x) {
@@ -393,9 +1491,9 @@
 	});
 
 	function invariantArrayCase(value, spec, command) {
-	  !Array.isArray(value) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected target of %s to be an array; got %s.', command, value) : invariant(false) : void 0;
+	  !Array.isArray(value) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected target of %s to be an array; got %s.', command, value) : _prodInvariant('1', command, value) : void 0;
 	  var specValue = spec[command];
-	  !Array.isArray(specValue) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected spec of %s to be an array; got %s. ' + 'Did you forget to wrap your parameter in an array?', command, specValue) : invariant(false) : void 0;
+	  !Array.isArray(specValue) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected spec of %s to be an array; got %s. Did you forget to wrap your parameter in an array?', command, specValue) : _prodInvariant('2', command, specValue) : void 0;
 	}
 
 	/**
@@ -403,10 +1501,10 @@
 	 * See https://facebook.github.io/react/docs/update.html for details.
 	 */
 	function update(value, spec) {
-	  !(typeof spec === 'object') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): You provided a key path to update() that did not contain one ' + 'of %s. Did you forget to include {%s: ...}?', ALL_COMMANDS_LIST.join(', '), COMMAND_SET) : invariant(false) : void 0;
+	  !(typeof spec === 'object') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): You provided a key path to update() that did not contain one of %s. Did you forget to include {%s: ...}?', ALL_COMMANDS_LIST.join(', '), COMMAND_SET) : _prodInvariant('3', ALL_COMMANDS_LIST.join(', '), COMMAND_SET) : void 0;
 
 	  if (hasOwnProperty.call(spec, COMMAND_SET)) {
-	    !(Object.keys(spec).length === 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Cannot have more than one key in an object with %s', COMMAND_SET) : invariant(false) : void 0;
+	    !(Object.keys(spec).length === 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Cannot have more than one key in an object with %s', COMMAND_SET) : _prodInvariant('4', COMMAND_SET) : void 0;
 
 	    return spec[COMMAND_SET];
 	  }
@@ -415,8 +1513,8 @@
 
 	  if (hasOwnProperty.call(spec, COMMAND_MERGE)) {
 	    var mergeObj = spec[COMMAND_MERGE];
-	    !(mergeObj && typeof mergeObj === 'object') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): %s expects a spec of type \'object\'; got %s', COMMAND_MERGE, mergeObj) : invariant(false) : void 0;
-	    !(nextValue && typeof nextValue === 'object') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): %s expects a target of type \'object\'; got %s', COMMAND_MERGE, nextValue) : invariant(false) : void 0;
+	    !(mergeObj && typeof mergeObj === 'object') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): %s expects a spec of type \'object\'; got %s', COMMAND_MERGE, mergeObj) : _prodInvariant('5', COMMAND_MERGE, mergeObj) : void 0;
+	    !(nextValue && typeof nextValue === 'object') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): %s expects a target of type \'object\'; got %s', COMMAND_MERGE, nextValue) : _prodInvariant('6', COMMAND_MERGE, nextValue) : void 0;
 	    _assign(nextValue, spec[COMMAND_MERGE]);
 	  }
 
@@ -435,16 +1533,16 @@
 	  }
 
 	  if (hasOwnProperty.call(spec, COMMAND_SPLICE)) {
-	    !Array.isArray(value) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Expected %s target to be an array; got %s', COMMAND_SPLICE, value) : invariant(false) : void 0;
-	    !Array.isArray(spec[COMMAND_SPLICE]) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected spec of %s to be an array of arrays; got %s. ' + 'Did you forget to wrap your parameters in an array?', COMMAND_SPLICE, spec[COMMAND_SPLICE]) : invariant(false) : void 0;
+	    !Array.isArray(value) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Expected %s target to be an array; got %s', COMMAND_SPLICE, value) : _prodInvariant('7', COMMAND_SPLICE, value) : void 0;
+	    !Array.isArray(spec[COMMAND_SPLICE]) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected spec of %s to be an array of arrays; got %s. Did you forget to wrap your parameters in an array?', COMMAND_SPLICE, spec[COMMAND_SPLICE]) : _prodInvariant('8', COMMAND_SPLICE, spec[COMMAND_SPLICE]) : void 0;
 	    spec[COMMAND_SPLICE].forEach(function (args) {
-	      !Array.isArray(args) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected spec of %s to be an array of arrays; got %s. ' + 'Did you forget to wrap your parameters in an array?', COMMAND_SPLICE, spec[COMMAND_SPLICE]) : invariant(false) : void 0;
+	      !Array.isArray(args) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected spec of %s to be an array of arrays; got %s. Did you forget to wrap your parameters in an array?', COMMAND_SPLICE, spec[COMMAND_SPLICE]) : _prodInvariant('8', COMMAND_SPLICE, spec[COMMAND_SPLICE]) : void 0;
 	      nextValue.splice.apply(nextValue, args);
 	    });
 	  }
 
 	  if (hasOwnProperty.call(spec, COMMAND_APPLY)) {
-	    !(typeof spec[COMMAND_APPLY] === 'function') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected spec of %s to be a function; got %s.', COMMAND_APPLY, spec[COMMAND_APPLY]) : invariant(false) : void 0;
+	    !(typeof spec[COMMAND_APPLY] === 'function') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'update(): expected spec of %s to be a function; got %s.', COMMAND_APPLY, spec[COMMAND_APPLY]) : _prodInvariant('9', COMMAND_APPLY, spec[COMMAND_APPLY]) : void 0;
 	    nextValue = spec[COMMAND_APPLY](nextValue);
 	  }
 
@@ -458,15 +1556,40 @@
 	}
 
 	module.exports = update;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ },
-/* 9 */
+/* 12 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
 
 	var process = module.exports = {};
+
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+
+	(function () {
+	  try {
+	    cachedSetTimeout = setTimeout;
+	  } catch (e) {
+	    cachedSetTimeout = function () {
+	      throw new Error('setTimeout is not defined');
+	    }
+	  }
+	  try {
+	    cachedClearTimeout = clearTimeout;
+	  } catch (e) {
+	    cachedClearTimeout = function () {
+	      throw new Error('clearTimeout is not defined');
+	    }
+	  }
+	} ())
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -491,7 +1614,7 @@
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = setTimeout(cleanUpNextTick);
+	    var timeout = cachedSetTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -508,7 +1631,7 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    clearTimeout(timeout);
+	    cachedClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -520,7 +1643,7 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
+	        cachedSetTimeout(drainQueue, 0);
 	    }
 	};
 
@@ -561,7 +1684,51 @@
 
 
 /***/ },
-/* 10 */
+/* 13 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright (c) 2013-present, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule reactProdInvariant
+	 * 
+	 */
+	'use strict';
+
+	/**
+	 * WARNING: DO NOT manually require this module.
+	 * This is a replacement for `invariant(...)` used by the error code system
+	 * and will _only_ be required by the corresponding babel pass.
+	 * It always throws.
+	 */
+
+	function reactProdInvariant(code) {
+	  var argCount = arguments.length - 1;
+
+	  var message = 'Minified React error #' + code + '; visit ' + 'http://facebook.github.io/react/docs/error-decoder.html?invariant=' + code;
+
+	  for (var argIdx = 0; argIdx < argCount; argIdx++) {
+	    message += '&args[]=' + encodeURIComponent(arguments[argIdx + 1]);
+	  }
+
+	  message += ' for the full message or use the non-minified dev environment' + ' for full errors and additional helpful warnings.';
+
+	  var error = new Error(message);
+	  error.name = 'Invariant Violation';
+	  error.framesToPop = 1; // we don't care about reactProdInvariant's own frame
+
+	  throw error;
+	}
+
+	module.exports = reactProdInvariant;
+
+/***/ },
+/* 14 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -650,7 +1817,7 @@
 
 
 /***/ },
-/* 11 */
+/* 15 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -689,7 +1856,7 @@
 	module.exports = keyOf;
 
 /***/ },
-/* 12 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -741,19 +1908,19 @@
 	}
 
 	module.exports = invariant;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ },
-/* 13 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var actions = __webpack_require__(4);
-	var store = __webpack_require__(5);
+	var store = __webpack_require__(7);
 
-	var ManageUserFormHeader = __webpack_require__(14);
-	var SettingsGridSection = __webpack_require__(15);
+	var ManageUserFormHeader = __webpack_require__(18);
+	var SettingsGridSection = __webpack_require__(23);
 
 	var ManageUsersForm = React.createClass({
 	  displayName: 'ManageUsersForm',
@@ -767,28 +1934,33 @@
 	  render: function render() {
 	    var _this = this;
 
-	    var props = this.props;
+	    var props = this.props,
+	        expanded = this.state.filterBy !== undefined;
 
 	    var sections = props.userGroups.filter(function (userGroup) {
 	      return _this.state.filterBy === undefined ? true : _this.state.filterBy == userGroup.id;
 	    }).map(function (userGroup) {
-	      return React.createElement(SettingsGridSection, { bulkActions: true, key: userGroup.id, filter: _this.state.filter, users: props.users.filter(function (user) {
+	      return React.createElement(SettingsGridSection, { bulkActions: true, userGroup: userGroup, key: userGroup.id, expanded: expanded, filter: _this.state.filter, users: props.users.filter(function (user) {
 	          return user.userGroups.includes(userGroup.id);
-	        }), title: userGroup.title, userGroup: userGroup });
+	        }), title: userGroup.title });
 	    });
 
 	    return React.createElement(
 	      'div',
 	      null,
-	      React.createElement(ManageUserFormHeader, { handleFilterBy: function handleFilterBy(filterBy) {
-	          return _this.setState({
-	            filterBy: isNaN(filterBy) ? undefined : filterBy
-	          });
-	        }, handleFilter: function handleFilter(filter) {
-	          return _this.setState({
-	            filter: filter.length ? filter : undefined
-	          });
-	        } }),
+	      React.createElement(
+	        'div',
+	        { id: 'manage-user-form__header' },
+	        React.createElement(ManageUserFormHeader, { roles: props.roles, userGroups: props.userGroups, fieldsetRoles: props.fieldsetRoles, quickCreate: props.quickCreate, handleFilterBy: function handleFilterBy(filterBy) {
+	            return _this.setState({
+	              filterBy: isNaN(filterBy) ? undefined : filterBy
+	            });
+	          }, handleFilter: function handleFilter(filter) {
+	            return _this.setState({
+	              filter: filter.length ? filter : undefined
+	            });
+	          } })
+	      ),
 	      React.createElement(
 	        'div',
 	        { className: 'settings-grid' },
@@ -801,200 +1973,201 @@
 	module.exports = ManageUsersForm;
 
 /***/ },
-/* 14 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	var actions = __webpack_require__(4);
-	var store = __webpack_require__(5);
+	var store = __webpack_require__(7);
+	var ReactFormData = __webpack_require__(19);
+	var QuickCreateFieldset = __webpack_require__(21);
+	var update = __webpack_require__(10);
+
+	var CreateSettingsForm = React.createClass({
+	  displayName: 'CreateSettingsForm',
+
+	  mixins: [ReactFormData],
+	  getInitialState: function getInitialState() {
+	    return {
+	      quickCreateOpen: false,
+	      formMethod: ''
+	    };
+	  },
+	  componentWillMount: function componentWillMount() {
+	    var _this = this;
+
+	    store.subscribe(function () {
+	      _this.setState({ quickCreateOpen: store.getState().quickCreate.open });
+	    });
+	  },
+	  handleDeleteUser: function handleDeleteUser(event) {
+	    console.log('handleDeleteUser', event);
+	    this.setState({ formMethod: 'delete' });
+	  },
+	  render: function render() {
+	    var _this2 = this;
+
+	    var props = this.props;
+	    //console.log(props);
+	    var quickCreateUserBtn = this.state.quickCreateOpen ? false : React.createElement(
+	      'a',
+	      { href: '/add/user', className: 'button', onClick: function onClick(event) {
+	          event.preventDefault();
+	          store.dispatch(actions.updateQuickCreate({ open: true }));
+	        } },
+	      'Quick ',
+	      props.quickCreate.updating ? 'Update' : 'Create',
+	      ' User'
+	    );
+
+	    var quickCreate = this.state.quickCreateOpen ? React.createElement(QuickCreateFieldset, _extends({}, props, { handleDeleteUser: this.handleDeleteUser })) : false;
+
+	    return React.createElement(
+	      'form',
+	      { ref: 'createSettingForm', action: props.quickCreate.updating ? "/update/user/" + props.quickCreate.id : "/add/user", method: 'post', className: 'create-setting-form', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
+	          event.preventDefault();
+	          console.log('onSubmit', _this2.state.formMethod, props.quickCreate);
+
+	          switch (_this2.state.formMethod) {
+	            case 'delete':
+	              store.dispatch(actions.deleteUser(update({}, { $merge: {
+	                  user_id: props.quickCreate.id,
+	                  id: props.quickCreate.id
+	                } }))).then(function () {
+	                return closeQuickCreate(_this2);
+	              });
+	              return;
+	          }
+
+	          var user = {};
+	          var userGroups = [];
+
+	          try {
+	            // try to use modern FormData
+	            var formData = new FormData(_this2.refs.createSettingForm);
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+
+	            try {
+	              for (var _iterator = formData.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var pair = _step.value;
+
+	                user[pair[0]] = pair[1];
+	                if (pair[0].indexOf('-role') > -1) {
+	                  userGroups.push(parseInt(pair[1].split('|')[0]));
+	                }
+	              }
+	            } catch (err) {
+	              _didIteratorError = true;
+	              _iteratorError = err;
+	            } finally {
+	              try {
+	                if (!_iteratorNormalCompletion && _iterator.return) {
+	                  _iterator.return();
+	                }
+	              } finally {
+	                if (_didIteratorError) {
+	                  throw _iteratorError;
+	                }
+	              }
+	            }
+	          } catch (e) {
+	            // fallback to react-form-data
+	            console.log(_this2.formData);
+	            for (var key in _this2.formData) {
+	              //console.log(key);
+	              user[key] = _this2.formData[key];
+	              if (key.indexOf('-role') > -1) {
+	                _this2.formData[key].map(function (pair, index) {
+	                  userGroups.push(parseInt(pair.split('|')[0]));
+	                });
+	              }
+	            }
+	          }
+
+	          for (var group in props.quickCreate.roles) {
+	            console.log('group', group, props.quickCreate.roles[group]);
+	            userGroups.push(parseInt(group));
+	          }
+
+	          userGroups = [].concat(_toConsumableArray(new Set(userGroups))); // remove duplicates
+
+	          userGroups = userGroups.map(function (userGroup) {
+	            return (// make sure sure sure they are numbers #consider changing
+	              parseInt(userGroup)
+	            );
+	          });
+
+	          console.log('userGroups', userGroups);
+
+	          userGroups = userGroups.filter(function (userGroup) {
+	            return (// kinda weird to have to do this, expected userGroups to be removed, maybe a formData bug with the React mixin (polyfill)
+	              props.quickCreate.roles[userGroup] !== undefined && props.quickCreate.roles[userGroup].length ? true : false
+	            );
+	          });
+
+	          console.log('userGroups', userGroups, 'props.quickCreate.roles', props.quickCreate.roles);
+
+	          var userParams = {
+	            id: props.quickCreate.id,
+	            username: props.quickCreate.username,
+	            givenName: props.quickCreate.givenName,
+	            familyName: props.quickCreate.familyName,
+	            email: props.quickCreate.email,
+	            active: props.quickCreate.active,
+	            sudo: props.quickCreate.sudo,
+	            roles: props.quickCreate.roles,
+	            userGroups: userGroups
+	          };
+
+	          (props.quickCreate.updating ? store.dispatch(actions.updateUser(props.quickCreate.id, userParams)) : store.dispatch(actions.addUser(userParams))).then(function () {
+	            return closeQuickCreate(_this2);
+	          });
+
+	          function closeQuickCreate(that) {
+	            that.setState({ quickCreateOpen: false });
+	            store.dispatch(actions.flushQuickCreate());
+	          }
+	        } },
+	      React.createElement(
+	        'div',
+	        { className: 'top-bar' },
+	        quickCreateUserBtn,
+	        React.createElement(
+	          'a',
+	          { className: 'button', href: '/add/user' },
+	          'Create User'
+	        )
+	      ),
+	      quickCreate
+	    );
+	  }
+	});
 
 	var ManageUserFormHeader = React.createClass({
 	  displayName: 'ManageUserFormHeader',
 
 	  getInitialState: function getInitialState() {
-	    return {
-	      quickCreateOpen: false
-	    };
+	    return {};
 	  },
 	  render: function render() {
-	    var _this = this;
+	    var _this3 = this;
 
 	    var props = this.props;
 
-	    var quickCreate = this.state.quickCreateOpen ? React.createElement(
-	      'fieldset',
-	      null,
-	      React.createElement(
-	        'legend',
-	        null,
-	        'Quick Create User'
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'n field-group' },
-	        React.createElement(
-	          'div',
-	          { className: 'field-username' },
-	          React.createElement(
-	            'label',
-	            { 'for': 'username', id: 'username-label' },
-	            'Username'
-	          ),
-	          React.createElement('input', { type: 'text', ref: 'quickCreateUsername', autoFocus: true, 'aria-describedby': 'username-label', name: 'username', id: 'username', className: 'nickname', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'field-given-name' },
-	          React.createElement(
-	            'label',
-	            { 'for': 'given-name' },
-	            'First Name'
-	          ),
-	          React.createElement('input', { type: 'text', ref: 'quickCreateGivenName', name: 'given-name', id: 'given-name', className: 'given-name' })
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'field-family-name' },
-	          React.createElement(
-	            'label',
-	            { 'for': 'family-name' },
-	            'Last Name'
-	          ),
-	          React.createElement('input', { type: 'text', ref: 'quickCreateFamilyName', name: 'family-name', id: 'family-name', className: 'family-name' })
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'field-email' },
-	          React.createElement(
-	            'label',
-	            { 'for': 'email' },
-	            'Email'
-	          ),
-	          React.createElement('input', { type: 'email', ref: 'quickCreateEmail', name: 'email', id: 'email', className: 'email', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'field-group user-group-field user-status-field' },
-	        React.createElement(
-	          'div',
-	          { className: 'field' },
-	          React.createElement('input', { checked: true, type: 'checkbox', ref: 'quickCreateUserActive', name: 'user-active', id: 'user-active' }),
-	          React.createElement(
-	            'label',
-	            { 'for': 'user-active' },
-	            'Active'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'field' },
-	          React.createElement('input', { type: 'checkbox', ref: 'quickCreateUserSudo', name: 'user-sudo', id: 'user-sudo' }),
-	          React.createElement(
-	            'label',
-	            { 'for': 'user-sudo' },
-	            'Sudo'
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        null,
-	        React.createElement(
-	          'button',
-	          { type: 'submit' },
-	          'Submit'
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'field-group' },
-	        React.createElement(
-	          'fieldset',
-	          { className: 'field' },
-	          React.createElement(
-	            'legend',
-	            null,
-	            'User Groups'
-	          ),
-	          React.createElement(
-	            'p',
-	            null,
-	            'Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can below to the same User Group with multiple roles.'
-	          ),
-	          React.createElement(
-	            'fieldset',
-	            null,
-	            React.createElement(
-	              'legend',
-	              null,
-	              'Administrator'
-	            ),
-	            React.createElement(
-	              'label',
-	              { 'for': 'user-group-editor-roles[]' },
-	              'Roles'
-	            ),
-	            React.createElement(
-	              'label',
-	              null,
-	              React.createElement('input', { type: 'checkbox', checked: true, ref: 'userGroupEditorRoles', name: 'user-group-editor-roles[]' }),
-	              ' Editor'
-	            ),
-	            React.createElement(
-	              'label',
-	              null,
-	              React.createElement('input', { type: 'checkbox', ref: 'userGroupEditorRoles', name: 'user-group-editor-roles[]' }),
-	              ' Super User'
-	            )
-	          ),
-	          React.createElement(
-	            'fieldset',
-	            null,
-	            React.createElement(
-	              'legend',
-	              null,
-	              'Editor'
-	            ),
-	            React.createElement(
-	              'label',
-	              { 'for': 'user-group-editor-roles[]' },
-	              'Roles'
-	            ),
-	            React.createElement(
-	              'label',
-	              null,
-	              React.createElement('input', { type: 'checkbox', name: 'user-group-editor-roles[]' }),
-	              ' Editor'
-	            ),
-	            React.createElement(
-	              'label',
-	              null,
-	              React.createElement('input', { type: 'checkbox', name: 'user-group-editor-roles[]' }),
-	              ' Super User'
-	            )
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'footer',
-	        null,
-	        React.createElement(
-	          'button',
-	          { type: 'submit' },
-	          'Submit'
-	        )
-	      )
-	    ) : false;
-
-	    var quickCreateUserBtn = this.state.quickCreateOpen ? false : React.createElement(
-	      'button',
-	      { formaction: './quick-create/user.html', onClick: function onClick(event) {
-	          return _this.setState({ quickCreateOpen: true });
-	        } },
-	      'Quick Create User'
-	    );
+	    var filterBuyOptions = props.userGroups.map(function (userGroup, index) {
+	      return React.createElement(
+	        'option',
+	        { key: userGroup.id, value: userGroup.id },
+	        userGroup.title
+	      );
+	    });
 
 	    return React.createElement(
 	      'header',
@@ -1006,36 +2179,8 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { className: 'create-setting-module' },
-	        React.createElement(
-	          'form',
-	          { action: './../user-edit/index.html', className: 'create-setting-form', onSubmit: function onSubmit(event) {
-	              event.preventDefault();
-
-	              store.dispatch(actions.addUser({ // todo: pull user groups out of the form
-	                username: _this.refs.quickCreateUsername.value,
-	                givenName: _this.refs.quickCreateGivenName.value,
-	                familyName: _this.refs.quickCreateFamilyName.value,
-	                email: _this.refs.quickCreateEmail.value,
-	                active: _this.refs.quickCreateUserActive.checked,
-	                sudo: _this.refs.quickCreateUserSudo.checked,
-	                userGroups: [0]
-	              }));
-
-	              _this.setState({ quickCreateOpen: false });
-	            } },
-	          React.createElement(
-	            'div',
-	            { className: 'top-bar' },
-	            quickCreateUserBtn,
-	            React.createElement(
-	              'button',
-	              { id: 'create-user', formaction: './../user-edit/index.html' },
-	              'Create User'
-	            )
-	          ),
-	          quickCreate
-	        )
+	        { className: 'create-user-module' },
+	        React.createElement(CreateSettingsForm, props)
 	      ),
 	      React.createElement('hr', null),
 	      React.createElement(
@@ -1043,7 +2188,7 @@
 	        null,
 	        React.createElement(
 	          'h3',
-	          null,
+	          { id: 'search-users' },
 	          'Search Users'
 	        ),
 	        React.createElement(
@@ -1054,24 +2199,40 @@
 	            { 'for': 'search-users' },
 	            React.createElement(
 	              'span',
-	              { 'a11y-hidden': true },
+	              { className: 'accessibly-hidden' },
 	              'Search: '
 	            ),
 	            React.createElement('input', { name: 'search-users', id: 'search-users', type: 'text', placeholder: 'Search for any User. We\'ll try and find them.', onChange: function onChange(event) {
 	                try {
-	                  _this.props.handleFilter(event.target.value);
+	                  _this3.props.handleFilter(event.target.value);
 	                } catch (e) {}
 	              } })
 	          ),
 	          React.createElement(
-	            'button',
-	            { type: 'submit' },
-	            'Search'
+	            'div',
+	            null,
+	            React.createElement(
+	              'button',
+	              { type: 'submit' },
+	              'Search'
+	            )
 	          ),
 	          React.createElement(
 	            'label',
-	            { 'for': 'filter-by' },
-	            'Filter by:'
+	            { htmlFor: 'filter-by' },
+	            'Filter ',
+	            React.createElement(
+	              'span',
+	              { className: 'accessibly-hidden' },
+	              'Users'
+	            ),
+	            ' by',
+	            React.createElement(
+	              'span',
+	              { className: 'accessibly-hidden' },
+	              ' User Group'
+	            ),
+	            ':'
 	          ),
 	          React.createElement(
 	            'select',
@@ -1087,16 +2248,7 @@
 	              { checked: true, value: '' },
 	              'All'
 	            ),
-	            React.createElement(
-	              'option',
-	              { value: '1' },
-	              'Editors'
-	            ),
-	            React.createElement(
-	              'option',
-	              { value: '0' },
-	              'Administrators'
-	            )
+	            filterBuyOptions
 	          )
 	        ),
 	        React.createElement(
@@ -1113,17 +2265,382 @@
 	module.exports = ManageUserFormHeader;
 
 /***/ },
-/* 15 */
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(20);
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	// Generated by CoffeeScript 1.9.1
+	var getValue, isCheckbox, isMultiChoice, toggleValue;
+
+	isCheckbox = function(el) {
+	  return el.getAttribute('type') === 'checkbox';
+	};
+
+	isMultiChoice = function(checkbox) {
+	  return checkbox.getAttribute('value') != null;
+	};
+
+	toggleValue = function(arr, val) {
+	  var valueIndex;
+	  valueIndex = arr.indexOf(val);
+	  if (valueIndex !== -1) {
+	    arr.splice(valueIndex, 1);
+	  } else {
+	    arr.push(val);
+	  }
+	  return arr;
+	};
+
+	getValue = function(el, currentValue) {
+	  if (!isCheckbox(el)) {
+	    return el.value;
+	  } else {
+	    if (isMultiChoice(el)) {
+	      if (currentValue == null) {
+	        currentValue = [];
+	      }
+	      return toggleValue(currentValue, el.value);
+	    } else {
+	      return el.checked;
+	    }
+	  }
+	};
+
+	module.exports = {
+	  componentWillMount: function() {
+	    if (this.getInitialFormData != null) {
+	      return this.formData = this.getInitialFormData();
+	    } else {
+	      return this.formData = {};
+	    }
+	  },
+	  updateFormData: function(e) {
+	    var key, newValue, t;
+	    t = e.target;
+	    key = t.getAttribute('name');
+	    if (key != null) {
+	      newValue = getValue(t, this.formData[key]);
+	      this.setFormData(key, newValue);
+	      if (this.formDataDidChange != null) {
+	        return this.formDataDidChange();
+	      }
+	    }
+	  },
+	  setFormData: function(key, value) {
+	    return this.formData[key] = value;
+	  },
+	  clearFormData: function() {
+	    return this.formData = {};
+	  },
+	  resetFormData: function(obj) {
+	    this.clearFormData();
+	    return Object.keys(obj).forEach((function(_this) {
+	      return function(key) {
+	        return _this.formData[key] = obj[key];
+	      };
+	    })(this));
+	  }
+	};
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	if (!React) var React = __webpack_require__(22); // only require React if need be (server-side rendering)
+
+	var actions = __webpack_require__(4),
+	    store = __webpack_require__(7);
+
+	var QuickCreateFieldset = function (_React$Component) {
+	  _inherits(QuickCreateFieldset, _React$Component);
+
+	  function QuickCreateFieldset() {
+	    _classCallCheck(this, QuickCreateFieldset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(QuickCreateFieldset).apply(this, arguments));
+	  }
+
+	  _createClass(QuickCreateFieldset, [{
+	    key: 'render',
+	    value: function render() {
+
+	      var props = this.props;
+	      var userGroups = props.userGroups;
+	      var roles = props.roles; // all the roles there are
+	      var userGroupsMarkup = [];
+	      var userRoles = props.quickCreate.roles; // an object containing what roles the user is in per group
+
+	      //console.log('userGroups',userGroups);
+	      //console.log('userRoles',userRoles);
+	      try {
+	        userGroups.map(function (group, index) {
+	          var rolesMarkup = [];
+
+	          roles.map(function (role, index) {
+	            var roleChecked = function () {
+	              try {
+	                return userRoles[group.id].includes(role.id);
+	              } catch (e) {
+	                return false;
+	              }
+	            }();
+	            rolesMarkup.push(React.createElement(
+	              'label',
+	              { key: index, htmlFor: 'user-group-' + group.id + '-roles[]' },
+	              React.createElement('input', { type: 'checkbox', onChange: function onChange(event) {
+	                  if (event.target.checked) {
+	                    store.dispatch(actions.quickCreateRoleAdd(group.id, role.id));
+	                  } else {
+	                    store.dispatch(actions.quickCreateRoleRemove(group.id, role.id));
+	                  }
+	                }, checked: roleChecked, name: 'user-group-' + group.id + '-roles[]', value: group.id + '|' + role.id }),
+	              ' ',
+	              role.name
+	            ));
+	          });
+	          userGroupsMarkup.push(React.createElement(
+	            'fieldset',
+	            { key: index },
+	            React.createElement(
+	              'legend',
+	              null,
+	              group.title || group.name
+	            ),
+	            rolesMarkup
+	          ));
+	        });
+	      } catch (e) {}
+
+	      var otherButtons = props.quickCreate.updating ? React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'div',
+	          null,
+	          React.createElement(
+	            'button',
+	            { type: 'submit', formaction: '/duplicate/user', formMethod: 'put' },
+	            'Duplicate User'
+	          ),
+	          React.createElement(
+	            'button',
+	            { type: 'submit', onClick: this.props.handleDeleteUser, className: 'dangerous', formAction: '/user/delete', formMethod: 'post' },
+	            'Delete User'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          null,
+	          React.createElement(
+	            'a',
+	            { className: 'button', href: "mailto:" + props.quickCreate.email + "?subject=MODX%20Next" },
+	            'Email User'
+	          )
+	        )
+	      ) : false;
+
+	      return React.createElement(
+	        'fieldset',
+	        null,
+	        React.createElement(
+	          'legend',
+	          null,
+	          'Quick ',
+	          props.quickCreate.updating ? 'Update' : 'Create',
+	          ' User'
+	        ),
+	        React.createElement('input', { type: 'hidden', name: 'id', value: props.quickCreate.id }),
+	        React.createElement(
+	          'div',
+	          { className: 'n field-group' },
+	          React.createElement(
+	            'div',
+	            { className: 'field-username' },
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'username', id: 'username-label' },
+	              'Username'
+	            ),
+	            React.createElement('input', { type: 'text', autoComplete: 'off', value: props.quickCreate.username, disabled: props.quickCreate.updating, onChange: function onChange(event) {
+	                store.dispatch(actions.updateQuickCreate({
+	                  username: event.target.value
+	                }));
+	              }, ref: 'quickCreateUsername', autoFocus: !props.quickCreate.updating, 'aria-describedby': 'username-label', name: 'username', id: 'username', className: 'nickname', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'field-given-name' },
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'given-name' },
+	              'First Name'
+	            ),
+	            React.createElement('input', { type: 'text', value: props.quickCreate.givenName, onChange: function onChange(event) {
+	                store.dispatch(actions.updateQuickCreate({
+	                  givenName: event.target.value
+	                }));
+	              }, ref: 'quickCreateGivenName', name: 'given-name', id: 'given-name', className: 'given-name' })
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'field-family-name' },
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'family-name' },
+	              'Last Name'
+	            ),
+	            React.createElement('input', { type: 'text', value: props.quickCreate.familyName, onChange: function onChange(event) {
+	                store.dispatch(actions.updateQuickCreate({
+	                  familyName: event.target.value
+	                }));
+	              }, ref: 'quickCreateFamilyName', name: 'family-name', id: 'family-name', className: 'family-name' })
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'field-email' },
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'email' },
+	              'Email'
+	            ),
+	            React.createElement('input', { type: 'email', value: props.quickCreate.email, autoFocus: props.quickCreate.updating, onChange: function onChange(event) {
+	                store.dispatch(actions.updateQuickCreate({
+	                  email: event.target.value
+	                }));
+	              }, ref: 'quickCreateEmail', name: 'email', id: 'email', className: 'email', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'field-group user-group-field user-status-field' },
+	          React.createElement(
+	            'div',
+	            { className: 'field' },
+	            React.createElement('input', { type: 'checkbox', checked: props.quickCreate.active, onChange: function onChange(event) {
+	                store.dispatch(actions.updateQuickCreate({
+	                  active: event.target.checked
+	                }));
+	              }, ref: 'quickCreateUserActive', name: 'user-active', id: 'user-active' }),
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'user-active' },
+	              ' Active'
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'field' },
+	            React.createElement('input', { type: 'checkbox', checked: props.quickCreate.sudo, onChange: function onChange(event) {
+	                store.dispatch(actions.updateQuickCreate({
+	                  sudo: event.target.checked
+	                }));
+	              }, ref: 'quickCreateUserSudo', name: 'user-sudo', id: 'user-sudo' }),
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'user-sudo' },
+	              ' Sudo'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          null,
+	          React.createElement(
+	            'div',
+	            { className: 'balanced' },
+	            React.createElement(
+	              'button',
+	              { className: 'comfortably', type: 'submit' },
+	              props.quickCreate.updating ? 'Update' : 'Create',
+	              ' User'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'field-group' },
+	          React.createElement(
+	            'fieldset',
+	            { className: 'field' },
+	            React.createElement(
+	              'legend',
+	              null,
+	              'User Groups'
+	            ),
+	            React.createElement(
+	              'p',
+	              null,
+	              'Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can belong to the same User Group with multiple roles.'
+	            ),
+	            userGroupsMarkup
+	          )
+	        ),
+	        React.createElement(
+	          'footer',
+	          null,
+	          React.createElement(
+	            'div',
+	            null,
+	            React.createElement(
+	              'button',
+	              { className: 'comfortably', type: 'submit' },
+	              props.quickCreate.updating ? 'Update' : 'Create',
+	              ' User'
+	            )
+	          ),
+	          otherButtons
+	        )
+	      );
+	    }
+	  }]);
+
+	  return QuickCreateFieldset;
+	}(React.Component);
+
+	exports.default = QuickCreateFieldset;
+
+
+	module.exports = QuickCreateFieldset;
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	module.exports = React;
+
+/***/ },
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-	var update = __webpack_require__(7);
-
-	var store = __webpack_require__(5);
+	var update = __webpack_require__(10);
+	var store = __webpack_require__(7);
 	var actions = __webpack_require__(4);
+	var ReactFormData = __webpack_require__(19);
 
 	// can't use this until a future version of React
 	var SettingTableRowGroup = React.createClass({
@@ -1139,6 +2656,7 @@
 
 	    var props = this.props;
 	    var user = props.user;
+	    console.log('user', user);
 	    //<SettingsTableRowForm user={user} colspan="2" />
 	    return React.createElement(SettingsTableRow, { user: user, className: 'contextual-setting',
 	      handleBlur: function handleBlur(event) {
@@ -1154,37 +2672,114 @@
 	  }
 	});
 
-	var SettingsGridSectionBulkActionsFieldset = function SettingsGridSectionBulkActionsFieldset(props) {
-	  return React.createElement(
-	    'fieldset',
-	    null,
-	    React.createElement(
-	      'legend',
-	      null,
-	      'Bulk Actions'
-	    ),
-	    React.createElement(
-	      'button',
-	      { disabled: !props.emails.length, formAction: 'bulkactions/activate' },
-	      'Activate'
-	    ),
-	    React.createElement(
-	      'button',
-	      { disabled: !props.emails.length, formAction: 'bulkactions/Suspend' },
-	      'Suspend'
-	    ),
-	    React.createElement(
-	      'button',
-	      { disabled: !props.emails.length, formAction: 'bulkactions/delete' },
-	      'Delete'
-	    ),
-	    React.createElement(
-	      'button',
-	      { disabled: !props.emails.length, formAction: 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next', formTarget: '_blank' },
-	      'Email'
-	    )
-	  );
-	};
+	var SettingsGridSectionBulkActionsFieldset = React.createClass({
+	  displayName: 'SettingsGridSectionBulkActionsFieldset',
+
+	  mixins: [ReactFormData],
+	  getInitalState: function getInitalState() {
+	    return {
+	      formAction: '',
+	      formMethod: 'push'
+	    };
+	  },
+	  handleBulkButtonClick: function handleBulkButtonClick(event) {
+	    console.log({
+	      formAction: event.target.getAttribute('formaction'),
+	      formMethod: event.target.getAttribute('formmethod')
+	    });
+	    this.setState({
+	      formAction: event.target.getAttribute('formaction'),
+	      formMethod: event.target.getAttribute('formmethod')
+	    });
+	  },
+	  render: function render() {
+	    var _this2 = this;
+
+	    var props = this.props;
+	    var bulkToggledUsers = props.bulkToggledUsers;
+
+	    var hiddenBulkToggleInputs = [],
+	        bulkSelectedUsers = [];
+	    Object.keys(bulkToggledUsers).forEach(function (key) {
+	      if (bulkToggledUsers[key]) {
+	        bulkSelectedUsers.push(key.toString());
+	        hiddenBulkToggleInputs.push(React.createElement('input', { key: key, type: 'hidden', name: 'bulk-toggle-users[]', value: key }));
+	      }
+	    });
+
+	    return React.createElement(
+	      'form',
+	      { action: '/bulk/actions', method: 'post', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
+
+	          /*try {
+	            var formData = new FormData(event.target);
+	            for(var pair of formData.entries()) {
+	              console.log(pair);
+	            }
+	          } catch (e) {
+	             console.log(this.formData);
+	            for (var key in this.formData) {
+	              console.log(key);
+	            }
+	          }*/
+
+	          try {
+	            switch (_this2.state.formAction) {
+	              case '/api/users/activate':
+	                event.preventDefault();
+	                store.dispatch(actions.activateUsers(bulkSelectedUsers));
+	                break;
+
+	              case '/api/users/deactivate':
+	                event.preventDefault();
+	                store.dispatch(actions.deactivateUsers(bulkSelectedUsers));
+	                break;
+
+	              case '/api/users/delete':
+	                event.preventDefault();
+	                store.dispatch(actions.deleteUsers(bulkSelectedUsers));
+	                break;
+	            }
+	          } catch (e) {}
+	        } },
+	      hiddenBulkToggleInputs,
+	      React.createElement(
+	        'fieldset',
+	        null,
+	        React.createElement(
+	          'legend',
+	          null,
+	          'Bulk Actions'
+	        ),
+	        React.createElement(
+	          'button',
+	          { type: 'submit', disabled: !props.emails.length, className: 'go', formAction: '/api/users/activate', formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          'Activate'
+	        ),
+	        React.createElement(
+	          'button',
+	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: '/api/users/deactivate', formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          'Suspend'
+	        ),
+	        React.createElement(
+	          'button',
+	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: '/api/users/delete', formMethod: 'delete', onClick: this.handleBulkButtonClick },
+	          'Delete'
+	        ),
+	        React.createElement(
+	          'a',
+	          { className: 'button', disabled: !props.emails.length, href: 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body=' },
+	          'Email'
+	        ),
+	        React.createElement(
+	          'a',
+	          { className: 'button', disabled: !props.emails.length, href: 'https://' + props.slackChannel + '.slack.com/messages/@' + props.slackHandles.join(','), target: '_blank' },
+	          'Slack DM'
+	        )
+	      )
+	    );
+	  }
+	});
 
 	var SettingsTable = React.createClass({
 	  displayName: 'SettingsTable',
@@ -1194,8 +2789,13 @@
 	      userFormsToShow: {}
 	    };
 	  },
+	  handleQuickEdit: function handleQuickEdit(user, event) {
+	    event.preventDefault();
+	    event.stopPropagation();
+	    console.log('handleQuickEdit!!!', user);
+	  },
 	  render: function render() {
-	    var _this2 = this;
+	    var _this3 = this;
 
 	    var props = this.props;
 
@@ -1205,16 +2805,16 @@
 	      null,
 	      React.createElement('input', { type: 'checkbox', onChange: function onChange(event) {
 	          try {
-	            _this2.props.handleBulkAllCheck(event.target.checked);
+	            _this3.props.handleBulkAllCheck(event.target.checked);
 	          } catch (e) {}
 	        } })
 	    );
 
 	    var rows = props.users.map(function (user) {
 
-	      return [React.createElement(SettingsTableRow, { user: user, className: 'contextual-setting', bulkToggle: props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false, bulkActions: props.bulkActions,
+	      return [React.createElement(SettingsTableRow, { user: user, userGroup: props.userGroup, bulkToggle: props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false, bulkActions: props.bulkActions,
 	        handleFocus: function handleFocus(event) {
-	          return _this2.setState({
+	          return _this3.setState({
 	            userFormsToShow: update({}, _defineProperty({}, user.id, { $set: true }))
 	          });
 	        }, handleBulkToggle: function handleBulkToggle(id, checked) {
@@ -1222,7 +2822,7 @@
 	            props.handleBulkToggle(id, checked);
 	          } catch (e) {}
 	        }
-	      }), _this2.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
+	      }), _this3.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { slackChannel: props.userGroup.slackChannel, handleQuickEdit: _this3.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
 	    });
 
 	    return React.createElement(
@@ -1237,7 +2837,7 @@
 	          bulkTh,
 	          React.createElement(
 	            'th',
-	            null,
+	            { className: 'username' },
 	            'User'
 	          ),
 	          React.createElement(
@@ -1265,16 +2865,22 @@
 	    };
 	  },
 	  render: function render() {
-	    var _this3 = this;
+	    var _this4 = this;
 
 	    var props = this.props;
 	    var users = props.users;
 	    var minimumUsersBulkAction = props.minimumUsersBulkAction !== undefined ? props.minimumUsersBulkAction : 3;
 
 	    var emails = users.map(function (user) {
-	      return _this3.state.bulkToggledUsers[user.id] ? user.email : undefined;
+	      return _this4.state.bulkToggledUsers[user.id] ? user.email : undefined;
 	    }).filter(function (email) {
 	      return email;
+	    });
+
+	    var slackHandles = users.map(function (user) {
+	      return _this4.state.bulkToggledUsers[user.id] ? user.slack : undefined;
+	    }).filter(function (slack) {
+	      return slack;
 	    });
 
 	    if (props.filter !== undefined && props.filter.length) {
@@ -1284,60 +2890,75 @@
 	      });
 	    }
 
-	    var bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { emails: emails }) : undefined;
+	    console.log(props.userGroup.slackChannel);
 
-	    console.log(emails);
+	    var paginationAmount = 12,
+	        bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails, slackChannel: props.userGroup.slackChannel, slackHandles: slackHandles }) : false,
+	        viewAll = this.props.expanded ? false : users.length > paginationAmount ? React.createElement(
+	      'p',
+	      null,
+	      React.createElement(
+	        'a',
+	        { href: '#' },
+	        'View all ',
+	        props.title,
+	        ' users'
+	      )
+	    ) : false,
+	        paginatedUsers = this.props.expanded ? users : users.slice(0, paginationAmount);
 
-	    return React.createElement(
+	    return paginatedUsers.length ? React.createElement(
 	      'section',
-	      { id: 'core-settings' },
+	      { id: "user-group-" + props.userGroup.id },
 	      React.createElement(
-	        'header',
+	        'div',
 	        null,
 	        React.createElement(
-	          'h2',
-	          null,
-	          props.title
-	        )
-	      ),
-	      React.createElement(
-	        'form',
-	        null,
-	        bulkActionsFieldset,
-	        React.createElement(SettingsTable, { bulkActions: users.length >= minimumUsersBulkAction ? props.bulkActions : false, users: users, bulkToggledUsers: this.state.bulkToggledUsers, userGroup: props.userGroup, handleBulkToggle: function handleBulkToggle(id, checked) {
-	            _this3.setState({
-	              bulkToggledUsers: update(_this3.state.bulkToggledUsers, _defineProperty({}, id, { $set: checked }))
-	            });
-	          }, handleBulkAllCheck: function handleBulkAllCheck(allChecked) {
-	            console.log('handleBulkAllCheck', allChecked);
-	            var all = {};
-	            if (allChecked) {
-	              users.map(function (user) {
-	                all[user.id] = true;
-	              });
-	            }
-	            _this3.setState({
-	              bulkToggledUsers: all
-	            });
-	          } }),
-	        bulkActionsFieldset
-	      ),
-	      React.createElement(
-	        'footer',
-	        null,
-	        React.createElement(
-	          'p',
+	          'header',
 	          null,
 	          React.createElement(
-	            'a',
-	            { href: '#' },
-	            'View all ',
-	            props.title,
-	            ' users'
+	            'h2',
+	            null,
+	            props.title
 	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'balanced' },
+	          React.createElement(
+	            'a',
+	            { className: 'button', href: "/add/user?group=" + props.userGroup.id, style: { marginBottom: "2em" } },
+	            'Create ' + props.title + ' User'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          null,
+	          bulkActionsFieldset,
+	          React.createElement(SettingsTable, { slackChannel: props.userGroup.slackChannel, bulkActions: paginatedUsers.length >= minimumUsersBulkAction ? props.bulkActions : false, users: paginatedUsers, bulkToggledUsers: this.state.bulkToggledUsers, userGroup: props.userGroup, handleBulkToggle: function handleBulkToggle(id, checked) {
+	              _this4.setState({
+	                bulkToggledUsers: update(_this4.state.bulkToggledUsers, _defineProperty({}, id, { $set: checked }))
+	              });
+	            }, handleBulkAllCheck: function handleBulkAllCheck(allChecked) {
+	              var all = {};
+	              if (allChecked) {
+	                paginatedUsers.map(function (user) {
+	                  all[user.id] = true;
+	                });
+	              }
+	              _this4.setState({
+	                bulkToggledUsers: all
+	              });
+	            } }),
+	          bulkActionsFieldset
+	        ),
+	        React.createElement(
+	          'footer',
+	          null,
+	          viewAll
 	        )
 	      )
-	    );
+	    ) : false;
 	  }
 	});
 
@@ -1345,24 +2966,28 @@
 	  var user = props.user;
 
 	  var bulkActionsTd;
-	  var bulkName = 'bulk-' + user.username;
+	  var bulkName = 'bulk-' + props.userGroup.id + '-' + user.username;
 	  if (props.bulkActions) bulkActionsTd = React.createElement(
 	    'td',
 	    null,
 	    React.createElement(
 	      'label',
-	      null,
-	      React.createElement('input', { type: 'checkbox', name: bulkName, checked: props.bulkToggle, onChange: function onChange(event) {
-	          try {
-	            props.handleBulkToggle(user.id, event.target.checked);
-	          } catch (e) {}
-	        } })
-	    )
+	      { htmlFor: bulkName, className: 'accessibly-hidden' },
+	      'Select ',
+	      user.username
+	    ),
+	    React.createElement('input', { type: 'checkbox', name: bulkName, checked: props.bulkToggle, onChange: function onChange(event) {
+	        event.stopPropagation();
+	        try {
+	          props.handleBulkToggle(user.id, event.target.checked);
+	        } catch (e) {}
+	      } })
 	  );
 
 	  return React.createElement(
 	    'tr',
 	    { tabIndex: '0', onFocus: function onFocus(event) {
+	        console.log(event.nativeEvent);
 	        try {
 	          props.handleFocus();
 	        } catch (e) {}
@@ -1374,160 +2999,189 @@
 	    bulkActionsTd,
 	    React.createElement(
 	      'td',
-	      null,
+	      { className: 'username' },
 	      user.username
 	    ),
 	    React.createElement(
 	      'td',
-	      null,
+	      { className: 'shy balanced checkbox' },
 	      React.createElement(
 	        'label',
 	        null,
 	        React.createElement(
 	          'span',
-	          { 'a11y-hidden': true },
+	          { className: 'accessibly-hidden' },
 	          'Active: '
 	        ),
 	        React.createElement('input', { checked: user.active, type: 'checkbox', onChange: function onChange(event) {
-	            return store.dispatch(actions.updateUser(user.id, {
-	              active: event.target.checked
-	            }));
+	            return store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
+	                active: event.target.checked
+	              } })));
 	          } })
 	      )
 	    )
 	  );
 	};
 
-	var SettingsTableRowForm = function SettingsTableRowForm(props) {
-	  var user = props.user;
-	  var userGroup = props.userGroup;
+	var SettingsTableRowForm = React.createClass({
+	  displayName: 'SettingsTableRowForm',
 
-	  return React.createElement(
-	    'tr',
-	    props,
-	    React.createElement(
-	      'td',
-	      { colSpan: props.colspan },
+	  mixins: [ReactFormData],
+	  getInitialState: function getInitialState() {
+	    return {
+	      asyncAction: undefined
+	    };
+	  },
+	  render: function render() {
+	    var props = this.props;
+	    var user = props.user;
+	    var userGroup = props.userGroup;
+
+	    //console.log('SettingsTableRowForm');
+	    //console.log(user);
+
+	    return React.createElement(
+	      'tr',
+	      props,
 	      React.createElement(
-	        'div',
-	        null,
+	        'td',
+	        { colSpan: props.colspan },
 	        React.createElement(
-	          'div',
-	          { className: 'friendly-labels' },
+	          'form',
+	          { action: this.state.formAction, method: this.state.formMethod, onChange: this.updateFormData },
+	          React.createElement('input', { name: 'user_id', type: 'hidden', value: user.id }),
+	          React.createElement('input', { name: 'username', type: 'hidden', value: user.username }),
 	          React.createElement(
-	            'label',
+	            'div',
+	            { className: 'friendly-labels' },
+	            React.createElement(
+	              'label',
+	              null,
+	              'Sudo: ',
+	              React.createElement('input', { name: 'sudo', checked: user.sudo, type: 'checkbox', onChange: function onChange(event) {
+	                  store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
+	                      sudo: event.target.checked
+	                    } })));
+	                } })
+	            ),
+	            React.createElement(
+	              'label',
+	              null,
+	              'Active: ',
+	              React.createElement('input', { name: 'active', checked: user.active, type: 'checkbox', onChange: function onChange(event) {
+	                  store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
+	                      active: event.target.checked
+	                    } })));
+	                } })
+	            )
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'subtle balanced oblique' },
+	            user.jobTitle
+	          ),
+	          React.createElement(
+	            'div',
 	            null,
-	            'Sudo: ',
-	            React.createElement('input', { name: 'sudo', checked: user.sudo, type: 'checkbox', onChange: function onChange(event) {
-	                store.dispatch(actions.updateUser(user.id, {
-	                  sudo: event.target.checked
-	                }));
-	              } })
+	            React.createElement(
+	              'a',
+	              { className: 'button' },
+	              'Next User'
+	            )
 	          ),
 	          React.createElement(
-	            'label',
+	            'div',
 	            null,
-	            'Active: ',
-	            React.createElement('input', { name: 'active', checked: user.active, type: 'checkbox', onChange: function onChange(event) {
-	                store.dispatch(actions.updateUser(user.id, {
-	                  active: event.target.checked
-	                }));
-	              } })
-	          )
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'subtle balanced oblique' },
-	          user.jobTitle
-	        ),
-	        React.createElement(
-	          'div',
-	          null,
-	          React.createElement(
-	            'button',
-	            { type: 'submit', className: 'save' },
-	            'Save'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          null,
-	          React.createElement(
-	            'button',
-	            { className: 'save' },
-	            'Next User'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          null,
-	          React.createElement(
-	            'button',
-	            { type: 'submit', formAction: './quick-edit/user.html' },
-	            'Quick Edit'
+	            React.createElement(
+	              'a',
+	              { className: 'button', href: "/update/user/" + user.id, onClick: function onClick(event) {
+	                  event.preventDefault();
+	                  //event.stopPropagation();
+	                  console.log('quick edit clicked', user);
+	                  store.dispatch(actions.updateQuickCreate({
+	                    username: user.username,
+	                    givenName: user.givenName,
+	                    familyName: user.familyName,
+	                    email: user.email,
+	                    active: user.active,
+	                    sudo: user.sudo,
+	                    open: true,
+	                    updating: true,
+	                    id: user.id,
+	                    roles: user.roles
+	                  }));
+	                } },
+	              'Quick Edit'
+	            ),
+	            React.createElement(
+	              'a',
+	              { className: 'button', href: "/update/user/" + user.id },
+	              'Edit'
+	            )
 	          ),
 	          React.createElement(
-	            'button',
-	            { type: 'submit', formAction: './../user-edit/index.html' },
-	            'Edit'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          null,
-	          React.createElement(
-	            'button',
-	            { type: 'submit', formAction: 'duplicate/user', className: 'save' },
-	            'Duplicate'
+	            'div',
+	            null,
+	            React.createElement(
+	              'button',
+	              { type: 'submit', formAction: 'duplicate/user', className: 'save' },
+	              'Duplicate'
+	            ),
+	            React.createElement(
+	              'button',
+	              { className: 'delete', type: 'submit', onClick: function onClick(event) {
+	                  event.preventDefault();
+	                  event.stopPropagation();
+	                  store.dispatch(actions.deleteUser(update(user, { $merge: {
+	                      user_id: user.id
+	                    } })));
+	                }, formMethod: 'post', formAction: '/user/delete', 'data-async-action': 'deleteuser' },
+	              'Delete'
+	            ),
+	            React.createElement(
+	              'a',
+	              { className: 'button', href: 'mailto:' + user.email + '?subject=MODX%20Next' },
+	              'Email'
+	            )
 	          ),
 	          React.createElement(
-	            'button',
-	            { type: 'submit', formAction: 'delete/user' },
-	            'Delete'
+	            'div',
+	            null,
+	            React.createElement(
+	              'a',
+	              { className: 'button', href: "https://" + props.slackChannel + ".slack.com/messages/@" + user.username, target: '_blank' },
+	              'Slack DM'
+	            )
 	          ),
 	          React.createElement(
-	            'button',
-	            { type: 'submit', formAction: 'mailto:' + user.email + '?subject=MODX%20Next', formTarget: '_blank' },
-	            'Email'
+	            'div',
+	            { style: { marginTop: "1em" } },
+	            React.createElement(
+	              'button',
+	              { formAction: 'removefromgroup/user', onClick: function onClick(event) {
+	                  event.preventDefault();
+	                  store.dispatch(actions.removeUserFromGroup(user.id, userGroup.id));
+	                } },
+	              'Remove from Group'
+	            )
 	          )
 	        ),
 	        React.createElement(
-	          'div',
-	          null,
+	          'footer',
+	          { className: 'subtle oblique balanced' },
 	          React.createElement(
-	            'button',
-	            { type: 'submit', className: 'save' },
-	            'Save'
+	            'p',
+	            null,
+	            user.givenName,
+	            ' ',
+	            user.familyName,
+	            '’ last login was Jan 23, 2016 4:52pm from Planet Earth'
 	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { style: { marginTop: "1em" } },
-	          React.createElement(
-	            'button',
-	            { formAction: 'removefromgroup/user', onClick: function onClick(event) {
-	                event.preventDefault();
-	                store.dispatch(actions.removeUserFromGroup(user.id, userGroup.id));
-	              } },
-	            'Remove from Group'
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'footer',
-	        { className: 'subtle oblique balanced' },
-	        React.createElement(
-	          'p',
-	          null,
-	          user.givenName,
-	          ' ',
-	          user.familyName,
-	          '’ last login was Jan 23, 2016 4:52pm from Leeuwarden, Nederlands'
 	        )
 	      )
-	    )
-	  );
-	};
+	    );
+	  }
+	});
 
 	module.exports = SettingsGridSection;
 

@@ -1,0 +1,42 @@
+{% include 'header.twig' with {
+  'base':'/',
+  'title':'Unable to Activate Users'
+} %}
+<body class="micro-page">
+  <div id="manage-users-form">
+    <div class="horizontally-padded">
+      <main class="bright padded">
+        <h1>Unable to {{ activate|default('Activate') }} Users</h1>
+        <table>
+          <caption style="text-align:left">
+            <p>
+              The following users were not able to be&nbsp;{{ activated|default('Activated')|lower }}.
+            </p>
+          </caption>
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>username</th>
+              <th>fullname</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.fullname }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </main>
+      <aside class="bright padded">
+        <h1>Manage Users</h1>
+        <p>
+          Return to <a href="/">Manage Users</a>.
+        </p>
+      </aside>
+    </div>
+  </div>
+</body>

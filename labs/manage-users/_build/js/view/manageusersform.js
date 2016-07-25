@@ -10,27 +10,30 @@ var ManageUsersForm = React.createClass({
     filterBy:undefined
   }),
   render:function(){
-    var props = this.props;
+    var props = this.props,
+    expanded = this.state.filterBy !== undefined;
 
     var sections = props.userGroups.filter((userGroup) => (
       (this.state.filterBy === undefined) ? true : this.state.filterBy == userGroup.id
     )).map((userGroup) => (
-      <SettingsGridSection bulkActions={true} key={userGroup.id} filter={this.state.filter} users={props.users.filter((user) => (
+      <SettingsGridSection bulkActions={true} userGroup={userGroup} key={userGroup.id} expanded={expanded} filter={this.state.filter} users={props.users.filter((user) => (
         user.userGroups.includes(userGroup.id)
-      ))} title={userGroup.title} userGroup={userGroup} />
+      ))} title={userGroup.title} />
     ));
 
     return (
       <div>
-        <ManageUserFormHeader handleFilterBy={(filterBy) => (
-          this.setState({
-            filterBy:isNaN(filterBy) ? undefined : filterBy
-          })
-        )} handleFilter={(filter) => (
-          this.setState({
-            filter:filter.length ? filter : undefined
-          })
-        )} />
+        <div id="manage-user-form__header">
+          <ManageUserFormHeader roles={props.roles} userGroups={props.userGroups} fieldsetRoles={props.fieldsetRoles} quickCreate={props.quickCreate} handleFilterBy={(filterBy) => (
+            this.setState({
+              filterBy:isNaN(filterBy) ? undefined : filterBy
+            })
+          )} handleFilter={(filter) => (
+            this.setState({
+              filter:filter.length ? filter : undefined
+            })
+          )} />
+        </div>
         <div className="settings-grid">
           {sections}
         </div>

@@ -1,0 +1,206 @@
+{% include 'header.twig' %}
+  <body>
+    <div id="manage-users-form">
+      <div id="manage-user-form__header">
+        <header>
+          <h1>Manage Users</h1>
+          <div class="create-user-module">
+            <form action="/add/user" method="post" class="create-setting-form">
+              <div class="top-bar">
+                <script>document.write('<button js-hidden formaction="./quick-create/user.html" aria-haspopup="true">Quick Create User</button>')</script>
+              </div>
+              <a id="create-user" class="button" href="/add/user">Create User</a>
+              <fieldset style="margin-top:1em" js-not-hidden>
+                <legend>Quick Create User</legend>
+                <div class="n field-group">
+                  <div class="field-username">
+                    <label for="username" id="username-label">Username</label>
+                    <input type="text" autocomplete="off" aria-describedby="username-label" name="username" id="username" class="nickname" aria-required="true"  aria-invalid="false" required>
+                  </div>
+                  <div class="field-given-name">
+                    <label for="given-name">First Name</label>
+                    <input type="text" name="given-name" id="given-name" class="given-name" />
+                  </div>
+                  <div class="field-family-name">
+                    <label for="family-name">Last Name</label>
+                    <input type="text" name="family-name" id="family-name" class="family-name" />
+                  </div>
+                  <div class="field-email">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" class="email" aria-required="true"  aria-invalid="false" required />
+                  </div>
+                </div>
+                <div style="margin:1em 0" class="field-group user-group-field user-status-field">
+                  <div class="field">
+                    <input checked type="checkbox" name="user-active" id="user-active">
+                    <label for="user-active">Active</label>
+                  </div>
+                  <div class="field">
+                    <input type="checkbox" name="user-sudo" id="user-sudo">
+                    <label for="user-sudo">Sudo</label>
+                  </div>
+                </div>
+                <div style="text-align:center;margin:1em 0;">
+                  <div>
+                    <button type="submit">Submit</button>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <fieldset class="field">
+                    <legend>User Groups</legend>
+                    <p>Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can below to the same User Group with multiple&nbsp;roles.</p>
+
+                    {% for userGroup in userGroups %}
+                      {% set firstGroup = loop.first %}
+                      <fieldset>
+                        <legend>{{ userGroup.name }}<span class="accessibly-hidden"> Roles</span></legend>
+                        {% for role in roles %}
+                          <label for="user-group-{{ userGroup.id }}-{{ role.id }}-roles[]"><input id="user-group-{{ userGroup.id }}-{{ role.id }}-roles[]" type="checkbox"{% if loop.first and firstGroup %} checked {% endif %}name="user-group-{{ userGroup.id }}-roles[]" data-user-group-id="{{ userGroup.id }}" data-role-id="{{ role.id }}" value="{{ userGroup.id }}|{{ role.id }}" />&nbsp;<span>{{ role.name }}</span></label>
+                        {% endfor %}
+                      </fieldset>
+                    {% endfor %}
+
+                    <!--fieldset>
+                      <legend>Administrator</legend>
+                      <label for="user-group-editor-roles[]">Roles</label>
+                      <label><input type="checkbox" checked name="user-group-editor-roles[]" />&nbsp;Editor</label>
+                      <label><input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Super User</label>
+                    </fieldset>
+                    <fieldset>
+                      <legend>Editor</legend>
+                      <label for="user-group-editor-roles[]">Roles</label>
+                      <label><input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Editor</label>
+                      <label><input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Super User</label>
+                    </fieldset-->
+                  </fieldset>
+                </div>
+                <footer style="margin-top:1em">
+                  <button type="submit">Submit</button>
+                </footer>
+              </fieldset>
+            </form>
+          </div>
+          <hr>
+          <div>
+            <h3 id="search-users">Search Users</h3>
+            <form action="#" id="search" class="search-settings">
+              <label for="search-users" ><span a11y-hidden>Search: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User or User Group. We'll try and find it."></label>
+              <div>
+                <button type="submit">Search</button>
+              </div>
+              <label for="filter-by">Filter <span class="accessibly-hidden">Users</span> by<span class="accessibly-hidden"> User Group</span>:</label>
+              <select name="filter-by" id="filter-by">
+                <option checked value="">All</option>
+                <option value="1">Editors</option>
+                <option value="0">Administrators</option>
+              </select>
+
+            </form>
+            <p>Below you will users who have logged in recently per user group.</p>
+          </div>
+          <hr>
+        </header>
+      </div>
+      <div class="settings-grid">
+        {% for userGroup in userGroups %}
+        {% set usersInGroup = 0 %}
+          {% for user in users %}
+            {% if userGroup.id in user.user_groups %}
+              {% set usersInGroup = usersInGroup + 1 %}
+            {% endif %}
+          {% endfor %}
+        <section id="user-group-{{ userGroup.id }}" class="user-group" data-user-group-id="{{ userGroup.id }}" data-slackchannel="{{ userGroup.slackchannel }}">
+          <div>
+            <header>
+              <h2 class="name">{{ userGroup.name }}</h2>
+            </header>
+            <div>
+              <div class="balanced"><a class="button" href="/add/user?group={{ userGroup.id }}" style="margin-bottom:2em">Create {{ userGroup.name }} User</a></div>
+              {% if usersInGroup > 3 %}
+                {% include 'bulkactions.twig' with {'users' : users} %}
+              {% endif %}
+              <table class="settings-table">
+                <thead>
+                  <tr>
+                    <th class="username">User</th>
+                    <!--th>Active</th-->
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for user in users %}
+                  {% if userGroup.id in user.user_groups %}
+                  <tr tabindex="0" class="user-row" data-user-id="{{ user.id }}" data-slack="{{ user.slack }}" data-email="{{ user.email }}" data-user-groups="{{ user.user_groups|join(',') }}">
+                    <td class="username">{{ user.username }}</td>
+                    <!--td><label><span a11y-hidden>Active: </span><input {% if user.active == '1' %}checked {% endif %} type="checkbox"></label></td-->
+                  </tr>
+                  <tr class="contextual-setting" js-hidden>
+                    <td colspan="3">
+                        <form action="/" method="post">
+                          {% for groupRoles in user.group_roles %}
+                            {% for role in groupRoles.roles %}
+                              <input type="hidden" class="grouproles" name="grouproles[]" value="{{ groupRoles.group }}|{{ role }}" data-group="{{ groupRoles.group }}" data-role="{{ role }}">
+                            {% endfor %}
+                          {% endfor %}
+                          <input name="user_id" type="hidden" value="{{ user.id }}" />
+                          <input name="username" type="hidden" value="{{ user.username }}" />
+                          <div class="friendly-labels">
+                            <label for="{{ user.username }}-{{ userGroup.id }}-sudo">Sudo: <input class="sudo" name="{{ user.username }}-{{ userGroup.id }}-sudo" {% if user.sudo == '1' %}checked {% endif %}type="checkbox" /></label>
+                            <label for="{{ user.username }}-{{ userGroup.id }}-active">Active: <input class="active" name="{{ user.username }}-{{ userGroup.id }}-active" {% if user.active == '1' %}checked {% endif %}type="checkbox" /></label>
+                          </div>
+                          <p class="subtle balanced oblique jobTitle">{{ user.title }}</p>
+                          <div>
+                            <button type="submit" class="save">Save</button>
+                          </div>
+                          <script>document.write('<div><button class="save">Next User</button></div>')</script>
+                          <div>
+                            <a class="button" href="/update/user/{{ user.id }}">Quick Edit</a>
+                            <a class="button" href="/update/user/{{ user.id }}">Edit</a>
+                          </div>
+                          <div>
+                            <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
+                            <button class="delete" type="submit" formaction="/user/delete" formmethod="post">Delete</button>
+                            <a class="button" href="mailto:{{ user.email }}">Email</a>
+                          </div>
+                          <div>
+                            <button type="submit" class="save">Save</button>
+                          </div>
+                        </form>
+                        <footer class="subtle oblique balanced">
+                          <p style="margin-bottom:0"><span class="givenName">{{ user.fullname }}</span> last login was Jan 23, 2016 4:52pm from probably Planet Earth</p>
+                        </footer>
+                    </td>
+                  </tr>
+                  {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+              {% if usersInGroup > 3 %}
+                {% include 'bulkactions.twig' with {'users':users,'userGroup':userGroup} %}
+              {% endif %}
+            </div>
+            <footer>
+              <p><a href="#">View all {{ userGroup.name }} Users</a></p>
+            </footer>
+          </div>
+        </section>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- NOTE: change these to load the .min in production. They are not only smaller filesize but have wildly different performance -->
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/redux/3.5.2/redux.js"></script>
+    <script defer>try{ Redux } catch(e){ document.write('<script src="assets/js/vendor/redux.js"><\/script>') }</script>
+
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"></script>
+    <script defer>try{ React } catch(e){ document.write('<script src="assets/js/vendor/react.js"><\/script>') }</script>
+
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"></script>
+    <script defer>try{ ReactDOM } catch(e){ document.write('<script src="assets/js/vendor/react-dom.js"><\/script>') }</script>
+
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/react-redux/4.4.5/react-redux.js"></script>
+    <script defer>try{ ReactRedux } catch(e){ document.write('<script src="assets/js/vendor/react-redux.js"><\/script>') }</script>
+
+    <script defer src="assets/js/app.js?nc=7"></script>
+
+  </body>
+</html>

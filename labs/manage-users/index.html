@@ -12,12 +12,11 @@
       <header>
         <h1>Manage Users</h1>
         <div class="create-setting-module">
-          <form action="./../user-edit/index.html" class="create-setting-form">
+          <form action="/add/user" method="post" class="create-setting-form">
             <div class="top-bar">
-              <script>document.write('<button js-hidden formaction="./quick-create/user.html">Quick Create User</button>')</script>
+              <script>document.write('<button js-hidden formaction="./quick-create/user.html" aria-haspopup="true">Quick Create User</button>')</script>
             </div>
             <button id="create-user" formaction="./../user-edit/index.html">Create User</button>
-
             <fieldset style="margin-top:1em" js-not-hidden>
               <legend>Quick Create User</legend>
               <div class="n field-group">
@@ -79,9 +78,11 @@
         <div>
           <h3>Search Users</h3>
           <form action="#" id="search" class="search-settings">
-            <label for="search-users" ><span a11y-hidden>Search: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User or User Group. We'll try and find it."></label>
-            <button type="submit">Search</button>
-            <label for="filter-by">Filter by:</label>
+            <label for="search-users" ><span a11y-hidden>Search Users: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User or User Group. We'll try and find it."></label>
+            <div>
+              <button type="submit">Search</button>
+            </div>
+            <label for="filter-by">Filter <span class="accessibly-hidden">Users</span> by<span class="accessibly-hidden"> User Group</span>:</label>
             <select name="filter-by" id="filter-by">
               <option checked value="">All</option>
               <option value="1">Editors</option>
@@ -95,170 +96,175 @@
       </header>
       <div class="settings-grid">
         <section id="core-settings">
-          <header>
-            <h2>Editors</h2>
-          </header>
-          <form>
-            <button style="margin-bottom:2em">Create Editors User</button>
-            <fieldset>
-              <legend>Bulk Actions</legend>
-              <button formtarget="bulkactions/activate">Activate</button>
-              <button formtarget="bulkactions/suspend">Suspend</button>
-              <button formtarget="bulkactions/delete">Delete</button>
-              <button formtarget="bulkactions/email">Email</button>
-            </fieldset>
-            <table class="settings-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>User</th>
-                  <th>Active</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr tabindex="0">
-                  <td><label><input type="checkbox" name="bulk-jpdevries" /></label></td>
-                  <td>jpdevries</td>
-                  <td><label><span a11y-hidden>Active: </span><input checked type="checkbox"></label></td>
-                </tr>
-                <tr class="contextual-setting" js-hidden>
-                  <td colspan="3">
-                      <div>
-                        <div class="friendly-labels">
-                          <label>Sudo: <input name="sudo" checked type="checkbox" /></label>
-                          <label>Active: <input name="active" checked type="checkbox" /></label>
-                        </div>
-                        <p class="subtle balanced oblique">Front End Architect</p>
+          <div>
+            <header>
+              <h2>Editors</h2>
+            </header>
+            <form>
+              <button style="margin-bottom:2em">Create Editors User</button>
+              <fieldset>
+                <legend>Bulk Actions</legend>
+                <button formtarget="bulkactions/activate">Activate</button>
+                <button formtarget="bulkactions/suspend">Suspend</button>
+                <button formtarget="bulkactions/delete">Delete</button>
+                <button formtarget="bulkactions/email">Email</button>
+              </fieldset>
+              <table class="settings-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>User</th>
+                    <th>Active</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr tabindex="0">
+                    <td><label><input type="checkbox" name="bulk-jpdevries" /></label></td>
+                    <td>jpdevries</td>
+                    <td><label><span a11y-hidden>Active: </span><input checked type="checkbox"></label></td>
+                  </tr>
+                  <tr class="contextual-setting" js-hidden>
+                    <td colspan="3">
                         <div>
-                          <button type="submit" class="save">Save</button>
+                          <div class="friendly-labels">
+                            <label>Sudo: <input name="sudo" checked type="checkbox" /></label>
+                            <label>Active: <input name="active" checked type="checkbox" /></label>
+                          </div>
+                          <p class="subtle balanced oblique">Front End Architect</p>
+                          <div>
+                            <button type="submit" class="save">Save</button>
+                          </div>
+                          <script>document.write('<div><button class="save">Next User</button></div>')</script>
+                          <div>
+                            <button type="submit" formaction="./quick-edit/user.html">Quick Edit</button>
+                            <button type="submit" formaction="./../user-edit/index.html">Edit</button>
+                          </div>
+                          <div>
+                            <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
+                            <button type="submit" formaction="delete/user">Delete</button>
+                            <button type="submit" formaction="mailto:mail@devries.jp">Email</button>
+                          </div>
+                          <div>
+                            <button type="submit" class="save">Save</button>
+                          </div>
                         </div>
-                        <script>document.write('<div><button class="save">Next User</button></div>')</script>
+                        <footer class="subtle oblique balanced">
+                          <p style="margin-bottom:0">John&ndash;Paul de Vries' last login was Jan 23, 2016 4:52pm from Leeuwarden,&nbsp;Nederlands</p>
+                        </footer>
+                    </td>
+                  </tr>
+                  <tr tabindex="0">
+                    <td><label><input type="checkbox" name="bulk-jpdevries" /></label></td>
+                    <td>markh</td>
+                    <td><label><span a11y-hidden>Active: </span><input checked type="checkbox"></label></td>
+                  </tr>
+                  <tr class="contextual-setting" js-hidden>
+                    <td colspan="3">
                         <div>
-                          <button type="submit" formaction="./quick-edit/user.html">Quick Edit</button>
-                          <button type="submit" formaction="./../user-edit/index.html">Edit</button>
+                          <div class="friendly-labels">
+                            <label>Sudo: <input name="sudo" checked type="checkbox" /></label>
+                            <label>Active: <input name="active" checked type="checkbox" /></label>
+                          </div>
+                          <p class="subtle balanced oblique">mod<strong>more</strong> Founder</p>
+                          <div>
+                            <button type="submit" class="save">Save</button>
+                          </div>
+                          <script>document.write('<div><button class="save">Next User</button></div>')</script>
+                          <div>
+                            <button type="submit" formaction="./quick-edit/user.html">Quick Edit</button>
+                            <button type="submit" formaction="./../user-edit/index.html">Edit</button>
+                          </div>
+                          <div>
+                            <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
+                            <button type="submit" formaction="delete/user">Delete</button>
+                            <button type="submit" formaction="mailto:mail@devries.jp">Email</button>
+                          </div>
+                          <div>
+                            <button type="submit" class="save">Save</button>
+                          </div>
                         </div>
-                        <div>
-                          <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
-                          <button type="submit" formaction="delete/user">Delete</button>
-                          <button type="submit" formaction="mailto:mail@devries.jp">Email</button>
-                        </div>
-                        <div>
-                          <button type="submit" class="save">Save</button>
-                        </div>
-                      </div>
-                      <footer class="subtle oblique balanced">
-                        <p style="margin-bottom:0">John&ndash;Paul de Vries' last login was Jan 23, 2016 4:52pm from Leeuwarden,&nbsp;Nederlands</p>
-                      </footer>
-                  </td>
-                </tr>
-                <tr tabindex="0">
-                  <td><label><input type="checkbox" name="bulk-jpdevries" /></label></td>
-                  <td>markh</td>
-                  <td><label><span a11y-hidden>Active: </span><input checked type="checkbox"></label></td>
-                </tr>
-                <tr class="contextual-setting" js-hidden>
-                  <td colspan="3">
-                      <div>
-                        <div class="friendly-labels">
-                          <label>Sudo: <input name="sudo" checked type="checkbox" /></label>
-                          <label>Active: <input name="active" checked type="checkbox" /></label>
-                        </div>
-                        <p class="subtle balanced oblique">mod<strong>more</strong> Founder</p>
-                        <div>
-                          <button type="submit" class="save">Save</button>
-                        </div>
-                        <script>document.write('<div><button class="save">Next User</button></div>')</script>
-                        <div>
-                          <button type="submit" formaction="./quick-edit/user.html">Quick Edit</button>
-                          <button type="submit" formaction="./../user-edit/index.html">Edit</button>
-                        </div>
-                        <div>
-                          <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
-                          <button type="submit" formaction="delete/user">Delete</button>
-                          <button type="submit" formaction="mailto:mail@devries.jp">Email</button>
-                        </div>
-                        <div>
-                          <button type="submit" class="save">Save</button>
-                        </div>
-                      </div>
-                      <footer class="subtle oblique balanced">
-                        <p style="margin-bottom:0">Mark Hamstra's last login was Mar 13, 2016 4:52pm from Leeuwarden,&nbsp;Nederlands</p>
-                      </footer>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <fieldset>
-              <legend>Bulk Actions</legend>
-              <button formtarget="bulkactions/activate">Activate</button>
-              <button formtarget="bulkactions/supsend">Suspend</button>
-              <button formtarget="bulkactions/delete">Delete</button>
-              <button formtarget="bulkactions/email">Email</button>
-            </fieldset>
-          </form>
-          <footer>
-            <p><a href="#">View all</a></p>
-          </footer>
+                        <footer class="subtle oblique balanced">
+                          <p style="margin-bottom:0">Mark Hamstra's last login was Mar 13, 2016 4:52pm from Leeuwarden,&nbsp;Nederlands</p>
+                        </footer>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <fieldset>
+                <legend>Bulk Actions</legend>
+                <button formtarget="bulkactions/activate">Activate</button>
+                <button formtarget="bulkactions/supsend">Suspend</button>
+                <button formtarget="bulkactions/delete">Delete</button>
+                <button formtarget="bulkactions/email">Email</button>
+              </fieldset>
+            </form>
+            <footer>
+              <p><a href="#">View all</a></p>
+            </footer>
+          </div>
         </section>
 
         <section id="core-settings">
-          <header>
-            <h2>Administrators</h2>
-          </header>
-          <form>
-            <button style="margin-bottom:2em">Create Adminstrator User</button>
-            <table class="settings-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Active</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr tabindex="0">
-                  <td>jpdevries</td>
-                  <td><label><span a11y-hidden>Active: </span><input checked type="checkbox"></label></td>
-                </tr>
-                <tr class="contextual-setting" js-hidden>
-                  <td colspan="2">
-                      <div>
-                        <div class="friendly-labels">
-                          <label>Sudo: <input name="sudo" checked type="checkbox" /></label>
-                          <label>Active: <input name="active" checked type="checkbox" /></label>
-                        </div>
-                        <p class="subtle balanced oblique">Front End Architect</p>
+          <div>
+            <header>
+              <h2>Administrators</h2>
+            </header>
+            <form>
+              <button style="margin-bottom:2em">Create Adminstrator User</button>
+              <table class="settings-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Active</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr tabindex="0">
+                    <td>jpdevries</td>
+                    <td><label><span a11y-hidden>Active: </span><input checked type="checkbox"></label></td>
+                  </tr>
+                  <tr class="contextual-setting" js-hidden>
+                    <td colspan="2">
                         <div>
-                          <button type="submit" class="save">Save</button>
+                          <div class="friendly-labels">
+                            <label>Sudo: <input name="sudo" checked type="checkbox" /></label>
+                            <label>Active: <input name="active" checked type="checkbox" /></label>
+                          </div>
+                          <p class="subtle balanced oblique">Front End Architect</p>
+                          <div>
+                            <button type="submit" class="save">Save</button>
+                          </div>
+                          <script>document.write('<div><button class="save">Next User</button></div>')</script>
+                          <div>
+                            <button type="submit" formaction="./quick-edit/user.html">Quick Edit</button>
+                            <button type="submit" formaction="./../user-edit/index.html">Edit</button>
+                          </div>
+                          <div>
+                            <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
+                            <button type="submit" formaction="delete/user">Delete</button>
+                            <button type="submit" formaction="mailto:mail@devries.jp">Email</button>
+                          </div>
+                          <div>
+                            <button type="submit" class="save">Save</button>
+                          </div>
                         </div>
-                        <script>document.write('<div><button class="save">Next User</button></div>')</script>
-                        <div>
-                          <button type="submit" formaction="./quick-edit/user.html">Quick Edit</button>
-                          <button type="submit" formaction="./../user-edit/index.html">Edit</button>
-                        </div>
-                        <div>
-                          <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
-                          <button type="submit" formaction="delete/user">Delete</button>
-                          <button type="submit" formaction="mailto:mail@devries.jp">Email</button>
-                        </div>
-                        <div>
-                          <button type="submit" class="save">Save</button>
-                        </div>
-                      </div>
-                      <footer class="subtle oblique balanced">
-                        <p style="margin-bottom:0">Last login Jan 23, 2016 4:52pm from Leeuwarden,&nbsp;Nederlands</p>
-                      </footer>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </form>
-          <footer>
-            <p><a href="#">View all</a></p>
-          </footer>
+                        <footer class="subtle oblique balanced">
+                          <p style="margin-bottom:0">Last login Jan 23, 2016 4:52pm from Leeuwarden,&nbsp;Nederlands</p>
+                        </footer>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+            <footer>
+              <p><a href="#">View all</a></p>
+            </footer>
+          </div>
         </section>
       </div>
     </div>
 
+    <!-- NOTE: change these to load the .min in production. They are not only smaller filesize but have wildly different performance -->
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/redux/3.5.2/redux.js"></script>
     <script defer>try{ Redux } catch(e){ document.write('<script src="assets/js/vendor/redux.js"><\/script>') }</script>
 

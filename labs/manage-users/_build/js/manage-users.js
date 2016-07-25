@@ -13,7 +13,7 @@ var ManageUsers = function() {
     console.log(store.getState());
   });
 
-  store.dispatch(actions.addUserGroup({
+  /*store.dispatch(actions.addUserGroup({
     title:'modmore'
   }));
 
@@ -26,16 +26,19 @@ var ManageUsers = function() {
     sudo:true,
     jobTitle:'Marketing Director',
     userGroups:[1]
-  }));
+  }));*/
 
-  store.dispatch(actions.addUserToGroup(0,2));
+  //store.dispatch(actions.addUserToGroup(0,2));
 
   var ManageUsersFormController = connect(function(state, props) {
     return {
+      quickCreate:state.quickCreate,
       users:state.users.sort((a,b) => ( // sort alphabetically
         (a.username > b.username) ? 1 : -1
       )),
-      userGroups:state.userGroups
+      userGroups:state.userGroups,
+      roles:state.roles,
+      fieldsetRoles:state.fieldsetRoles
     }
   })(ManageUsersForm);
 
