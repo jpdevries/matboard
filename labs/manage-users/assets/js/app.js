@@ -1194,8 +1194,7 @@
 	  quickCreate: initialQuickCreate
 	};
 
-	console.log('initialState');
-	console.log(initialState);
+	console.log('initialState', initialState);
 
 	var usersReducer = function usersReducer(state, action) {
 	  state = state || initialState.users;
