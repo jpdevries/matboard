@@ -274,7 +274,8 @@ h1 {
       }
     }
     .contextual-setting {
-        html.js & {
+        background:white;
+        html.js.react & {
             background:#F2F2C5;
         }
         text-align:center;
