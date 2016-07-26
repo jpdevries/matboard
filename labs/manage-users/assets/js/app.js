@@ -2531,7 +2531,11 @@
 	              null,
 	              'Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can belong to the same User Group with multiple roles.'
 	            ),
-	            userGroupsMarkup
+	            React.createElement(
+	              'div',
+	              { className: 'user-group-roles' },
+	              userGroupsMarkup
+	            )
 	          )
 	        ),
 	        React.createElement(

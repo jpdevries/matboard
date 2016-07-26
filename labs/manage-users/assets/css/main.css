@@ -119,6 +119,12 @@ button, .button {
 fieldset {
   border: 1px solid #c8c8c8; }
 
+hr {
+  border-style: solid;
+  border-width: 1px;
+  border-top: none;
+  border-color: #c8c8c8; }
+
 html.js.react [js-hidden] {
   display: none; }
 

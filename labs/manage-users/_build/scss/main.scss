@@ -8,6 +8,7 @@ $white:white;
 $link:rgb(0, 0, 238); // default link blue
 $active:rgb(255,0,0); // default link red
 $go:darken(#55AE3D,12%); // MODX green
+$borderColor:rgb(200,200,200);
 
 @import "highcontrast";
 
@@ -126,7 +127,14 @@ button, .button {
 }
 
 fieldset {
-  border:1px solid rgb(200,200,200);
+  border:1px solid $borderColor;
+}
+
+hr {
+  border-style:solid;
+  border-width:1px;
+  border-top:none;
+  border-color:$borderColor;
 }
 
 html {

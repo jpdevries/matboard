@@ -447,7 +447,7 @@ function deleteUserById(user_id) {
 }
 
 function activateUsersById(users,active = true) {
-  //console.log('activateUsersById',users);
+  console.log('activateUsersById',users);
   active = active ? 1 : 0;
   return new Promise(function(resolve, reject) {
     // instantiate a new client
@@ -472,9 +472,11 @@ function activateUsersById(users,active = true) {
         UPDATE "modx_users" SET active = ${active} WHERE user_id IN (${usersList})
         RETURNING *
       )
-      SELECT user_id,username,givenname, familyname, FROM "update_user"
+      SELECT user_id,username,givenname, familyname FROM "update_user"
         INNER JOIN modx_user_attributes ON modx_user_attributes.id = update_user.user_id;
       `;
+
+      console.log(query);
 
       // execute a query on our database
       client.query(query, function (err, result) {
@@ -515,7 +517,7 @@ function deleteUsersById(users) {
           DELETE FROM "modx_users" WHERE user_id IN (${usersList})
           RETURNING *
         )
-          SELECT user_id,username,givenname, familyname, FROM "delete_users"
+          SELECT user_id,username,givenname, familyname FROM "delete_users"
           INNER JOIN modx_user_attributes ON modx_user_attributes.id = delete_users.user_id;
         `;
 

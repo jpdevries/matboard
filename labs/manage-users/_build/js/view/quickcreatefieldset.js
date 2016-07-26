@@ -41,7 +41,7 @@ export default class QuickCreateFieldset extends React.Component {
         userGroupsMarkup.push((
           <fieldset key={index}>
             <legend>{group.title || group.name}</legend>
-            {rolesMarkup}
+              {rolesMarkup}
           </fieldset>
         ));
       });
@@ -124,7 +124,9 @@ export default class QuickCreateFieldset extends React.Component {
               <fieldset className="field">
                 <legend>User Groups</legend>
                 <p>Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can belong to the same User Group with multiple&nbsp;roles.</p>
-                {userGroupsMarkup}
+                <div className="user-group-roles">
+                  {userGroupsMarkup}
+                </div>
               </fieldset>
             </div>
             <footer>
