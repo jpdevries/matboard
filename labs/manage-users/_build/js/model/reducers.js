@@ -257,7 +257,7 @@ var quickCreateReducer = function(state, action) {
     ) }});
 
     case actions.FLUSH_QUICK_CREATE:
-    return update(state, {$set:initialQuickCreate});
+    return update(state, {$set:update(initialQuickCreate,{$merge: action.quickCreate})});
 
 
   }

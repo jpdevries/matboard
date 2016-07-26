@@ -570,13 +570,13 @@ SELECT user_id FROM "new_user";
 
 
 INSERT INTO "modx_membergroup_names" (id, name, description, parent, rank, dashboard, slackchannel) VALUES
-(1, 'Administrator', NULL, 0, 0, 1, 'modxcommunity'),
+(1, 'Administrators', NULL, 0, 0, 1, 'modxcommunity'),
 (2, 'modmore', NULL, 0, 0, 1, 'modmore'),
 (3, 'MGAB', NULL, 0, 0, 1, 'modx'),
 (4, 'Sterc', NULL, 0, 0, 1, 'modxcommunity'),
 (5, 'Site Builders', NULL, 0, 0, 1, 'modxcommunity'),
 (6, 'Thinkful Students', NULL, 0, 0, 1, 'thinkful-students'),
-(7, 'MODX Ambassador', NULL, 0, 0, 1, 'modxcommunity');
+(7, 'MODX Ambassadors', NULL, 0, 0, 1, 'modxcommunity');
 
 
 SELECT

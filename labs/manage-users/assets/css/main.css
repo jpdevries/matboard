@@ -116,6 +116,16 @@ button, .button {
     border: 1px solid #787878 !important;
     background: #f0f0f0 !important; }
 
+.user-group-roles {
+  display: flex;
+  flex-wrap: wrap; }
+  .user-group-roles > * {
+    flex: 1 1 12em;
+    margin-right: .5rem;
+    margin-bottom: .5rem; }
+    .user-group-roles > *:last-of-type {
+      margin-right: 0; }
+
 fieldset {
   border: 1px solid #c8c8c8; }
 

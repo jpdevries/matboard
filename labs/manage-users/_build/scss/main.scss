@@ -126,6 +126,19 @@ button, .button {
   }
 }
 
+.user-group-roles {
+  display:flex;
+  flex-wrap:wrap;
+  > * {
+    flex:1 1 12em;
+    margin-right:.5rem;
+    margin-bottom:.5rem;
+    &:last-of-type {
+      margin-right:0;
+    }
+  }
+}
+
 fieldset {
   border:1px solid $borderColor;
 }

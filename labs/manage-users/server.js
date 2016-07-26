@@ -253,6 +253,9 @@ app.get('/add/user', function(req, res){
   }).then(function(roles){
     return new Promise(function(resolve,reject){
       getUserGroups().then(function(userGroups){
+        store.dispatch(actions.flushQuickCreate({
+          roles:{[userGroups[0].id]:[roles[0].id]} // default new users to Administrators User Group with Administrator role (or whichever is the first of each)
+        }));
         resolve({
           roles:roles,
           userGroups:userGroups

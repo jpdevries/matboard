@@ -441,9 +441,10 @@ exports.QUICKCREATE_ROLE_REMOVE = QUICKCREATE_ROLE_REMOVE;
 exports.quickCreateRoleRemove = quickCreateRoleRemove;
 
 var FLUSH_QUICK_CREATE = 'flushquickcreate';
-var flushQuickCreate = function() {
+var flushQuickCreate = function(quickCreate = {}) {
   return {
-    type:FLUSH_QUICK_CREATE
+    type:FLUSH_QUICK_CREATE,
+    quickCreate:quickCreate
   }
 }
 

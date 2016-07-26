@@ -561,8 +561,11 @@
 
 	var FLUSH_QUICK_CREATE = 'flushquickcreate';
 	var flushQuickCreate = function flushQuickCreate() {
+	  var quickCreate = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
 	  return {
-	    type: FLUSH_QUICK_CREATE
+	    type: FLUSH_QUICK_CREATE,
+	    quickCreate: quickCreate
 	  };
 	};
 
@@ -1323,7 +1326,7 @@
 	          } } });
 
 	    case actions.FLUSH_QUICK_CREATE:
-	      return update(state, { $set: initialQuickCreate });
+	      return update(state, { $set: update(initialQuickCreate, { $merge: action.quickCreate }) });
 
 	  }
 	  return state;
