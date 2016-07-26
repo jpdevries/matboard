@@ -137,9 +137,23 @@ var ManageUserFormHeader = React.createClass({
   render:function(){
     var props = this.props;
 
+    console.log('props.viewProps',props.viewProps);
+
     var filterBuyOptions = props.userGroups.map((userGroup,index) => (
       <option key={userGroup.id} value={userGroup.id}>{userGroup.title}</option>
     ));
+
+    var filterByLabel = (props.viewProps.showFilterBy) ? <label htmlFor="filter-by">Filter <span className="accessibly-hidden">Users</span> by<span className="accessibly-hidden"> User Group</span>:</label> : false;
+
+    var filterBy = (props.viewProps.showFilterBy) ? (
+      <select name="filter-by" id="filter-by" value={props.filterBy} onChange={(event) => {
+        try {
+          props.handleFilterBy(parseInt(event.target.value));
+        } catch (e) { console.log(e) }
+      }}>
+      <option checked value="">All</option>
+      {filterBuyOptions}
+      </select>) : false;
 
     return (
       <header>
@@ -162,15 +176,8 @@ var ManageUserFormHeader = React.createClass({
             <div>
               <button type="submit">Search</button>
             </div>
-            <label htmlFor="filter-by">Filter <span className="accessibly-hidden">Users</span> by<span className="accessibly-hidden"> User Group</span>:</label>
-            <select name="filter-by" id="filter-by" onChange={(event) => {
-              try {
-                props.handleFilterBy(parseInt(event.target.value));
-              } catch (e) { console.log(e) }
-            }}>
-              <option checked value="">All</option>
-              {filterBuyOptions}
-            </select>
+            {filterByLabel}
+            {filterBy}
           </form>
           <p>Below you will users who have logged in recently per user group.</p>
         </div>

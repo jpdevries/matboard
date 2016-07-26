@@ -123,8 +123,15 @@ button, .button {
     flex: 1 1 12em;
     margin-right: .5rem;
     margin-bottom: .5rem; }
-    .user-group-roles > *:last-of-type {
-      margin-right: 0; }
+
+.returnto {
+  display: flex;
+  justify-content: center; }
+  .returnto > * {
+    flex: 1 1 24em;
+    max-width: 40em;
+    padding-left: .4rem;
+    padding-right: .5rem; }
 
 fieldset {
   border: 1px solid #c8c8c8; }

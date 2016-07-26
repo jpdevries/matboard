@@ -2,6 +2,21 @@ var actions = require('./actions');
 var combineReducers = require('redux').combineReducers;
 var update = require('react-addons-update');
 
+var initialViewProps = {
+  pageType:(function(){
+    try {
+      return document.querySelector('body').getAttribute('data-page-type') || 'summary'
+    } catch (e) {}
+    return 'summary';
+  })(),
+  showFilterBy:(function(){
+    try {
+      return (document.querySelector('body').getAttribute('data-show-filterby') != 'false')
+    } catch (e) {}
+    return true;
+  })()
+};
+
 var initialUserGroups = (function(){
   var userGroups = [];
   try {
@@ -297,11 +312,17 @@ var rolesReducer = function(state, action) {
   return state;
 }
 
+var viewPropsReducer = function(state, action) {
+  state = state || initialViewProps;
+  return state;
+}
+
 var manageUsersReducer = combineReducers({
   quickCreate:quickCreateReducer,
   users:usersReducer,
   userGroups:userGroupsReducer,
-  roles:rolesReducer
+  roles:rolesReducer,
+  viewProps:viewPropsReducer
 });
 
 

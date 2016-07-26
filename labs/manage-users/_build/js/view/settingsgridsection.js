@@ -192,12 +192,15 @@ var SettingsGridSection = React.createClass({
       });
     }
 
-    console.log(props.userGroup.slackChannel);
+    console.log(this.props,this.props.viewProps.pageType);
 
     var paginationAmount = 12,
     bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} slackChannel={props.userGroup.slackChannel} slackHandles={slackHandles} /> : false,
-    viewAll = this.props.expanded ? false : (users.length > paginationAmount) ? (<p><a href="#">View all {props.title} users</a></p>) : false,
-    paginatedUsers = this.props.expanded ? users : users.slice(0, paginationAmount);
+    viewAll = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? false : (users.length > paginationAmount) ? (<p><a onClick={(event) => {
+      event.preventDefault();
+      this.props.handleFilterBy(props.userGroup.id);
+    }} href={`/groups/${props.userGroup.id}`}>View all {props.title} users</a></p>) : false,
+    paginatedUsers = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? users : users.slice(0, paginationAmount);
 
     return (paginatedUsers.length) ? (
       <section id={"user-group-" + props.userGroup.id}>

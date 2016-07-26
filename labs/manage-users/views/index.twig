@@ -1,5 +1,5 @@
 {% include 'header.twig' %}
-  <body>
+  <body data-page-type="{{ pageType|default('summary') }}" data-show-filterby="{{ showFilterBy|default(true) }}">
     <div id="manage-users-form">
       <div id="manage-user-form__header">
         <header>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="field-group">
                   <fieldset class="field">
-                    <legend>User Groups</legend>
+                    <legend>User Permissions</legend>
                     <p>Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can below to the same User Group with multiple&nbsp;roles.</p>
 
                     {% for userGroup in userGroups %}
@@ -88,12 +88,14 @@
               <div>
                 <button type="submit">Search</button>
               </div>
+              {% if showFilterBy|default(true) %}
               <label for="filter-by">Filter <span class="accessibly-hidden">Users</span> by<span class="accessibly-hidden"> User Group</span>:</label>
               <select name="filter-by" id="filter-by">
                 <option checked value="">All</option>
                 <option value="1">Editors</option>
                 <option value="0">Administrators</option>
               </select>
+              {% endif %}
 
             </form>
             <p>Below you will users who have logged in recently per user group.</p>
@@ -179,13 +181,21 @@
               {% endif %}
             </div>
             <footer>
-              <p><a href="#">View all {{ userGroup.name }} Users</a></p>
+              {% if pageType != 'detail' %}<p><a href="#">View all {{ userGroup.name }} Users</a></p>{% endif %}
             </footer>
           </div>
         </section>
         {% endfor %}
       </div>
     </div>
+
+    {% if showReturnTo|default(false) %}
+    <footer class="returnto">
+      <div class="">
+        {% include 'returnto.twig' %}
+      </div>
+    </footer>
+    {% endif %}
 
 	<script>
     var doEnhancments = document.addEventListener ? true : false; // this is super annoying but react-redux will bork the page, turn it into a blank white screen in IE8 so we have to not even try to load it :(...then again i suppose there is no reason to load scripts we know will break

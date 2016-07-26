@@ -383,8 +383,8 @@ app.get('/update/user/:userid', function(req, res) {
   renderUpdateUserPage(req, res, req.params.userid);
 });
 
-app.get('/', function(req, res){
-  getUserRows().then(function(results){
+function getUserRowsAndPrepareData(where = '') {
+  return getUserRows(where).then(function(results){
     return new Promise(function(resolve,reject){
       getRoles().then(function(roles){
          resolve({
@@ -405,15 +405,28 @@ app.get('/', function(req, res){
         }))
       })
     })
-  }).then(function(data){
-    //console.log(data);
+  });
+}
+
+app.get('/', function(req, res){
+  getUserRowsAndPrepareData().then(function(data){
     res.render('index.twig', data);
   },function(err){
     //console.log(err);
   });
-
 });
 
+app.get('/groups/:groupid', function(req, res){
+  getUserRowsAndPrepareData(`WHERE user_group = ${req.params.groupid}`).then(function(data){
+    res.render('index.twig', Object.assign({},data,{
+      pageType:'detail',
+      showFilterBy:false,
+      showReturnTo:true
+    }));
+  },function(err){
+    //console.log(err);
+  });
+});
 
 app.use(express.static(__dirname));
 

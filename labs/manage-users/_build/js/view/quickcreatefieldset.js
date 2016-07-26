@@ -122,7 +122,7 @@ export default class QuickCreateFieldset extends React.Component {
             </div>
             <div className="field-group">
               <fieldset className="field">
-                <legend>User Groups</legend>
+                <legend>User Permissions</legend>
                 <p>Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can belong to the same User Group with multiple&nbsp;roles.</p>
                 <div className="user-group-roles">
                   {userGroupsMarkup}

@@ -130,7 +130,8 @@
 	        );
 	      }),
 	      userGroups: state.userGroups,
-	      roles: state.roles
+	      roles: state.roles,
+	      viewProps: state.viewProps
 	    };
 	  })(ManageUsersForm);
 
@@ -1080,6 +1081,21 @@
 	var combineReducers = __webpack_require__(2).combineReducers;
 	var update = __webpack_require__(10);
 
+	var initialViewProps = {
+	  pageType: function () {
+	    try {
+	      return document.querySelector('body').getAttribute('data-page-type') || 'summary';
+	    } catch (e) {}
+	    return 'summary';
+	  }(),
+	  showFilterBy: function () {
+	    try {
+	      return document.querySelector('body').getAttribute('data-show-filterby') != 'false';
+	    } catch (e) {}
+	    return true;
+	  }()
+	};
+
 	var initialUserGroups = function () {
 	  var userGroups = [];
 	  try {
@@ -1365,11 +1381,17 @@
 	  return state;
 	};
 
+	var viewPropsReducer = function viewPropsReducer(state, action) {
+	  state = state || initialViewProps;
+	  return state;
+	};
+
 	var manageUsersReducer = combineReducers({
 	  quickCreate: quickCreateReducer,
 	  users: usersReducer,
 	  userGroups: userGroupsReducer,
-	  roles: rolesReducer
+	  roles: rolesReducer,
+	  viewProps: viewPropsReducer
 	});
 
 	exports.manageUsersReducer = manageUsersReducer;
@@ -1872,6 +1894,11 @@
 	      filterBy: undefined
 	    };
 	  },
+	  handleFilterBy: function handleFilterBy(filterBy) {
+	    this.setState({
+	      filterBy: isNaN(filterBy) ? undefined : filterBy
+	    });
+	  },
 	  render: function render() {
 	    var _this = this;
 
@@ -1881,7 +1908,7 @@
 	    var sections = props.userGroups.filter(function (userGroup) {
 	      return _this.state.filterBy === undefined ? true : _this.state.filterBy == userGroup.id;
 	    }).map(function (userGroup) {
-	      return React.createElement(SettingsGridSection, { bulkActions: true, userGroup: userGroup, key: userGroup.id, expanded: expanded, filter: _this.state.filter, users: props.users.filter(function (user) {
+	      return React.createElement(SettingsGridSection, { bulkActions: true, viewProps: props.viewProps, userGroup: userGroup, key: userGroup.id, expanded: expanded, filter: _this.state.filter, handleFilterBy: _this.handleFilterBy, users: props.users.filter(function (user) {
 	          return user.userGroups.includes(userGroup.id);
 	        }), title: userGroup.title });
 	    });
@@ -1892,11 +1919,7 @@
 	      React.createElement(
 	        'div',
 	        { id: 'manage-user-form__header' },
-	        React.createElement(ManageUserFormHeader, { roles: props.roles, userGroups: props.userGroups, quickCreate: props.quickCreate, handleFilterBy: function handleFilterBy(filterBy) {
-	            return _this.setState({
-	              filterBy: isNaN(filterBy) ? undefined : filterBy
-	            });
-	          }, handleFilter: function handleFilter(filter) {
+	        React.createElement(ManageUserFormHeader, { filterBy: this.state.filterBy, viewProps: props.viewProps, roles: props.roles, userGroups: props.userGroups, quickCreate: props.quickCreate, handleFilterBy: this.handleFilterBy, handleFilter: function handleFilter(filter) {
 	            return _this.setState({
 	              filter: filter.length ? filter : undefined
 	            });
@@ -2102,6 +2125,8 @@
 
 	    var props = this.props;
 
+	    console.log('props.viewProps', props.viewProps);
+
 	    var filterBuyOptions = props.userGroups.map(function (userGroup, index) {
 	      return React.createElement(
 	        'option',
@@ -2109,6 +2134,41 @@
 	        userGroup.title
 	      );
 	    });
+
+	    var filterByLabel = props.viewProps.showFilterBy ? React.createElement(
+	      'label',
+	      { htmlFor: 'filter-by' },
+	      'Filter ',
+	      React.createElement(
+	        'span',
+	        { className: 'accessibly-hidden' },
+	        'Users'
+	      ),
+	      ' by',
+	      React.createElement(
+	        'span',
+	        { className: 'accessibly-hidden' },
+	        ' User Group'
+	      ),
+	      ':'
+	    ) : false;
+
+	    var filterBy = props.viewProps.showFilterBy ? React.createElement(
+	      'select',
+	      { name: 'filter-by', id: 'filter-by', value: props.filterBy, onChange: function onChange(event) {
+	          try {
+	            props.handleFilterBy(parseInt(event.target.value));
+	          } catch (e) {
+	            console.log(e);
+	          }
+	        } },
+	      React.createElement(
+	        'option',
+	        { checked: true, value: '' },
+	        'All'
+	      ),
+	      filterBuyOptions
+	    ) : false;
 
 	    return React.createElement(
 	      'header',
@@ -2158,39 +2218,8 @@
 	              'Search'
 	            )
 	          ),
-	          React.createElement(
-	            'label',
-	            { htmlFor: 'filter-by' },
-	            'Filter ',
-	            React.createElement(
-	              'span',
-	              { className: 'accessibly-hidden' },
-	              'Users'
-	            ),
-	            ' by',
-	            React.createElement(
-	              'span',
-	              { className: 'accessibly-hidden' },
-	              ' User Group'
-	            ),
-	            ':'
-	          ),
-	          React.createElement(
-	            'select',
-	            { name: 'filter-by', id: 'filter-by', onChange: function onChange(event) {
-	                try {
-	                  props.handleFilterBy(parseInt(event.target.value));
-	                } catch (e) {
-	                  console.log(e);
-	                }
-	              } },
-	            React.createElement(
-	              'option',
-	              { checked: true, value: '' },
-	              'All'
-	            ),
-	            filterBuyOptions
-	          )
+	          filterByLabel,
+	          filterBy
 	        ),
 	        React.createElement(
 	          'p',
@@ -2527,7 +2556,7 @@
 	            React.createElement(
 	              'legend',
 	              null,
-	              'User Groups'
+	              'User Permissions'
 	            ),
 	            React.createElement(
 	              'p',
@@ -2835,22 +2864,25 @@
 	      });
 	    }
 
-	    console.log(props.userGroup.slackChannel);
+	    console.log(this.props, this.props.viewProps.pageType);
 
 	    var paginationAmount = 12,
 	        bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails, slackChannel: props.userGroup.slackChannel, slackHandles: slackHandles }) : false,
-	        viewAll = this.props.expanded ? false : users.length > paginationAmount ? React.createElement(
+	        viewAll = this.props.expanded || this.props.viewProps.pageType == 'detail' ? false : users.length > paginationAmount ? React.createElement(
 	      'p',
 	      null,
 	      React.createElement(
 	        'a',
-	        { href: '#' },
+	        { onClick: function onClick(event) {
+	            event.preventDefault();
+	            _this4.props.handleFilterBy(props.userGroup.id);
+	          }, href: '/groups/' + props.userGroup.id },
 	        'View all ',
 	        props.title,
 	        ' users'
 	      )
 	    ) : false,
-	        paginatedUsers = this.props.expanded ? users : users.slice(0, paginationAmount);
+	        paginatedUsers = this.props.expanded || this.props.viewProps.pageType == 'detail' ? users : users.slice(0, paginationAmount);
 
 	    return paginatedUsers.length ? React.createElement(
 	      'section',

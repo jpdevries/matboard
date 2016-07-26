@@ -37,7 +37,8 @@ var ManageUsers = function() {
         (a.username > b.username) ? 1 : -1
       )),
       userGroups:state.userGroups,
-      roles:state.roles
+      roles:state.roles,
+      viewProps:state.viewProps
     }
   })(ManageUsersForm);
 
