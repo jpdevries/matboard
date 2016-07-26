@@ -142,7 +142,7 @@ hr {
   border-top: none;
   border-color: #c8c8c8; }
 
-html.js.react [js-hidden] {
+html.js [js-hidden] {
   display: none; }
 
 body {

@@ -165,7 +165,7 @@ html {
   [a11y-hidden] {
     @extend %accessibly-hidden;
   }
-  &.js.react {
+  &.js {
     [js-hidden] {
       display:none;
     }

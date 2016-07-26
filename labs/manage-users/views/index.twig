@@ -8,9 +8,9 @@
             <form action="/add/user" method="post" class="create-setting-form">
               <div class="top-bar">
                 <script>document.write('<a class="button" href="add/user" aria-haspopup="true">Quick Create User</a>')</script>
+                <a id="create-user" class="button" href="/add/user">Create User</a>
               </div>
-              <a id="create-user" class="button" href="/add/user">Create User</a>
-              <fieldset style="margin-top:1em" js-not-hidden>
+              <fieldset style="margin-top:1em" js-hidden>
                 <legend>Quick Create User</legend>
                 <div class="n field-group">
                   <div class="field-username">
@@ -49,29 +49,17 @@
                   <fieldset class="field">
                     <legend>User Permissions</legend>
                     <p>Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can below to the same User Group with multiple&nbsp;roles.</p>
-
-                    {% for userGroup in userGroups %}
-                      {% set firstGroup = loop.first %}
-                      <fieldset>
-                        <legend>{{ userGroup.name }}<span class="accessibly-hidden"> Roles</span></legend>
-                        {% for role in roles %}
-                          <label for="user-group-{{ userGroup.id }}-{{ role.id }}-roles[]"><input id="user-group-{{ userGroup.id }}-{{ role.id }}-roles[]" type="checkbox"{% if loop.first and firstGroup %} checked {% endif %}name="user-group-{{ userGroup.id }}-roles[]" data-user-group-id="{{ userGroup.id }}" data-role-id="{{ role.id }}" value="{{ userGroup.id }}|{{ role.id }}" />&nbsp;<span>{{ role.name }}</span></label>
-                        {% endfor %}
-                      </fieldset>
-                    {% endfor %}
-
-                    <!--fieldset>
-                      <legend>Administrator</legend>
-                      <label for="user-group-editor-roles[]">Roles</label>
-                      <label><input type="checkbox" checked name="user-group-editor-roles[]" />&nbsp;Editor</label>
-                      <label><input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Super User</label>
-                    </fieldset>
-                    <fieldset>
-                      <legend>Editor</legend>
-                      <label for="user-group-editor-roles[]">Roles</label>
-                      <label><input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Editor</label>
-                      <label><input type="checkbox" name="user-group-editor-roles[]" />&nbsp;Super User</label>
-                    </fieldset-->
+                    <div class="user-group-roles">
+                      {% for userGroup in userGroups %}
+                        {% set firstGroup = loop.first %}
+                        <fieldset>
+                          <legend>{{ userGroup.name }}<span class="accessibly-hidden"> Roles</span></legend>
+                          {% for role in roles %}
+                            <label for="user-group-{{ userGroup.id }}-{{ role.id }}-roles[]"><input id="user-group-{{ userGroup.id }}-{{ role.id }}-roles[]" type="checkbox"{% if loop.first and firstGroup %} checked {% endif %}name="user-group-{{ userGroup.id }}-roles[]" data-user-group-id="{{ userGroup.id }}" data-role-id="{{ role.id }}" value="{{ userGroup.id }}|{{ role.id }}" />&nbsp;<span>{{ role.name }}</span></label>
+                          {% endfor %}
+                        </fieldset>
+                      {% endfor %}
+                    </div>
                   </fieldset>
                 </div>
                 <footer style="margin-top:1em">
@@ -84,7 +72,7 @@
           <div>
             <h3 id="search-users">Search Users</h3>
             <form action="#" id="search" class="search-settings">
-              <label for="search-users" ><span a11y-hidden>Search: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User or User Group. We'll try and find it."></label>
+              <label for="search-users" ><span a11y-hidden>Search: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User. We'll try and find them."></label>
               <div>
                 <button type="submit">Search</button>
               </div>

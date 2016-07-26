@@ -247,14 +247,16 @@ app.post('/api/users/deactivate',function(req, res) {
 });
 
 app.get('/add/user', function(req, res){
+  console.log('/add/user',req.query);
   getRoles().then(function(roles){
     store.dispatch(actions.setRoles(roles));
     return roles;
   }).then(function(roles){
     return new Promise(function(resolve,reject){
       getUserGroups().then(function(userGroups){
+        var group = req.query.group || undefined;
         store.dispatch(actions.flushQuickCreate({
-          roles:{[userGroups[0].id]:[roles[0].id]} // default new users to Administrators User Group with Administrator role (or whichever is the first of each)
+          roles:(group) ? {[group]:[roles[0].id]} : {[userGroups[0].id]:[roles[0].id]} // default new users to Administrators User Group with Administrator role (or whichever is the first of each)
         }));
         resolve({
           roles:roles,
