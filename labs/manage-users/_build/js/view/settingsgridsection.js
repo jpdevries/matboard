@@ -121,7 +121,7 @@ var SettingsTable = React.createClass({
   handleQuickEdit:function(user,event){
     event.preventDefault();
     event.stopPropagation();
-    console.log('handleQuickEdit!!!',user);
+    //console.log('handleQuickEdit!!!',user);
   },
   render:function(){
     var props = this.props;
@@ -202,17 +202,17 @@ var SettingsGridSection = React.createClass({
     viewAll = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? false : (users.length > paginationAmount) ? (<p><a onClick={(event) => {
       event.preventDefault();
       this.props.handleFilterBy(props.userGroup.id);
-    }} href={`${ endpoints.GROUPS }${props.userGroup.id}`}>View all {props.title} users</a></p>) : false,
+    }} href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>View all {props.title} users</a></p>) : false,
     paginatedUsers = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? users : users.slice(0, paginationAmount);
 
     return (paginatedUsers.length) ? (
       <section id={"user-group-" + props.userGroup.id}>
         <div>
           <header>
-            <h2>{props.title}</h2>
+            <h2><a className="subtle" href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>{props.title}</a></h2>
           </header>
           <div className="balanced">
-            <a className="button" href={endpoints.ADD_USER + "?group=" + props.userGroup.id} style={{marginBottom:"2em"}}>{'Create ' + props.title + ' User'}</a>
+            <a className="button" href={endpoints.ADD_USER + "?group=" + props.userGroup.id + "#fold"} style={{marginBottom:"2em"}}>{'Create ' + props.title + ' User'}</a>
           </div>
           <div>
             {bulkActionsFieldset}

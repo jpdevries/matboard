@@ -30,7 +30,7 @@ app.set("twig options", {
  * Quickly add the user to the database then get user data, get role data, get user groups data, and render the React form
  */
 app.post(endpoints.ADD_USER, function(req, res){
-  console.log(endpoints.ADD_USER);
+  //console.log(endpoints.ADD_USER);
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
     addUserQuickly(fields).then(function(result){
@@ -261,7 +261,7 @@ app.post(endpoints.API_USERS_DEACTIVATE,function(req, res) {
 });
 
 app.get(endpoints.ADD_USER, function(req, res){
-  console.log('/add/user',req.query);
+  //console.log('/add/user',req.query);
   getRoles().then(function(roles){
     store.dispatch(actions.setRoles(roles));
     return roles;
@@ -334,7 +334,6 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
   )).then(function(users){
     var user = users[0],
     userGroupRoles = {};
-    console.log('user',user);
     user.group_roles.map((groupRole,index) => {
       userGroupRoles[groupRole.group] = groupRole.roles;
     });
@@ -348,7 +347,6 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
         store.dispatch(actions.setUserGroups(userGroups));
         return userGroups;
       }).then(function(userGroups){
-        console.log('resolving userGroups',userGroups);
         resolve(Object.assign({},data,{
           userGroups:userGroups
         }));
@@ -382,12 +380,6 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
       id:user.id,
       roles:userGroupRoles
     }));
-
-    console.log('rendering template',{
-      quickCreate:store.getState().quickCreate,
-      roles:store.getState().roles,
-      userGroups:store.getState().userGroups
-    });
 
     res.render(template, {
       user:user,
@@ -818,7 +810,7 @@ function prepGroupRoles(fields){ // pretty nasty but turns the form data into an
     });
   }
 
-  console.log('groups',groups);
+  //console.log('groups',groups);
 
   return groups;
 }

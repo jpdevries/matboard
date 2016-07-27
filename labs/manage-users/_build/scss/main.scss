@@ -196,7 +196,7 @@ body {
   @extend %bright-padded-module;
 }
 
-#manage-users-form {
+#manage-users-form, #fold {
   > div {
   }
   #manage-user-form__header header {
@@ -225,7 +225,11 @@ header, aside, .padded {
   }
 }
 
-.subtle {
+a.subtle {
+  color:inherit;
+  text-decoration: none;
+}
+footer.subtle {
   color:lighten(black,20%);
   font-size:.8em;
 }

@@ -1978,7 +1978,7 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { className: 'settings-grid' },
+	        { id: 'fold', className: 'settings-grid' },
 	        sections
 	      )
 	    );
@@ -2826,7 +2826,7 @@
 	  handleQuickEdit: function handleQuickEdit(user, event) {
 	    event.preventDefault();
 	    event.stopPropagation();
-	    console.log('handleQuickEdit!!!', user);
+	    //console.log('handleQuickEdit!!!',user);
 	  },
 	  render: function render() {
 	    var _this3 = this;
@@ -2936,7 +2936,7 @@
 	        { onClick: function onClick(event) {
 	            event.preventDefault();
 	            _this4.props.handleFilterBy(props.userGroup.id);
-	          }, href: '' + endpoints.GROUPS + props.userGroup.id },
+	          }, href: '' + endpoints.GROUPS + props.userGroup.id + '#fold' },
 	        'View all ',
 	        props.title,
 	        ' users'
@@ -2956,7 +2956,11 @@
 	          React.createElement(
 	            'h2',
 	            null,
-	            props.title
+	            React.createElement(
+	              'a',
+	              { className: 'subtle', href: '' + endpoints.GROUPS + props.userGroup.id + '#fold' },
+	              props.title
+	            )
 	          )
 	        ),
 	        React.createElement(
@@ -2964,7 +2968,7 @@
 	          { className: 'balanced' },
 	          React.createElement(
 	            'a',
-	            { className: 'button', href: endpoints.ADD_USER + "?group=" + props.userGroup.id, style: { marginBottom: "2em" } },
+	            { className: 'button', href: endpoints.ADD_USER + "?group=" + props.userGroup.id + "#fold", style: { marginBottom: "2em" } },
 	            'Create ' + props.title + ' User'
 	          )
 	        ),

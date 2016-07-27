@@ -35,7 +35,7 @@ var ManageUsersForm = React.createClass({
             })
           )} />
         </div>
-        <div className="settings-grid">
+        <div id="fold" className="settings-grid">
           {sections}
         </div>
       </div>

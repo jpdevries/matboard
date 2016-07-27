@@ -91,7 +91,7 @@
           <hr>
         </header>
       </div>
-      <div class="settings-grid">
+      <div id="fold" class="settings-grid">
 
         {% for userGroup in userGroups %}
         {% set usersInGroup = 0 %}
@@ -106,10 +106,10 @@
         <section id="user-group-{{ userGroup.id }}" class="user-group" data-user-group-id="{{ userGroup.id }}" data-slackchannel="{{ userGroup.slackchannel }}">
           <div>
             <header>
-              <h2 class="name">{{ userGroup.name }}</h2>
+              <h2><a class="subtle" href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}#fold"><span class="name">{{ userGroup.name }}</span></a></h2>
             </header>
             <div>
-              <div class="balanced"><a class="button" href="{{ endpoints.ADD_USER|default('/add/user/') }}?group={{ userGroup.id }}" style="margin-bottom:2em">Create {{ userGroup.name }} User</a></div>
+              <div class="balanced"><a class="button" href="{{ endpoints.ADD_USER|default('/add/user/') }}?group={{ userGroup.id }}#fold" style="margin-bottom:2em">Create {{ userGroup.name }} User</a></div>
               {% if usersInGroup > 3 %}
                 {% include 'bulkactions.twig' with {'users' : users} %}
               {% endif %}
@@ -175,7 +175,7 @@
               {% endif %}
             </div>
             <footer>
-              {% if pageType != 'detail' and usersInGroup > paginateUsers|default(12) %}<p><a href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}">View all {{ userGroup.name }} Users</a></p>{% endif %}
+              {% if pageType != 'detail' and usersInGroup > paginateUsers|default(12) %}<p><a href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}#fold">View all {{ userGroup.name }} Users</a></p>{% endif %}
             </footer>
           </div>
         </section>
