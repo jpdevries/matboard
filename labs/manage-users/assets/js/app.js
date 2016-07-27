@@ -1043,7 +1043,7 @@
 	module.exports = {
 	  paginateUsers: 12,
 	  endpoints: {
-	    ADD_USER: '/add/user/',
+	    ADD_USER: '/user/add/',
 
 	    UPDATE_USER: '/update/user/',
 
