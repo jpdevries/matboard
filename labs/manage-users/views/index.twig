@@ -5,10 +5,10 @@
         <header>
           <h1>Manage Users</h1>
           <div class="create-user-module">
-            <form action="/add/user" method="post" class="create-setting-form">
+            <form action="{{ endpoints.ADD_USER|default('/add/user/') }}" method="post" class="create-setting-form">
               <div class="top-bar">
                 <script>document.write('<a class="button" href="add/user" aria-haspopup="true">Quick Create User</a>')</script>
-                <a id="create-user" class="button" href="/add/user">Create User</a>
+                <a id="create-user" class="button" href="{{ endpoints.ADD_USER|default('/add/user/') }}">Create User</a>
               </div>
               <fieldset style="margin-top:1em" js-hidden>
                 <legend>Quick Create User</legend>
@@ -92,20 +92,24 @@
         </header>
       </div>
       <div class="settings-grid">
+
         {% for userGroup in userGroups %}
         {% set usersInGroup = 0 %}
-          {% for user in users %}
-            {% if userGroup.id in user.user_groups %}
-              {% set usersInGroup = usersInGroup + 1 %}
-            {% endif %}
-          {% endfor %}
+        {% set showGroup = true %}
+          {% if filteredGroup is defined and filteredGroup != userGroup.id %}{% set showGroup = false %}{% endif %}
+          {% if showGroup %}
+            {% for user in users %}
+              {% if userGroup.id in user.user_groups %}
+                {% set usersInGroup = usersInGroup + 1 %}
+              {% endif %}
+            {% endfor %}
         <section id="user-group-{{ userGroup.id }}" class="user-group" data-user-group-id="{{ userGroup.id }}" data-slackchannel="{{ userGroup.slackchannel }}">
           <div>
             <header>
               <h2 class="name">{{ userGroup.name }}</h2>
             </header>
             <div>
-              <div class="balanced"><a class="button" href="/add/user?group={{ userGroup.id }}" style="margin-bottom:2em">Create {{ userGroup.name }} User</a></div>
+              <div class="balanced"><a class="button" href="{{ endpoints.ADD_USER|default('/add/user/') }}?group={{ userGroup.id }}" style="margin-bottom:2em">Create {{ userGroup.name }} User</a></div>
               {% if usersInGroup > 3 %}
                 {% include 'bulkactions.twig' with {'users' : users} %}
               {% endif %}
@@ -117,8 +121,10 @@
                   </tr>
                 </thead>
                 <tbody>
+                  {% set shownUsers = 0 %}
                   {% for user in users %}
-                  {% if userGroup.id in user.user_groups %}
+                  {% if userGroup.id in user.user_groups and shownUsers >= 0 and shownUsers < paginateUsers|default(12) %}
+                  {% if filteredGroup is not defined %}{% set shownUsers = shownUsers + 1 %}{% endif %}
                   <tr tabindex="0" class="user-row" data-user-id="{{ user.id }}" data-slack="{{ user.slack }}" data-email="{{ user.email }}" data-user-groups="{{ user.user_groups|join(',') }}">
                     <td class="username">{{ user.username }}</td>
                     <!--td><label><span a11y-hidden>Active: </span><input {% if user.active == '1' %}checked {% endif %} type="checkbox"></label></td-->
@@ -143,8 +149,8 @@
                           </div>
                           <script>document.write('<div><button class="save">Next User</button></div>')</script>
                           <div>
-                            <a class="button" href="/update/user/{{ user.id }}">Quick Edit</a>
-                            <a class="button" href="/update/user/{{ user.id }}">Edit</a>
+                            <a class="button" href="{{ endpoints.UPDATE_USER|default('/update/user/') }}{{ user.id }}">Quick Edit</a>
+                            <a class="button" href="{{ endpoints.UPDATE_USER|default('/update/user/') }}{{ user.id }}">Edit</a>
                           </div>
                           <div>
                             <button type="submit" formaction="duplicate/user" class="save">Duplicate</button>
@@ -169,10 +175,11 @@
               {% endif %}
             </div>
             <footer>
-              {% if pageType != 'detail' %}<p><a href="#">View all {{ userGroup.name }} Users</a></p>{% endif %}
+              {% if pageType != 'detail' and usersInGroup > paginateUsers|default(12) %}<p><a href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}">View all {{ userGroup.name }} Users</a></p>{% endif %}
             </footer>
           </div>
         </section>
+          {% endif %}
         {% endfor %}
       </div>
     </div>

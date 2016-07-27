@@ -3,6 +3,9 @@ var store = require('./../model/store');
 var actions = require('./../model/actions');
 var ReactFormData = require('react-form-data');
 
+var settings = require('./../model/settings'),
+endpoints = settings.endpoints;
+
 // can't use this until a future version of React
 var SettingTableRowGroup = React.createClass({
   getInitialState:function(){
@@ -79,17 +82,17 @@ var SettingsGridSectionBulkActionsFieldset = React.createClass({
 
         try {
           switch(this.state.formAction) {
-            case '/api/users/activate':
+            case endpoints.API_USERS_ACTIVATE:
             event.preventDefault();
             store.dispatch(actions.activateUsers(bulkSelectedUsers));
             break;
 
-            case '/api/users/deactivate':
+            case endpoints.API_USERS_DEACTIVATE:
             event.preventDefault();
             store.dispatch(actions.deactivateUsers(bulkSelectedUsers));
             break;
 
-            case '/api/users/delete':
+            case endpoints.API_USERS_DELETE:
             event.preventDefault();
             store.dispatch(actions.deleteUsers(bulkSelectedUsers));
             break;
@@ -100,9 +103,9 @@ var SettingsGridSectionBulkActionsFieldset = React.createClass({
         {hiddenBulkToggleInputs}
         <fieldset>
           <legend>Bulk Actions</legend>
-          <button type="submit" disabled={!props.emails.length} className="go" formAction="/api/users/activate" formMethod="post" onClick={this.handleBulkButtonClick}>Activate</button>
-          <button type="submit" disabled={!props.emails.length} className="danger" formAction="/api/users/deactivate" formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
-          <button type="submit" disabled={!props.emails.length} className="danger" formAction="/api/users/delete" formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
+          <button type="submit" disabled={!props.emails.length} className="go" formAction={endpoints.API_USERS_ACTIVATE} formMethod="post" onClick={this.handleBulkButtonClick}>Activate</button>
+          <button type="submit" disabled={!props.emails.length} className="danger" formAction={endpoints.API_USERS_DEACTIVATE} formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
+          <button type="submit" disabled={!props.emails.length} className="danger" formAction={endpoints.API_USERS_DELETE} formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
           <a className="button" disabled={!props.emails.length} href={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body='}>Email</a>
           <a className="button" disabled={!props.emails.length} href={'https://' + props.slackChannel + '.slack.com/messages/@' + props.slackHandles.join(',')} target="_blank">Slack DM</a>
         </fieldset>
@@ -199,7 +202,7 @@ var SettingsGridSection = React.createClass({
     viewAll = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? false : (users.length > paginationAmount) ? (<p><a onClick={(event) => {
       event.preventDefault();
       this.props.handleFilterBy(props.userGroup.id);
-    }} href={`/groups/${props.userGroup.id}`}>View all {props.title} users</a></p>) : false,
+    }} href={`${ endpoints.GROUPS }${props.userGroup.id}`}>View all {props.title} users</a></p>) : false,
     paginatedUsers = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? users : users.slice(0, paginationAmount);
 
     return (paginatedUsers.length) ? (
@@ -209,7 +212,7 @@ var SettingsGridSection = React.createClass({
             <h2>{props.title}</h2>
           </header>
           <div className="balanced">
-            <a className="button" href={"/add/user?group=" + props.userGroup.id} style={{marginBottom:"2em"}}>{'Create ' + props.title + ' User'}</a>
+            <a className="button" href={endpoints.ADD_USER + "?group=" + props.userGroup.id} style={{marginBottom:"2em"}}>{'Create ' + props.title + ' User'}</a>
           </div>
           <div>
             {bulkActionsFieldset}
@@ -313,7 +316,7 @@ var SettingsTableRowForm = React.createClass({
 
               <div><a className="button">Next User</a></div>
               <div>
-                <a className="button" href={"/update/user/" + user.id} onClick={(event) => {
+                <a className="button" href={endpoints.UPDATE_USER + user.id} onClick={(event) => {
                   event.preventDefault();
                   //event.stopPropagation();
                   store.dispatch(actions.updateQuickCreate({
@@ -329,7 +332,7 @@ var SettingsTableRowForm = React.createClass({
                     roles:user.roles
                   }));
                 }}>Quick Edit</a>
-                <a className="button" href={"/update/user/" + user.id}>Edit</a>
+                <a className="button" href={endpoints.UPDATE_USER + user.id}>Edit</a>
               </div>
               <div>
                 <button type="submit" formAction="duplicate/user" className="save">Duplicate</button>
@@ -341,7 +344,7 @@ var SettingsTableRowForm = React.createClass({
                       user_id:user.id
                     }})
                   ));
-                }} formMethod="post" formAction="/user/delete" data-async-action="deleteuser">Delete</button>
+                }} formMethod="post" formAction={endpoints.USER_DELETE} data-async-action="deleteuser">Delete</button>
                 <a className="button" href={'mailto:' + user.email + '?subject=MODX%20Next'}>Email</a>
               </div>
               <div>

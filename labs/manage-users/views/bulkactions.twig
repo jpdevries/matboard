@@ -1,4 +1,4 @@
-<form action="/users/deactivate" method="post">
+<form action="{{endpoints.USERS_DEACTIVATE|default('/users/deactivate')}}" method="post">
   <input type="hidden" name="usergroup" value="{{ userGroup.id }}" />
   {% set emails = [] %}
   {% for user in users %}
@@ -9,8 +9,8 @@
   {% endfor %}
   <fieldset>
     <legend>Bulk Actions</legend>
-    <button class="danger" type="submit" formaction="/users/deactivate" formmethod="post">Suspend All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
-    <button type="submit" className="go" formaction="/users/activate">Activate All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
+    <button class="danger" type="submit" formaction="{{endpoints.USERS_DEACTIVATE|default('/users/deactivate')}}" formmethod="post">Suspend All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
+    <button type="submit" className="go" formaction="{{endpoints.USERS_ACTIVATE|default('/users/activate')}}">Activate All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
     <button class="delete" formaction="/users/delete" formmethod="post">Delete All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
     <a class="button" href="mailto:{{ emails|join(',') }}?subject=MODX%20Next">Email All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></a>
   </fieldset>

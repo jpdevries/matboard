@@ -17,6 +17,10 @@ store = require('./_build/js/model/store'),
 actions = require('./_build/js/model/actions'),
 app = express();
 
+var settings = require('./_build/js/model/settings'),
+paginateUsers = settings.paginateUsers,
+endpoints = settings.endpoints;
+
 // This section is optional and used to configure twig.
 app.set("twig options", {
     strict_variables: false
@@ -25,10 +29,12 @@ app.set("twig options", {
 /**
  * Quickly add the user to the database then get user data, get role data, get user groups data, and render the React form
  */
-app.post('/add/user', function(req, res){
+app.post(endpoints.ADD_USER, function(req, res){
+  console.log(endpoints.ADD_USER);
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
     addUserQuickly(fields).then(function(result){
+      console.log('renderUpdateUserPage',result);
       renderUpdateUserPage(req,res,result.user_id,false,'addeduser.twig');
     });
   });
@@ -61,7 +67,7 @@ app.post('/add/user', function(req, res){
   });
 });*/
 
-app.get('/api/users',function(req, res){
+app.get(endpoints.API_USERS,function(req, res){
   getUserRows().then(function(result){
     res.json(result);
   },function(err){
@@ -69,7 +75,7 @@ app.get('/api/users',function(req, res){
   });
 });
 
-app.get('/api/user/groups', function(req, res){
+app.get(endpoints.API_USER_GROUPS, function(req, res){
   getUserGroups().then(function(userGroups){
     res.json({
       userGroups:userGroups
@@ -77,7 +83,7 @@ app.get('/api/user/groups', function(req, res){
   });
 });
 
-app.get('/api/roles',function(req, res){
+app.get(endpoints.API_ROLES,function(req, res){
   getRoles().then(function(roles){
     res.json({
       roles:roles
@@ -87,7 +93,7 @@ app.get('/api/roles',function(req, res){
   });
 });
 
-app.post('/api/user/add',function(req, res){
+app.post(endpoints.API_USER_ADD,function(req, res){
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -99,7 +105,7 @@ app.post('/api/user/add',function(req, res){
   });
 });
 
-app.post('/api/user/update',function(req, res){
+app.post(endpoints.API_USER_UPDATE,function(req, res){
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -112,7 +118,7 @@ app.post('/api/user/update',function(req, res){
   });
 });
 
-app.post('/user/delete', function(req, res) {
+app.post(endpoints.USER_DELETE, function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -121,17 +127,19 @@ app.post('/user/delete', function(req, res) {
     deleteUserById(fields.user_id || fields.id).then(function(result){
       res.render('deletedusers.twig', {
         deleted:'Deleted',
-        users:result.rows
+        users:result.rows,
+        endpoints:endpoints
       });
     },function(){ // error
       res.render('deletedusers.twig', {
-        deleted:'Delete'
+        deleted:'Delete',
+        endpoints:endpoints
       });
     });
   });
 });
 
-app.post('/users/delete',function(req, res) {
+app.post(endpoints.USERS_DELETE,function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -140,18 +148,20 @@ app.post('/users/delete',function(req, res) {
     deleteUsersById(users).then(function(result){
       res.render('deletedusers.twig', {
         deleted:'Deleted',
-        users:result.rows
+        users:result.rows,
+        endpoints:endpoints
       });
     },function(err,result){ // error
       res.render('deletedusers.twig', {
         deleted:'Delete',
-        users:result.rows
+        users:result.rows,
+        endpoints:endpoints
       });
     });
   });
 });
 
-app.delete('/api/users/delete',function(req, res) {
+app.delete(endpoints.API_USERS_DELETE,function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -165,7 +175,7 @@ app.delete('/api/users/delete',function(req, res) {
   });
 });
 
-app.delete('/api/user/delete',function(req, res) {
+app.delete(endpoints.API_USER_DELETE,function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -179,26 +189,28 @@ app.delete('/api/user/delete',function(req, res) {
   });
 });
 
-app.post('/users/activate', function(req, res) {
+app.post(endpoints.USERS_ACTIVATE, function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
     activateUsersById(fields['users[]'], true).then(function(result){
       res.render('activatedusers.twig', {
         activated:'Activated',
-        users:result.rows
+        users:result.rows,
+        endpoints:endpoints
       });
     },function(err,result){
       res.render('unabletoactivateusers.twig', {
         activate:'Activate',
         activated:'Activated',
-        users:result.rows
+        users:result.rows,
+        endpoints:endpoints
       });
     });
   });
 });
 
-app.post('/api/users/activate',function(req, res) {
+app.post(endpoints.API_USERS_ACTIVATE,function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -212,7 +224,7 @@ app.post('/api/users/activate',function(req, res) {
   });
 });
 
-app.post('/users/deactivate', function(req, res) {
+app.post(endpoints.USERS_DEACTIVATE, function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -220,19 +232,21 @@ app.post('/users/deactivate', function(req, res) {
       //console.log(result.rows);
       res.render('activatedusers.twig', {
         activated:'Suspended',
-        users:result.rows
+        users:result.rows,
+        endpoints:endpoints
       });
     },function(err,result){
       res.render('unabletoactivateusers.twig', {
         activate:'Suspend',
         activated:'Suspended',
-        users:result.rows
+        users:result.rows,
+        endpoints:endpoints
       });
     });
   });
 });
 
-app.post('/api/users/deactivate',function(req, res) {
+app.post(endpoints.API_USERS_DEACTIVATE,function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
@@ -246,7 +260,7 @@ app.post('/api/users/deactivate',function(req, res) {
   });
 });
 
-app.get('/add/user', function(req, res){
+app.get(endpoints.ADD_USER, function(req, res){
   console.log('/add/user',req.query);
   getRoles().then(function(roles){
     store.dispatch(actions.setRoles(roles));
@@ -272,6 +286,7 @@ app.get('/add/user', function(req, res){
     return data;
   }).then(function(data){
     res.render('createuser.twig', {
+      endpoints:endpoints,
       react: ReactDOM.renderToStaticMarkup(
         React.createElement(QuickCreateFieldset,{
           quickCreate:store.getState().quickCreate,
@@ -283,7 +298,7 @@ app.get('/add/user', function(req, res){
   });
 });
 
-app.post('/update/user/:userid', function(req, res) {
+app.post(endpoints.UPDATE_USER + ':userid', function(req, res) {
   var userid = req.params.userid,
   form = new formidable.IncomingForm();
 
@@ -319,6 +334,7 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
   )).then(function(users){
     var user = users[0],
     userGroupRoles = {};
+    console.log('user',user);
     user.group_roles.map((groupRole,index) => {
       userGroupRoles[groupRole.group] = groupRole.roles;
     });
@@ -332,6 +348,7 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
         store.dispatch(actions.setUserGroups(userGroups));
         return userGroups;
       }).then(function(userGroups){
+        console.log('resolving userGroups',userGroups);
         resolve(Object.assign({},data,{
           userGroups:userGroups
         }));
@@ -366,9 +383,16 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
       roles:userGroupRoles
     }));
 
+    console.log('rendering template',{
+      quickCreate:store.getState().quickCreate,
+      roles:store.getState().roles,
+      userGroups:store.getState().userGroups
+    });
+
     res.render(template, {
       user:user,
       updated:updated,
+      endpoints:endpoints,
       react:ReactDOM.renderToStaticMarkup(
         React.createElement(QuickCreateFieldset,{
           quickCreate:store.getState().quickCreate,
@@ -381,11 +405,11 @@ function renderUpdateUserPage(req, res, userid, updated = false, template='updat
   });
 }
 
-app.get('/update/user/:userid', function(req, res) {
+app.get(endpoints.UPDATE_USER + ':userid', function(req, res) {
   renderUpdateUserPage(req, res, req.params.userid);
 });
 
-function getUserRowsAndPrepareData(where = '') {
+function getUserRowsAndPrepareData(where = '',userGroupsWhere = '') {
   return getUserRows(where).then(function(results){
     return new Promise(function(resolve,reject){
       getRoles().then(function(roles){
@@ -401,7 +425,7 @@ function getUserRowsAndPrepareData(where = '') {
     });
   }).then(function(data){
     return new Promise(function(resolve,reject){ // legacy userGroup didn't contain props like slackchannel overwrite with necessary data
-      getUserGroups().then(function(userGroups){
+      getUserGroups(userGroupsWhere).then(function(userGroups){
         resolve(Object.assign({},data,{
           userGroups:userGroups
         }))
@@ -412,18 +436,24 @@ function getUserRowsAndPrepareData(where = '') {
 
 app.get('/', function(req, res){
   getUserRowsAndPrepareData().then(function(data){
-    res.render('index.twig', data);
+    res.render('index.twig', Object.assign({},data,{
+      paginateUsers:12,
+      endpoints:endpoints
+    }));
   },function(err){
     //console.log(err);
   });
 });
 
-app.get('/groups/:groupid', function(req, res){
+app.get(endpoints.GROUPS + ':groupid', function(req, res){
   getUserRowsAndPrepareData(`WHERE user_group = ${req.params.groupid}`).then(function(data){
     res.render('index.twig', Object.assign({},data,{
       pageType:'detail',
       showFilterBy:false,
-      showReturnTo:true
+      showReturnTo:true,
+      filteredGroup:req.params.groupid,
+      paginateUsers:paginateUsers,
+      endpoints:endpoints
     }));
   },function(err){
     //console.log(err);
@@ -465,7 +495,7 @@ function deleteUserById(user_id) {
 }
 
 function activateUsersById(users,active = true) {
-  console.log('activateUsersById',users);
+  //console.log('activateUsersById',users);
   active = active ? 1 : 0;
   return new Promise(function(resolve, reject) {
     // instantiate a new client
@@ -494,7 +524,7 @@ function activateUsersById(users,active = true) {
         INNER JOIN modx_user_attributes ON modx_user_attributes.id = update_user.user_id;
       `;
 
-      console.log(query);
+      //console.log(query);
 
       // execute a query on our database
       client.query(query, function (err, result) {
@@ -620,7 +650,7 @@ function quicklyUpdateUser(fields) {
   });
 }
 
-function getUserGroups() {
+function getUserGroups(where = '') {
   return new Promise(function(resolve, reject){
     var client = new pg.Client();
 
@@ -629,7 +659,7 @@ function getUserGroups() {
 
       // execute a query on our database
       client.query(`
-        SELECT * FROM "modx_membergroup_names";
+        SELECT * FROM "modx_membergroup_names" ${where};
         `, function (err, results) {
         if (err) reject(err);
 
@@ -758,7 +788,7 @@ function getGroupRoleSelects(userGroupRoles, userrelation = 'new_user') {
 }
 
 function prepGroupRoles(fields){ // pretty nasty but turns the form data into an array of objects representing user group ids and respective roles of the user
-  console.log('prepGroupRoles',fields);
+  //console.log('prepGroupRoles',fields);
   var obj = {};
   for(var k in fields) {
     var split = k.split('-');
@@ -832,7 +862,7 @@ function addUserQuickly(fields) {
         VALUES (nextval('user_id_sequence'),'${username}', 1,1,0) RETURNING *
       ), "new_user_attributes" AS (
         INSERT INTO "modx_user_attributes" (id, internalKey, givenname, familyname, email, phone, title)
-        SELECT new_user.user_id,new_user.user_id,'${givenname} ${familyname}','${email}','','' FROM new_user
+        SELECT new_user.user_id,new_user.user_id,'${givenname}','${familyname}','${email}','','' FROM new_user
         RETURNING *
       ) ${groupSelectsBlock}
       SELECT * FROM "new_user";`;
@@ -841,6 +871,7 @@ function addUserQuickly(fields) {
 
       // execute a query on our database
       client.query(query,function(err, result){
+        console.log(result);
         if (err) reject(err);
 
         // disconnect the client

@@ -1,5 +1,9 @@
 require('isomorphic-fetch');
 
+var settings = require('./settings'),
+endpoints = settings.endpoints;
+
+
 var UPDATE_QUICKCREATE = 'update_quickcreate';
 var updateQuickCreate = function(quickCreate) {
   return {
@@ -76,7 +80,7 @@ var updateUserError = function(id,user) {
 
 var updateUser = (id,user) => (
   (dispatch) => (
-    fetch('/api/user/update', {
+    fetch(endpoints.API_USER_UPDATE, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -185,7 +189,7 @@ var deleteUserError = function(user) {
 
 var deleteUser = function(user) {
   return function(dispatch) {
-    return fetch('/api/user/delete', {
+    return fetch(endpoints.API_USER_DELETE, {
       method: 'DELETE',
       headers: {
         'Accept': 'application/json',
@@ -238,7 +242,7 @@ var deleteUsersError = function(users) {
 var deleteUsers = function(users) {
   //console.log('deleteUsers',users);
   return function(dispatch) {
-    return fetch('/api/users/delete', {
+    return fetch(endpoints.API_USERS_DELETE, {
       method: 'DELETE',
       headers: {
         'Accept': 'application/json',
@@ -303,7 +307,7 @@ var activateUsersError = function(users) {
 var activateUsers = function(users) {
   //console.log('activate',users);
   return function(dispatch) {
-    return fetch('/api/users/activate', {
+    return fetch(endpoints.API_USERS_ACTIVATE, {
       method: 'post',
       headers: {
         'Accept': 'application/json',

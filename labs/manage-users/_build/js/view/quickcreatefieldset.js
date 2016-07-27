@@ -3,6 +3,9 @@ if(!React) var React = require("react"); // only require React if need be (serve
 var actions = require('./../model/actions'),
 store = require('./../model/store');
 
+var settings = require('./../model/settings'),
+endpoints = settings.endpoints;
+
 export default class QuickCreateFieldset extends React.Component {
   render() {
 
@@ -51,7 +54,7 @@ export default class QuickCreateFieldset extends React.Component {
       <div>
         <div>
           <button type="submit" formaction="/duplicate/user" formMethod="put">Duplicate User</button>
-          <button type="submit" onClick={this.props.handleDeleteUser} className="dangerous" formAction="/user/delete" formMethod="post">Delete User</button>
+          <button type="submit" onClick={this.props.handleDeleteUser} className="dangerous" formAction={endpoints.USER_DELETE} formMethod="post">Delete User</button>
         </div>
         <div>
           <a className="button" href={"mailto:" + props.quickCreate.email + "?subject=MODX%20Next"}>Email User</a>

@@ -96,9 +96,9 @@
 	var _reactRedux = __webpack_require__(3);
 
 	var actions = __webpack_require__(4);
-	var store = __webpack_require__(7);
+	var store = __webpack_require__(8);
 
-	var ManageUsersForm = __webpack_require__(17);
+	var ManageUsersForm = __webpack_require__(18);
 
 	var ManageUsers = function ManageUsers() {
 	  store.subscribe(function () {
@@ -163,6 +163,9 @@
 	'use strict';
 
 	__webpack_require__(5);
+
+	var settings = __webpack_require__(7),
+	    endpoints = settings.endpoints;
 
 	var UPDATE_QUICKCREATE = 'update_quickcreate';
 	var updateQuickCreate = function updateQuickCreate(quickCreate) {
@@ -233,7 +236,7 @@
 
 	var updateUser = function updateUser(id, user) {
 	  return function (dispatch) {
-	    return fetch('/api/user/update', {
+	    return fetch(endpoints.API_USER_UPDATE, {
 	      method: 'POST',
 	      headers: {
 	        'Accept': 'application/json',
@@ -333,7 +336,7 @@
 
 	var deleteUser = function deleteUser(user) {
 	  return function (dispatch) {
-	    return fetch('/api/user/delete', {
+	    return fetch(endpoints.API_USER_DELETE, {
 	      method: 'DELETE',
 	      headers: {
 	        'Accept': 'application/json',
@@ -382,7 +385,7 @@
 	var deleteUsers = function deleteUsers(users) {
 	  //console.log('deleteUsers',users);
 	  return function (dispatch) {
-	    return fetch('/api/users/delete', {
+	    return fetch(endpoints.API_USERS_DELETE, {
 	      method: 'DELETE',
 	      headers: {
 	        'Accept': 'application/json',
@@ -433,7 +436,7 @@
 	var activateUsers = function activateUsers(users) {
 	  //console.log('activate',users);
 	  return function (dispatch) {
-	    return fetch('/api/users/activate', {
+	    return fetch(endpoints.API_USERS_ACTIVATE, {
 	      method: 'post',
 	      headers: {
 	        'Accept': 'application/json',
@@ -1026,6 +1029,54 @@
 
 /***/ },
 /* 7 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var USERS_ACTIVATE = '/users/activate/';
+	var USERS_DEACTIVATE = '/users/deactivate/';
+	var USER_DELETE = '/user/delete/';
+	var USERS_DELETE = '/users/delete/';
+	var USER_UPDATE = '/user/update';
+	var USER_GROUPS = '/user/groups/';
+
+	module.exports = {
+	  paginateUsers: 12,
+	  endpoints: {
+	    ADD_USER: '/add/user/',
+
+	    UPDATE_USER: '/update/user/',
+
+	    GROUPS: '/groups/',
+
+	    USERS_ACTIVATE: USERS_ACTIVATE,
+	    API_USERS_ACTIVATE: '/api' + USERS_ACTIVATE,
+
+	    USERS_DEACTIVATE: USERS_DEACTIVATE,
+	    API_USERS_DEACTIVATE: '/api' + USERS_DEACTIVATE,
+
+	    USER_DELETE: USER_DELETE,
+	    API_USER_DELETE: '/api' + USER_DELETE,
+
+	    USERS_DELETE: USERS_DELETE,
+	    API_USERS_DELETE: '/api' + USERS_DELETE,
+
+	    USER_UPDATE: USER_UPDATE,
+	    API_USER_UPDATE: '/api' + USER_UPDATE,
+
+	    API_USER_ADD: '/api/user/add',
+
+	    API_ROLES: '/api/roles',
+
+	    USER_GROUPS: 'USER_GROUPS',
+	    API_USER_GROUPS: '/api' + USER_GROUPS,
+
+	    API_USERS: '/api/users'
+	  }
+	};
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1033,16 +1084,16 @@
 	var redux = __webpack_require__(2);
 	var createStore = redux.createStore;
 	var applyMiddleware = redux.applyMiddleware;
-	var thunk = __webpack_require__(8).default;
+	var thunk = __webpack_require__(9).default;
 
-	var reducers = __webpack_require__(9);
+	var reducers = __webpack_require__(10);
 
 	var store = createStore(reducers.manageUsersReducer, applyMiddleware(thunk));
 
 	module.exports = store;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1070,7 +1121,7 @@
 	exports['default'] = thunk;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1079,7 +1130,7 @@
 
 	var actions = __webpack_require__(4);
 	var combineReducers = __webpack_require__(2).combineReducers;
-	var update = __webpack_require__(10);
+	var update = __webpack_require__(11);
 
 	var initialViewProps = {
 	  pageType: function () {
@@ -1397,13 +1448,13 @@
 	exports.manageUsersReducer = manageUsersReducer;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(11);
+	module.exports = __webpack_require__(12);
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -1421,11 +1472,11 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(13),
-	    _assign = __webpack_require__(14);
+	var _prodInvariant = __webpack_require__(14),
+	    _assign = __webpack_require__(15);
 
-	var keyOf = __webpack_require__(15);
-	var invariant = __webpack_require__(16);
+	var keyOf = __webpack_require__(16);
+	var invariant = __webpack_require__(17);
 	var hasOwnProperty = {}.hasOwnProperty;
 
 	function shallowCopy(x) {
@@ -1519,10 +1570,10 @@
 	}
 
 	module.exports = update;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -1647,7 +1698,7 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/**
@@ -1691,7 +1742,7 @@
 	module.exports = reactProdInvariant;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1780,7 +1831,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1819,7 +1870,7 @@
 	module.exports = keyOf;
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -1871,19 +1922,19 @@
 	}
 
 	module.exports = invariant;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var actions = __webpack_require__(4);
-	var store = __webpack_require__(7);
+	var store = __webpack_require__(8);
 
-	var ManageUserFormHeader = __webpack_require__(18);
-	var SettingsGridSection = __webpack_require__(23);
+	var ManageUserFormHeader = __webpack_require__(19);
+	var SettingsGridSection = __webpack_require__(24);
 
 	var ManageUsersForm = React.createClass({
 	  displayName: 'ManageUsersForm',
@@ -1937,7 +1988,7 @@
 	module.exports = ManageUsersForm;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1947,10 +1998,13 @@
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	var actions = __webpack_require__(4);
-	var store = __webpack_require__(7);
-	var ReactFormData = __webpack_require__(19);
-	var QuickCreateFieldset = __webpack_require__(21);
-	var update = __webpack_require__(10);
+	var store = __webpack_require__(8);
+	var ReactFormData = __webpack_require__(20);
+	var QuickCreateFieldset = __webpack_require__(22);
+	var update = __webpack_require__(11);
+
+	var settings = __webpack_require__(7),
+	    endpoints = settings.endpoints;
 
 	var CreateSettingsForm = React.createClass({
 	  displayName: 'CreateSettingsForm',
@@ -1970,7 +2024,7 @@
 	    });
 	  },
 	  handleDeleteUser: function handleDeleteUser(event) {
-	    console.log('handleDeleteUser', event);
+	    //console.log('handleDeleteUser',event);
 	    this.setState({ formMethod: 'delete' });
 	  },
 	  render: function render() {
@@ -1980,7 +2034,7 @@
 	    //console.log(props);
 	    var quickCreateUserBtn = this.state.quickCreateOpen ? false : React.createElement(
 	      'a',
-	      { href: '/add/user', className: 'button', onClick: function onClick(event) {
+	      { href: endpoints.ADD_USER, className: 'button', onClick: function onClick(event) {
 	          event.preventDefault();
 	          store.dispatch(actions.updateQuickCreate({ open: true }));
 	        } },
@@ -1993,7 +2047,7 @@
 
 	    return React.createElement(
 	      'form',
-	      { ref: 'createSettingForm', action: props.quickCreate.updating ? "/update/user/" + props.quickCreate.id : "/add/user", method: 'post', className: 'create-setting-form', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
+	      { ref: 'createSettingForm', action: props.quickCreate.updating ? endpoints.UPDATE_USER + props.quickCreate.id : endpoints.ADD_USER, method: 'post', className: 'create-setting-form', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
 	          event.preventDefault();
 	          console.log('onSubmit', _this2.state.formMethod, props.quickCreate);
 
@@ -2105,7 +2159,7 @@
 	        quickCreateUserBtn,
 	        React.createElement(
 	          'a',
-	          { className: 'button', href: '/add/user' },
+	          { className: 'button', href: endpoints.ADD_USER },
 	          'Create User'
 	        )
 	      ),
@@ -2235,14 +2289,14 @@
 	module.exports = ManageUserFormHeader;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(20);
+	module.exports = __webpack_require__(21);
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	// Generated by CoffeeScript 1.9.1
@@ -2320,7 +2374,7 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2337,10 +2391,13 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	if (!React) var React = __webpack_require__(22); // only require React if need be (server-side rendering)
+	if (!React) var React = __webpack_require__(23); // only require React if need be (server-side rendering)
 
 	var actions = __webpack_require__(4),
-	    store = __webpack_require__(7);
+	    store = __webpack_require__(8);
+
+	var settings = __webpack_require__(7),
+	    endpoints = settings.endpoints;
 
 	var QuickCreateFieldset = function (_React$Component) {
 	  _inherits(QuickCreateFieldset, _React$Component);
@@ -2415,7 +2472,7 @@
 	          ),
 	          React.createElement(
 	            'button',
-	            { type: 'submit', onClick: this.props.handleDeleteUser, className: 'dangerous', formAction: '/user/delete', formMethod: 'post' },
+	            { type: 'submit', onClick: this.props.handleDeleteUser, className: 'dangerous', formAction: endpoints.USER_DELETE, formMethod: 'post' },
 	            'Delete User'
 	          )
 	        ),
@@ -2598,23 +2655,26 @@
 	module.exports = QuickCreateFieldset;
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = React;
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-	var update = __webpack_require__(10);
-	var store = __webpack_require__(7);
+	var update = __webpack_require__(11);
+	var store = __webpack_require__(8);
 	var actions = __webpack_require__(4);
-	var ReactFormData = __webpack_require__(19);
+	var ReactFormData = __webpack_require__(20);
+
+	var settings = __webpack_require__(7),
+	    endpoints = settings.endpoints;
 
 	// can't use this until a future version of React
 	var SettingTableRowGroup = React.createClass({
@@ -2699,17 +2759,17 @@
 
 	          try {
 	            switch (_this2.state.formAction) {
-	              case '/api/users/activate':
+	              case endpoints.API_USERS_ACTIVATE:
 	                event.preventDefault();
 	                store.dispatch(actions.activateUsers(bulkSelectedUsers));
 	                break;
 
-	              case '/api/users/deactivate':
+	              case endpoints.API_USERS_DEACTIVATE:
 	                event.preventDefault();
 	                store.dispatch(actions.deactivateUsers(bulkSelectedUsers));
 	                break;
 
-	              case '/api/users/delete':
+	              case endpoints.API_USERS_DELETE:
 	                event.preventDefault();
 	                store.dispatch(actions.deleteUsers(bulkSelectedUsers));
 	                break;
@@ -2727,17 +2787,17 @@
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, className: 'go', formAction: '/api/users/activate', formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', disabled: !props.emails.length, className: 'go', formAction: endpoints.API_USERS_ACTIVATE, formMethod: 'post', onClick: this.handleBulkButtonClick },
 	          'Activate'
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: '/api/users/deactivate', formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: endpoints.API_USERS_DEACTIVATE, formMethod: 'post', onClick: this.handleBulkButtonClick },
 	          'Suspend'
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: '/api/users/delete', formMethod: 'delete', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: endpoints.API_USERS_DELETE, formMethod: 'delete', onClick: this.handleBulkButtonClick },
 	          'Delete'
 	        ),
 	        React.createElement(
@@ -2876,7 +2936,7 @@
 	        { onClick: function onClick(event) {
 	            event.preventDefault();
 	            _this4.props.handleFilterBy(props.userGroup.id);
-	          }, href: '/groups/' + props.userGroup.id },
+	          }, href: '' + endpoints.GROUPS + props.userGroup.id },
 	        'View all ',
 	        props.title,
 	        ' users'
@@ -2904,7 +2964,7 @@
 	          { className: 'balanced' },
 	          React.createElement(
 	            'a',
-	            { className: 'button', href: "/add/user?group=" + props.userGroup.id, style: { marginBottom: "2em" } },
+	            { className: 'button', href: endpoints.ADD_USER + "?group=" + props.userGroup.id, style: { marginBottom: "2em" } },
 	            'Create ' + props.title + ' User'
 	          )
 	        ),
@@ -3071,7 +3131,7 @@
 	            null,
 	            React.createElement(
 	              'a',
-	              { className: 'button', href: "/update/user/" + user.id, onClick: function onClick(event) {
+	              { className: 'button', href: endpoints.UPDATE_USER + user.id, onClick: function onClick(event) {
 	                  event.preventDefault();
 	                  //event.stopPropagation();
 	                  store.dispatch(actions.updateQuickCreate({
@@ -3091,7 +3151,7 @@
 	            ),
 	            React.createElement(
 	              'a',
-	              { className: 'button', href: "/update/user/" + user.id },
+	              { className: 'button', href: endpoints.UPDATE_USER + user.id },
 	              'Edit'
 	            )
 	          ),
@@ -3111,7 +3171,7 @@
 	                  store.dispatch(actions.deleteUser(update(user, { $merge: {
 	                      user_id: user.id
 	                    } })));
-	                }, formMethod: 'post', formAction: '/user/delete', 'data-async-action': 'deleteuser' },
+	                }, formMethod: 'post', formAction: endpoints.USER_DELETE, 'data-async-action': 'deleteuser' },
 	              'Delete'
 	            ),
 	            React.createElement(

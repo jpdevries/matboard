@@ -4,6 +4,9 @@ var ReactFormData = require('react-form-data');
 var QuickCreateFieldset = require('./quickcreatefieldset');
 var update = require('react-addons-update');
 
+var settings = require('./../model/settings'),
+endpoints = settings.endpoints;
+
 var CreateSettingsForm = React.createClass({
   mixins: [ ReactFormData ],
   getInitialState:function(){
@@ -18,14 +21,14 @@ var CreateSettingsForm = React.createClass({
     });
   },
   handleDeleteUser:function(event) {
-    console.log('handleDeleteUser',event);
+    //console.log('handleDeleteUser',event);
     this.setState({formMethod:'delete'});
   },
   render:function() {
     var props = this.props;
     //console.log(props);
     var quickCreateUserBtn = this.state.quickCreateOpen ? false : (
-      <a href="/add/user" className="button" onClick={(event) => {
+      <a href={endpoints.ADD_USER} className="button" onClick={(event) => {
         event.preventDefault();
         store.dispatch(actions.updateQuickCreate({open:true}));
       }}>Quick {props.quickCreate.updating ? 'Update' : 'Create'} User</a>
@@ -36,7 +39,7 @@ var CreateSettingsForm = React.createClass({
     ) : false;
 
     return(
-      <form ref="createSettingForm" action={props.quickCreate.updating ? "/update/user/" + props.quickCreate.id : "/add/user"} method="post" className="create-setting-form" onChange={this.updateFormData} onSubmit={(event) => {
+      <form ref="createSettingForm" action={props.quickCreate.updating ? endpoints.UPDATE_USER + props.quickCreate.id : endpoints.ADD_USER} method="post" className="create-setting-form" onChange={this.updateFormData} onSubmit={(event) => {
         event.preventDefault();
         console.log('onSubmit',this.state.formMethod,props.quickCreate);
 
@@ -122,7 +125,7 @@ var CreateSettingsForm = React.createClass({
     }}>
       <div className="top-bar">
         {quickCreateUserBtn}
-        <a className="button" href="/add/user">Create User</a>
+        <a className="button" href={endpoints.ADD_USER}>Create User</a>
       </div>
       {quickCreate}
     </form>

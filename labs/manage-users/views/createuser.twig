@@ -8,7 +8,7 @@
       <header>
         <h1>Create User</h1>
         <div class="create-user-module">
-          <form action="/add/user" method="post" class="create-setting-form">
+          <form action="{{ endpoints.ADD_USER|default('/add/user/') }}" method="post" class="create-setting-form">
               {{ react }}
           </form>
         </div>

@@ -12,7 +12,7 @@
         <hr style="margin-bottom:1em">
       {% endif %}
         <div class="create-user-module">
-          <form action="/update/user/{{ user.id }}" method="post" class="create-setting-form">
+          <form action="{{ endpoints.UPDATE_USER|default('/update/user/') }}{{ user.id }}" method="post" class="create-setting-form">
               {{ react }}
           </form>
         </div>
