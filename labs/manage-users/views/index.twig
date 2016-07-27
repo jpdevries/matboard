@@ -71,20 +71,20 @@
           <hr>
           <div>
             <h3 id="search-users">Search Users</h3>
-            <form action="#" id="search" class="search-settings">
-              <label for="search-users" ><span a11y-hidden>Search: </span><input name="search-users" id="search-users" type="text" placeholder="Search for any User. We'll try and find them."></label>
+            <form action="/#fold" method="post" id="search" class="search-settings">
+              <label for="search" ><span a11y-hidden>Search: </span><input name="search" id="search-users" value="{{ query }}" type="text" placeholder="Search for any User. We'll try and find them."></label>
               <div>
                 <button type="submit">Search</button>
               </div>
               {% if showFilterBy|default(true) %}
               <label for="filter-by">Filter <span class="accessibly-hidden">Users</span> by<span class="accessibly-hidden"> User Group</span>:</label>
               <select name="filter-by" id="filter-by">
-                <option checked value="">All</option>
-                <option value="1">Editors</option>
-                <option value="0">Administrators</option>
+                <option {% if filteredGroup is not defined %}selected {% endif %}value="">All</option>
+                {% for userGroup in userGroups %}
+                <option {% if filteredGroup == userGroup.id %}selected {% endif %}value="{{ userGroup.id }}">{{ userGroup.name }}</option>
+                {% endfor %}
               </select>
               {% endif %}
-
             </form>
             <p>Below you will users who have logged in recently per user group.</p>
           </div>
@@ -187,7 +187,9 @@
     {% if showReturnTo|default(false) %}
     <footer class="returnto">
       <div class="">
-        {% include 'returnto.twig' %}
+        {% include 'returnto.twig' with {
+        'preface':'The results above <a href="#search">are filtered</a>. '
+        } %}
       </div>
     </footer>
     {% endif %}

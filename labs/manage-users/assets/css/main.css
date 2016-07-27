@@ -4,7 +4,7 @@ html {
 *, *::after, *::before {
   box-sizing: inherit; }
 
-table .contextual-setting input[type="text"], .create-setting-form input[type="text"], .create-setting-form input[type="email"], .create-setting-form input[type="password"], .create-setting-form textarea, .create-user-form input[type="text"], .create-user-form input[type="email"], .create-user-form input[type="password"], .create-user-form textarea, .settings-grid table, input[name="search-settings"], input[name="search-users"] {
+table .contextual-setting input[type="text"], .create-setting-form input[type="text"], .create-setting-form input[type="email"], .create-setting-form input[type="password"], .create-setting-form textarea, .create-user-form input[type="text"], .create-user-form input[type="email"], .create-user-form input[type="password"], .create-user-form textarea, .settings-grid table, input[name*="search"] {
   width: 100%;
   min-width: 100%; }
 
@@ -321,7 +321,7 @@ form.search-settings, form.search-users {
   form.search-settings input, form.search-settings button, form.search-users input, form.search-users button {
     font-size: inherit; }
 
-input[name="search-settings"], input[name="search-users"] {
+input[name*="search"] {
   line-height: 1.6rem; }
 
 #search-users {

@@ -437,6 +437,30 @@ app.get('/', function(req, res){
   });
 });
 
+app.post('/', function(req, res){
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    var query = fields.search,
+    filteredGroup = parseInt(fields['filter-by']) || undefined,
+    andfilter = (filteredGroup) ? ` AND user_group = ${filteredGroup}` : '',
+    where = (query) ? `WHERE (username ILIKE '%${query}%'${andfilter}) OR (givenname ILIKE '%${query}%'${andfilter}) OR (familyname ILIKE '%${query}%'${andfilter}) OR (email ILIKE '%${query}%'${andfilter}) OR (title ILIKE '%${query}%'${andfilter})` : '';
+    console.log(fields,query,where,filteredGroup);
+    getUserRowsAndPrepareData(where).then(function(data){
+      res.render('index.twig', Object.assign({},data,{
+        paginateUsers:12,
+        endpoints:endpoints,
+        query:query,
+        filteredGroup:filteredGroup,
+        showReturnTo:true
+      }));
+    },function(err){
+      //console.log(err);
+    });
+
+  });
+});
+
 app.get(endpoints.GROUPS + ':groupid', function(req, res){
   getUserRowsAndPrepareData(`WHERE user_group = ${req.params.groupid}`).then(function(data){
     res.render('index.twig', Object.assign({},data,{
@@ -859,11 +883,11 @@ function addUserQuickly(fields) {
       ) ${groupSelectsBlock}
       SELECT * FROM "new_user";`;
 
-      console.log(query);
+      //console.log(query);
 
       // execute a query on our database
       client.query(query,function(err, result){
-        console.log(result);
+        //console.log(result);
         if (err) reject(err);
 
         // disconnect the client

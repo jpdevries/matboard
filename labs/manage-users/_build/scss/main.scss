@@ -490,7 +490,7 @@ form.search-settings, form.search-users {
   @extend %accessibly-hidden;
 }
 
-input[name="search-settings"], input[name="search-users"] {
+input[name*="search"] {
   @extend %very-greedy;
   //margin-bottom:1em;
   line-height:1.6rem;
