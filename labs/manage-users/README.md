@@ -86,6 +86,8 @@ Our HTML layer itself is isomorphic. As described in the DOM Consumption section
 
 We also find isomorphism in our Node server which uses the same Promises to interact with the database for both the synchronous and asynchronous&nbsp;endpoints.
 
+The synchronous and asynchronous endpoint paths leverage isomorphism by being defined in a single `settings` module that is referenced by both the backend Node server and the front end React code. This allows us to modify the endpoints, such as `/add/users` in one spot. Not only is this convenient it helps reduce the possibility of introducing&nbsp;bugs.
+
 ## Bandwidth Considerations
 React and Redux are loaded from a common CDN. This not only delivers the assets quicker, as they will be served from a server nearest the user's location, but it reduces the weight of our experience by leveraging the browser cache. Browsers cache files by the URL. These concepts are for a management interface. Imagine you may log in to 20 different websites on different domains that use the same manager interface. The first time you login on a fresh cache React and Redux will be cached for all the other interfaces you haven't even logged into or visited&nbsp;yet! By leveraging the browser cache, the more our application is distributed across the web the more performance, optimal, and and accessible it becomes in relation to the world wide&nbsp;web.
 
