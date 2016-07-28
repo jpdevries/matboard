@@ -113,7 +113,7 @@ var initialQuickCreate = {
   familyName:'',
   email:'',
   active:true,
-  sudo:true,
+  sudo:false,
   open:false,
   updating:false,
   id:undefined,
@@ -133,7 +133,7 @@ var initialState = {
   quickCreate:initialQuickCreate
 };
 
-console.log('initialState',initialState);
+//console.log('initialState',initialState);
 
 var usersReducer = function(state, action) {
   state = state || initialState.users;
@@ -145,7 +145,7 @@ var usersReducer = function(state, action) {
 
   switch(action.type) {
     case actions.UPDATE_USER_SUCCESS:
-    console.log(actions.UPDATE_USER_SUCCESS, action.user);
+    //console.log(actions.UPDATE_USER_SUCCESS, action.user);
     var newState =  update(state, {[index]: {$apply: (user) => {
       return update(user,{$merge:action.user})
     }} });
@@ -170,11 +170,7 @@ var usersReducer = function(state, action) {
     break;
 
     case actions.REMOVE_USER_FROM_GROUP:
-    console.log(actions.REMOVE_USER_FROM_GROUP,state[index]);
-
-    console.log(Object.assign({},state[index].roles,{
-      [action.group]:[]
-    }));
+    //console.log(actions.REMOVE_USER_FROM_GROUP,state[index]);
 
     return update(state, {[index]: {$apply: (user) => {
       return update(user, {$merge: {
@@ -199,7 +195,7 @@ var usersReducer = function(state, action) {
     */
 
     case actions.ADD_USER_SUCCESS:
-    console.log(actions.ADD_USER_SUCCESS,action.data);
+    //console.log(actions.ADD_USER_SUCCESS,action.data);
     if(action.user.id === undefined) {
       var nextIndex = 0;
       state.map((user,i) => {
@@ -247,7 +243,7 @@ var quickCreateReducer = function(state, action) {
 
   switch(action.type) {
     case actions.UPDATE_QUICKCREATE:
-    console.log(actions.UPDATE_QUICKCREATE, update(state, {$merge:action.quickCreate}));
+    //console.log(actions.UPDATE_QUICKCREATE, update(state, {$merge:action.quickCreate}));
     return update(state, {$merge:action.quickCreate});
 
     case actions.QUICKCREATE_ROLE_ADD:
@@ -272,6 +268,7 @@ var quickCreateReducer = function(state, action) {
     ) }});
 
     case actions.FLUSH_QUICK_CREATE:
+    //console.log('action.quickCreate',action.quickCreate,update(initialQuickCreate,{$merge: action.quickCreate}));
     return update(state, {$set:update(initialQuickCreate,{$merge: action.quickCreate})});
 
 

@@ -106,7 +106,7 @@
         <section id="user-group-{{ userGroup.id }}" class="user-group" data-user-group-id="{{ userGroup.id }}" data-slackchannel="{{ userGroup.slackchannel }}">
           <div>
             <header>
-              <h2><a class="subtle" href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}#fold"><span class="name">{{ userGroup.name }}</span></a></h2>
+              <h2 id="{{ userGroup.name|escape('css') }}"><a class="subtle" href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}#fold"><span class="name">{{ userGroup.name }}</span></a></h2>
             </header>
             <div>
               <div class="balanced"><a class="button" href="{{ endpoints.ADD_USER|default('/add/user/') }}?group={{ userGroup.id }}#fold" style="margin-bottom:2em">Create {{ userGroup.name }} User</a></div>

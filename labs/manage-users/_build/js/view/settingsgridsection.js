@@ -16,18 +16,8 @@ var SettingTableRowGroup = React.createClass({
   render:function(){
     var props = this.props;
     var user = props.user;
-    console.log('user',user);
-    //<SettingsTableRowForm user={user} colspan="2" />
     return (
-        <SettingsTableRow user={user} className="contextual-setting"
-          handleBlur={(event) => (
-            console.log('showSetting',this.state.showSetting)
-           //this.setState({showSetting:false})
-         )} handleFocus={(event) => (
-           console.log('showSetting',this.state.showSetting)
-           //this.setState({showSetting:true})
-         )}
-        />
+        <SettingsTableRow user={user} className="contextual-setting" />
     );
   }
 });
@@ -39,10 +29,6 @@ var SettingsGridSectionBulkActionsFieldset = React.createClass({
     formMethod:'push'
   }),
   handleBulkButtonClick:function(event) {
-    console.log({
-      formAction:event.target.getAttribute('formaction'),
-      formMethod:event.target.getAttribute('formmethod')
-    });
     this.setState({
       formAction:event.target.getAttribute('formaction'),
       formMethod:event.target.getAttribute('formmethod')
@@ -195,8 +181,6 @@ var SettingsGridSection = React.createClass({
       });
     }
 
-    console.log(this.props,this.props.viewProps.pageType);
-
     var paginationAmount = 12,
     bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} slackChannel={props.userGroup.slackChannel} slackHandles={slackHandles} /> : false,
     viewAll = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? false : (users.length > paginationAmount) ? (<p><a onClick={(event) => {
@@ -205,14 +189,29 @@ var SettingsGridSection = React.createClass({
     }} href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>View all {props.title} users</a></p>) : false,
     paginatedUsers = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? users : users.slice(0, paginationAmount);
 
+    function cssSafeName(name) {
+      return name.replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '').toLowerCase()
+    }
+
     return (paginatedUsers.length) ? (
       <section id={"user-group-" + props.userGroup.id}>
         <div>
           <header>
-            <h2><a className="subtle" href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>{props.title}</a></h2>
+            <h2 id={cssSafeName(props.title)}><a className="subtle" href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>{props.title}</a></h2>
           </header>
           <div className="balanced">
-            <a className="button" href={endpoints.ADD_USER + "?group=" + props.userGroup.id + "#fold"} style={{marginBottom:"2em"}}>{'Create ' + props.title + ' User'}</a>
+            <a className="button" href={endpoints.ADD_USER + "?group=" + props.userGroup.id + "#fold"} style={{marginBottom:"2em"}} onClick={(event) => {
+              event.preventDefault();
+              store.dispatch(actions.flushQuickCreate({
+                active:true,
+                open:true,
+                updating:false,
+                roles:{
+                  [props.userGroup.id]:[store.getState().roles[0].id]
+                }
+              }));
+              window.scrollTo(0, 0);
+            }}>{'Create ' + props.title + ' User'}</a>
           </div>
           <div>
             {bulkActionsFieldset}
@@ -256,7 +255,7 @@ var SettingsTableRow = function(props) {
 
   return (
     <tr tabIndex="0" onFocus={(event) => {
-        console.log(event.nativeEvent);
+        //console.log(event.nativeEvent);
           try {
             props.handleFocus();
           } catch(e) {}
@@ -331,6 +330,7 @@ var SettingsTableRowForm = React.createClass({
                     id:user.id,
                     roles:user.roles
                   }));
+                  window.scrollTo(0, 0);
                 }}>Quick Edit</a>
                 <a className="button" href={endpoints.UPDATE_USER + user.id}>Edit</a>
               </div>

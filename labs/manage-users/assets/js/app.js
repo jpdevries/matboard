@@ -1244,7 +1244,7 @@
 	  familyName: '',
 	  email: '',
 	  active: true,
-	  sudo: true,
+	  sudo: false,
 	  open: false,
 	  updating: false,
 	  id: undefined,
@@ -1264,7 +1264,7 @@
 	  quickCreate: initialQuickCreate
 	};
 
-	console.log('initialState', initialState);
+	//console.log('initialState',initialState);
 
 	var usersReducer = function usersReducer(state, action) {
 	  state = state || initialState.users;
@@ -1276,7 +1276,7 @@
 
 	  switch (action.type) {
 	    case actions.UPDATE_USER_SUCCESS:
-	      console.log(actions.UPDATE_USER_SUCCESS, action.user);
+	      //console.log(actions.UPDATE_USER_SUCCESS, action.user);
 	      var newState = update(state, _defineProperty({}, index, { $apply: function $apply(user) {
 	          return update(user, { $merge: action.user });
 	        } }));
@@ -1299,9 +1299,7 @@
 	      break;
 
 	    case actions.REMOVE_USER_FROM_GROUP:
-	      console.log(actions.REMOVE_USER_FROM_GROUP, state[index]);
-
-	      console.log(Object.assign({}, state[index].roles, _defineProperty({}, action.group, [])));
+	      //console.log(actions.REMOVE_USER_FROM_GROUP,state[index]);
 
 	      return update(state, _defineProperty({}, index, { $apply: function $apply(user) {
 	          return update(user, { $merge: {
@@ -1324,7 +1322,7 @@
 	    */
 
 	    case actions.ADD_USER_SUCCESS:
-	      console.log(actions.ADD_USER_SUCCESS, action.data);
+	      //console.log(actions.ADD_USER_SUCCESS,action.data);
 	      if (action.user.id === undefined) {
 	        var nextIndex = 0;
 	        state.map(function (user, i) {
@@ -1371,7 +1369,7 @@
 
 	  switch (action.type) {
 	    case actions.UPDATE_QUICKCREATE:
-	      console.log(actions.UPDATE_QUICKCREATE, update(state, { $merge: action.quickCreate }));
+	      //console.log(actions.UPDATE_QUICKCREATE, update(state, {$merge:action.quickCreate}));
 	      return update(state, { $merge: action.quickCreate });
 
 	    case actions.QUICKCREATE_ROLE_ADD:
@@ -1393,6 +1391,7 @@
 	          } } });
 
 	    case actions.FLUSH_QUICK_CREATE:
+	      //console.log('action.quickCreate',action.quickCreate,update(initialQuickCreate,{$merge: action.quickCreate}));
 	      return update(state, { $set: update(initialQuickCreate, { $merge: action.quickCreate }) });
 
 	  }
@@ -2049,7 +2048,7 @@
 	      'form',
 	      { ref: 'createSettingForm', action: props.quickCreate.updating ? endpoints.UPDATE_USER + props.quickCreate.id : endpoints.ADD_USER, method: 'post', className: 'create-setting-form', onChange: this.updateFormData, onSubmit: function onSubmit(event) {
 	          event.preventDefault();
-	          console.log('onSubmit', _this2.state.formMethod, props.quickCreate);
+	          //console.log('onSubmit',this.state.formMethod,props.quickCreate);
 
 	          switch (_this2.state.formMethod) {
 	            case 'delete':
@@ -2097,7 +2096,7 @@
 	            }
 	          } catch (e) {
 	            // fallback to react-form-data
-	            console.log(_this2.formData);
+	            //console.log(this.formData)
 	            for (var key in _this2.formData) {
 	              //console.log(key);
 	              user[key] = _this2.formData[key];
@@ -2110,7 +2109,7 @@
 	          }
 
 	          for (var group in props.quickCreate.roles) {
-	            console.log('group', group, props.quickCreate.roles[group]);
+	            //console.log('group',group,props.quickCreate.roles[group]);
 	            userGroups.push(parseInt(group));
 	          }
 
@@ -2122,7 +2121,7 @@
 	            );
 	          });
 
-	          console.log('userGroups', userGroups);
+	          //console.log('userGroups',userGroups);
 
 	          userGroups = userGroups.filter(function (userGroup) {
 	            return (// kinda weird to have to do this, expected userGroups to be removed, maybe a formData bug with the React mixin (polyfill)
@@ -2130,7 +2129,7 @@
 	            );
 	          });
 
-	          console.log('userGroups', userGroups, 'props.quickCreate.roles', props.quickCreate.roles);
+	          //console.log('userGroups',userGroups,'props.quickCreate.roles',props.quickCreate.roles);
 
 	          var userParams = {
 	            id: props.quickCreate.id,
@@ -2179,7 +2178,7 @@
 
 	    var props = this.props;
 
-	    console.log('props.viewProps', props.viewProps);
+	    //console.log('props.viewProps',props.viewProps);
 
 	    var filterBuyOptions = props.userGroups.map(function (userGroup, index) {
 	      return React.createElement(
@@ -2212,9 +2211,7 @@
 	      { name: 'filter-by', id: 'filter-by', value: props.filterBy, onChange: function onChange(event) {
 	          try {
 	            props.handleFilterBy(parseInt(event.target.value));
-	          } catch (e) {
-	            console.log(e);
-	          }
+	          } catch (e) {}
 	        } },
 	      React.createElement(
 	        'option',
@@ -2487,6 +2484,8 @@
 	        )
 	      ) : false;
 
+	      console.log('props.quickCreate.updating', props.quickCreate.updating);
+
 	      return React.createElement(
 	        'fieldset',
 	        null,
@@ -2686,23 +2685,9 @@
 	    };
 	  },
 	  render: function render() {
-	    var _this = this;
-
 	    var props = this.props;
 	    var user = props.user;
-	    console.log('user', user);
-	    //<SettingsTableRowForm user={user} colspan="2" />
-	    return React.createElement(SettingsTableRow, { user: user, className: 'contextual-setting',
-	      handleBlur: function handleBlur(event) {
-	        return console.log('showSetting', _this.state.showSetting)
-	        //this.setState({showSetting:false})
-	        ;
-	      }, handleFocus: function handleFocus(event) {
-	        return console.log('showSetting', _this.state.showSetting)
-	        //this.setState({showSetting:true})
-	        ;
-	      }
-	    });
+	    return React.createElement(SettingsTableRow, { user: user, className: 'contextual-setting' });
 	  }
 	});
 
@@ -2717,17 +2702,13 @@
 	    };
 	  },
 	  handleBulkButtonClick: function handleBulkButtonClick(event) {
-	    console.log({
-	      formAction: event.target.getAttribute('formaction'),
-	      formMethod: event.target.getAttribute('formmethod')
-	    });
 	    this.setState({
 	      formAction: event.target.getAttribute('formaction'),
 	      formMethod: event.target.getAttribute('formmethod')
 	    });
 	  },
 	  render: function render() {
-	    var _this2 = this;
+	    var _this = this;
 
 	    var props = this.props;
 	    var bulkToggledUsers = props.bulkToggledUsers;
@@ -2758,7 +2739,7 @@
 	          }*/
 
 	          try {
-	            switch (_this2.state.formAction) {
+	            switch (_this.state.formAction) {
 	              case endpoints.API_USERS_ACTIVATE:
 	                event.preventDefault();
 	                store.dispatch(actions.activateUsers(bulkSelectedUsers));
@@ -2829,7 +2810,7 @@
 	    //console.log('handleQuickEdit!!!',user);
 	  },
 	  render: function render() {
-	    var _this3 = this;
+	    var _this2 = this;
 
 	    var props = this.props;
 
@@ -2839,7 +2820,7 @@
 	      null,
 	      React.createElement('input', { type: 'checkbox', onChange: function onChange(event) {
 	          try {
-	            _this3.props.handleBulkAllCheck(event.target.checked);
+	            _this2.props.handleBulkAllCheck(event.target.checked);
 	          } catch (e) {}
 	        } })
 	    );
@@ -2848,7 +2829,7 @@
 
 	      return [React.createElement(SettingsTableRow, { user: user, userGroup: props.userGroup, bulkToggle: props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false, bulkActions: props.bulkActions,
 	        handleFocus: function handleFocus(event) {
-	          return _this3.setState({
+	          return _this2.setState({
 	            userFormsToShow: update({}, _defineProperty({}, user.id, { $set: true }))
 	          });
 	        }, handleBulkToggle: function handleBulkToggle(id, checked) {
@@ -2856,7 +2837,7 @@
 	            props.handleBulkToggle(id, checked);
 	          } catch (e) {}
 	        }
-	      }), _this3.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { slackChannel: props.userGroup.slackChannel, handleQuickEdit: _this3.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
+	      }), _this2.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { slackChannel: props.userGroup.slackChannel, handleQuickEdit: _this2.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
 	    });
 
 	    return React.createElement(
@@ -2899,20 +2880,20 @@
 	    };
 	  },
 	  render: function render() {
-	    var _this4 = this;
+	    var _this3 = this;
 
 	    var props = this.props;
 	    var users = props.users;
 	    var minimumUsersBulkAction = props.minimumUsersBulkAction !== undefined ? props.minimumUsersBulkAction : 3;
 
 	    var emails = users.map(function (user) {
-	      return _this4.state.bulkToggledUsers[user.id] ? user.email : undefined;
+	      return _this3.state.bulkToggledUsers[user.id] ? user.email : undefined;
 	    }).filter(function (email) {
 	      return email;
 	    });
 
 	    var slackHandles = users.map(function (user) {
-	      return _this4.state.bulkToggledUsers[user.id] ? user.slack : undefined;
+	      return _this3.state.bulkToggledUsers[user.id] ? user.slack : undefined;
 	    }).filter(function (slack) {
 	      return slack;
 	    });
@@ -2924,8 +2905,6 @@
 	      });
 	    }
 
-	    console.log(this.props, this.props.viewProps.pageType);
-
 	    var paginationAmount = 12,
 	        bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails, slackChannel: props.userGroup.slackChannel, slackHandles: slackHandles }) : false,
 	        viewAll = this.props.expanded || this.props.viewProps.pageType == 'detail' ? false : users.length > paginationAmount ? React.createElement(
@@ -2935,7 +2914,7 @@
 	        'a',
 	        { onClick: function onClick(event) {
 	            event.preventDefault();
-	            _this4.props.handleFilterBy(props.userGroup.id);
+	            _this3.props.handleFilterBy(props.userGroup.id);
 	          }, href: '' + endpoints.GROUPS + props.userGroup.id + '#fold' },
 	        'View all ',
 	        props.title,
@@ -2943,6 +2922,10 @@
 	      )
 	    ) : false,
 	        paginatedUsers = this.props.expanded || this.props.viewProps.pageType == 'detail' ? users : users.slice(0, paginationAmount);
+
+	    function cssSafeName(name) {
+	      return name.replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '').toLowerCase();
+	    }
 
 	    return paginatedUsers.length ? React.createElement(
 	      'section',
@@ -2955,7 +2938,7 @@
 	          null,
 	          React.createElement(
 	            'h2',
-	            null,
+	            { id: cssSafeName(props.title) },
 	            React.createElement(
 	              'a',
 	              { className: 'subtle', href: '' + endpoints.GROUPS + props.userGroup.id + '#fold' },
@@ -2968,7 +2951,16 @@
 	          { className: 'balanced' },
 	          React.createElement(
 	            'a',
-	            { className: 'button', href: endpoints.ADD_USER + "?group=" + props.userGroup.id + "#fold", style: { marginBottom: "2em" } },
+	            { className: 'button', href: endpoints.ADD_USER + "?group=" + props.userGroup.id + "#fold", style: { marginBottom: "2em" }, onClick: function onClick(event) {
+	                event.preventDefault();
+	                store.dispatch(actions.flushQuickCreate({
+	                  active: true,
+	                  open: true,
+	                  updating: false,
+	                  roles: _defineProperty({}, props.userGroup.id, [store.getState().roles[0].id])
+	                }));
+	                window.scrollTo(0, 0);
+	              } },
 	            'Create ' + props.title + ' User'
 	          )
 	        ),
@@ -2977,8 +2969,8 @@
 	          null,
 	          bulkActionsFieldset,
 	          React.createElement(SettingsTable, { slackChannel: props.userGroup.slackChannel, bulkActions: paginatedUsers.length >= minimumUsersBulkAction ? props.bulkActions : false, users: paginatedUsers, bulkToggledUsers: this.state.bulkToggledUsers, userGroup: props.userGroup, handleBulkToggle: function handleBulkToggle(id, checked) {
-	              _this4.setState({
-	                bulkToggledUsers: update(_this4.state.bulkToggledUsers, _defineProperty({}, id, { $set: checked }))
+	              _this3.setState({
+	                bulkToggledUsers: update(_this3.state.bulkToggledUsers, _defineProperty({}, id, { $set: checked }))
 	              });
 	            }, handleBulkAllCheck: function handleBulkAllCheck(allChecked) {
 	              var all = {};
@@ -2987,7 +2979,7 @@
 	                  all[user.id] = true;
 	                });
 	              }
-	              _this4.setState({
+	              _this3.setState({
 	                bulkToggledUsers: all
 	              });
 	            } }),
@@ -3028,7 +3020,7 @@
 	  return React.createElement(
 	    'tr',
 	    { tabIndex: '0', onFocus: function onFocus(event) {
-	        console.log(event.nativeEvent);
+	        //console.log(event.nativeEvent);
 	        try {
 	          props.handleFocus();
 	        } catch (e) {}
@@ -3150,6 +3142,7 @@
 	                    id: user.id,
 	                    roles: user.roles
 	                  }));
+	                  window.scrollTo(0, 0);
 	                } },
 	              'Quick Edit'
 	            ),

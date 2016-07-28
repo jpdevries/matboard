@@ -41,7 +41,7 @@ var CreateSettingsForm = React.createClass({
     return(
       <form ref="createSettingForm" action={props.quickCreate.updating ? endpoints.UPDATE_USER + props.quickCreate.id : endpoints.ADD_USER} method="post" className="create-setting-form" onChange={this.updateFormData} onSubmit={(event) => {
         event.preventDefault();
-        console.log('onSubmit',this.state.formMethod,props.quickCreate);
+        //console.log('onSubmit',this.state.formMethod,props.quickCreate);
 
         switch(this.state.formMethod) {
           case 'delete':
@@ -68,7 +68,7 @@ var CreateSettingsForm = React.createClass({
             }
           }
         } catch(e) { // fallback to react-form-data
-          console.log(this.formData)
+          //console.log(this.formData)
           for (var key in this.formData) {
             //console.log(key);
             user[key] = this.formData[key];
@@ -81,7 +81,7 @@ var CreateSettingsForm = React.createClass({
         }
 
         for(var group in props.quickCreate.roles) {
-          console.log('group',group,props.quickCreate.roles[group]);
+          //console.log('group',group,props.quickCreate.roles[group]);
           userGroups.push(parseInt(group));
         }
 
@@ -91,13 +91,13 @@ var CreateSettingsForm = React.createClass({
           parseInt(userGroup)
         ));
 
-        console.log('userGroups',userGroups);
+        //console.log('userGroups',userGroups);
 
         userGroups = userGroups.filter((userGroup) => ( // kinda weird to have to do this, expected userGroups to be removed, maybe a formData bug with the React mixin (polyfill)
           (props.quickCreate.roles[userGroup] !== undefined && props.quickCreate.roles[userGroup].length) ? true : false
         ));
 
-        console.log('userGroups',userGroups,'props.quickCreate.roles',props.quickCreate.roles);
+        //console.log('userGroups',userGroups,'props.quickCreate.roles',props.quickCreate.roles);
 
         var userParams = {
           id:props.quickCreate.id,
@@ -140,7 +140,7 @@ var ManageUserFormHeader = React.createClass({
   render:function(){
     var props = this.props;
 
-    console.log('props.viewProps',props.viewProps);
+    //console.log('props.viewProps',props.viewProps);
 
     var filterBuyOptions = props.userGroups.map((userGroup,index) => (
       <option key={userGroup.id} value={userGroup.id}>{userGroup.title}</option>
@@ -152,7 +152,7 @@ var ManageUserFormHeader = React.createClass({
       <select name="filter-by" id="filter-by" value={props.filterBy} onChange={(event) => {
         try {
           props.handleFilterBy(parseInt(event.target.value));
-        } catch (e) { console.log(e) }
+        } catch (e) { }
       }}>
       <option checked value="">All</option>
       {filterBuyOptions}

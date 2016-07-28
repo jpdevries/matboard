@@ -62,6 +62,8 @@ export default class QuickCreateFieldset extends React.Component {
       </div>
     ) : false;
 
+    console.log('props.quickCreate.updating',props.quickCreate.updating);
+
     return (
       <fieldset>
             <legend>Quick {props.quickCreate.updating ? 'Update' : 'Create'} User</legend>
