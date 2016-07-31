@@ -41,22 +41,68 @@ var addUserToGroup = function(user,group) {
 exports.ADD_USER_TO_GROUP = ADD_USER_TO_GROUP;
 exports.addUserToGroup = addUserToGroup;
 
+var removeUserFromGroup = (user,group) => (
+  (dispatch) => (
+    fetch(endpoints.API_REMOVE_USER_FROM_GROUP, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user:user,
+        group:group
+      })
+    }).then(function(response){
+      if(response.state < 200 || response.state >= 300) {
+        var error = new Error(response.statusText)
+        error.response = response
+        throw error;
+      }
+      return response;
+    }).then((response) => (
+      response.json()
+    )).then((data) => (
+      dispatch(
+        removeUserFromGroupSuccess(user,group)
+      )
+    )).catch((error) => (
+      dispatch(
+        removeUserFromGroupError(user,group)
+      )
+    ))
+  )
+);
 
-
-
-var REMOVE_USER_FROM_GROUP = 'removeuserfromgroup';
-var removeUserFromGroup = function(user,group) {
-  //console.log('ru',user,group);
+var REMOVE_USER_FROM_GROUP_SUCCESS = 'removeuserfromgroupsuccess';
+var removeUserFromGroupSuccess = function(user,group) {
   return {
-    type:REMOVE_USER_FROM_GROUP,
+    type:REMOVE_USER_FROM_GROUP_SUCCESS,
     id:user,
     group:group
   }
 }
 
-exports.REMOVE_USER_FROM_GROUP = REMOVE_USER_FROM_GROUP;
+var REMOVE_USER_FROM_GROUP_ERROR = 'removeuserfromgrouperror';
+var removeUserFromGroupError = function(user,group) {
+  return {
+    type:REMOVE_USER_FROM_GROUP_ERROR,
+    id:user,
+    group:group
+  }
+}
+
+exports.REMOVE_USER_FROM_GROUP_SUCCESS = REMOVE_USER_FROM_GROUP_SUCCESS;
+exports.REMOVE_USER_FROM_GROUP_ERROR = REMOVE_USER_FROM_GROUP_ERROR;
 exports.removeUserFromGroup = removeUserFromGroup;
 
+var deleteUserError = function(user) {
+  return {
+    type:ADD_USER_ERROR,
+    user:user,
+    id:user.id
+  }
+}
 
 var UPDATE_USER = 'updateuser';
 var UPDATE_USER_SUCCESS = 'updateusersuccess';

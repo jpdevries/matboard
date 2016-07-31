@@ -201,18 +201,64 @@
 	exports.ADD_USER_TO_GROUP = ADD_USER_TO_GROUP;
 	exports.addUserToGroup = addUserToGroup;
 
-	var REMOVE_USER_FROM_GROUP = 'removeuserfromgroup';
 	var removeUserFromGroup = function removeUserFromGroup(user, group) {
-	  //console.log('ru',user,group);
+	  return function (dispatch) {
+	    return fetch(endpoints.API_REMOVE_USER_FROM_GROUP, {
+	      method: 'POST',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({
+	        user: user,
+	        group: group
+	      })
+	    }).then(function (response) {
+	      if (response.state < 200 || response.state >= 300) {
+	        var error = new Error(response.statusText);
+	        error.response = response;
+	        throw error;
+	      }
+	      return response;
+	    }).then(function (response) {
+	      return response.json();
+	    }).then(function (data) {
+	      return dispatch(removeUserFromGroupSuccess(user, group));
+	    }).catch(function (error) {
+	      return dispatch(removeUserFromGroupError(user, group));
+	    });
+	  };
+	};
+
+	var REMOVE_USER_FROM_GROUP_SUCCESS = 'removeuserfromgroupsuccess';
+	var removeUserFromGroupSuccess = function removeUserFromGroupSuccess(user, group) {
 	  return {
-	    type: REMOVE_USER_FROM_GROUP,
+	    type: REMOVE_USER_FROM_GROUP_SUCCESS,
 	    id: user,
 	    group: group
 	  };
 	};
 
-	exports.REMOVE_USER_FROM_GROUP = REMOVE_USER_FROM_GROUP;
+	var REMOVE_USER_FROM_GROUP_ERROR = 'removeuserfromgrouperror';
+	var removeUserFromGroupError = function removeUserFromGroupError(user, group) {
+	  return {
+	    type: REMOVE_USER_FROM_GROUP_ERROR,
+	    id: user,
+	    group: group
+	  };
+	};
+
+	exports.REMOVE_USER_FROM_GROUP_SUCCESS = REMOVE_USER_FROM_GROUP_SUCCESS;
+	exports.REMOVE_USER_FROM_GROUP_ERROR = REMOVE_USER_FROM_GROUP_ERROR;
 	exports.removeUserFromGroup = removeUserFromGroup;
+
+	var deleteUserError = function deleteUserError(user) {
+	  return {
+	    type: ADD_USER_ERROR,
+	    user: user,
+	    id: user.id
+	  };
+	};
 
 	var UPDATE_USER = 'updateuser';
 	var UPDATE_USER_SUCCESS = 'updateusersuccess';
@@ -1036,9 +1082,12 @@
 	var USERS_ACTIVATE = '/users/activate/';
 	var USERS_DEACTIVATE = '/users/deactivate/';
 	var USER_DELETE = '/user/delete/';
+	var USER_REMOVE = '/user/remove/';
+	var USER_REMOVE_FROM_GROUP = USER_REMOVE + 'group/';
 	var USERS_DELETE = '/users/delete/';
 	var USER_UPDATE = '/user/update';
 	var USER_GROUPS = '/user/groups/';
+	var API = '/api';
 
 	module.exports = {
 	  paginateUsers: 12,
@@ -1050,28 +1099,32 @@
 	    GROUPS: '/groups/',
 
 	    USERS_ACTIVATE: USERS_ACTIVATE,
-	    API_USERS_ACTIVATE: '/api' + USERS_ACTIVATE,
+	    API_USERS_ACTIVATE: '' + API + USERS_ACTIVATE,
 
 	    USERS_DEACTIVATE: USERS_DEACTIVATE,
-	    API_USERS_DEACTIVATE: '/api' + USERS_DEACTIVATE,
+	    API_USERS_DEACTIVATE: '' + API + USERS_DEACTIVATE,
 
 	    USER_DELETE: USER_DELETE,
-	    API_USER_DELETE: '/api' + USER_DELETE,
+	    API_USER_DELETE: '' + API + USER_DELETE,
 
 	    USERS_DELETE: USERS_DELETE,
-	    API_USERS_DELETE: '/api' + USERS_DELETE,
+	    API_USERS_DELETE: '' + API + USERS_DELETE,
 
 	    USER_UPDATE: USER_UPDATE,
-	    API_USER_UPDATE: '/api' + USER_UPDATE,
+	    API_USER_UPDATE: '' + API + USER_UPDATE,
 
-	    API_USER_ADD: '/api/user/add',
+	    API_USER_ADD: '${API}/user/add',
 
-	    API_ROLES: '/api/roles',
+	    API_ROLES: '${API}/roles',
 
 	    USER_GROUPS: 'USER_GROUPS',
-	    API_USER_GROUPS: '/api' + USER_GROUPS,
+	    API_USER_GROUPS: '' + API + USER_GROUPS,
 
-	    API_USERS: '/api/users'
+	    API_USERS: '${API}/users',
+
+	    USER_REMOVE: USER_REMOVE,
+	    USER_REMOVE_FROM_GROUP: USER_REMOVE_FROM_GROUP,
+	    API_REMOVE_USER_FROM_GROUP: '' + API + USER_REMOVE_FROM_GROUP
 	  }
 	};
 
@@ -1298,7 +1351,7 @@
 	        } }));
 	      break;
 
-	    case actions.REMOVE_USER_FROM_GROUP:
+	    case actions.REMOVE_USER_FROM_GROUP_SUCCESS:
 	      //console.log(actions.REMOVE_USER_FROM_GROUP,state[index]);
 
 	      return update(state, _defineProperty({}, index, { $apply: function $apply(user) {
@@ -3191,7 +3244,7 @@
 	            { style: { marginTop: "1em" } },
 	            React.createElement(
 	              'button',
-	              { formAction: 'removefromgroup/user', onClick: function onClick(event) {
+	              { formAction: endpoints.USER_REMOVE_FROM_GROUP, onClick: function onClick(event) {
 	                  event.preventDefault();
 	                  store.dispatch(actions.removeUserFromGroup(user.id, userGroup.id));
 	                } },

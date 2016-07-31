@@ -160,6 +160,9 @@
                           <div>
                             <button type="submit" class="save">Save</button>
                           </div>
+                          <div>
+                            <button formaction="{{ endpoints.USER_REMOVE|default('/user/remove/') }}{{ user.id }}/group/{{ userGroup.id }}" formmethod="post">Remove from Group</button>
+                          </div>
                         </form>
                         <footer class="subtle oblique balanced">
                           <p style="margin-bottom:0"><span class="givenName">{{ user.givenname }}</span> <span class="familyName">{{ user.familyname }}</span>&#8217;{% if user.familyname|last != 's' %}s{% endif %} last login was Jan 23, 2016 4:52pm from probably Planet Earth</p>
@@ -196,19 +199,20 @@
 
 	<script>
     var doEnhancments = document.addEventListener ? true : false; // this is super annoying but react-redux will bork the page, turn it into a blank white screen in IE8 so we have to not even try to load it :(...then again i suppose there is no reason to load scripts we know will break
+    var useCDN = false;
 	</script>
 
   <!-- NOTE: change these to load the .min in production. They are not only smaller filesize but have wildly different performance -->
-	<script defer>if(doEnhancments) document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/redux/3.5.2/redux.js"><\/script>');</script>
+	<script defer>if(doEnhancments && useCDN) document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/redux/3.5.2/redux.js"><\/script>');</script>
   <script defer>if(doEnhancments) try { Redux } catch (e) { document.write('<script src="assets/js/vendor/redux.js"><\/script>') }</script>
 
-	<script defer>if(doEnhancments) document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"><\/script>');</script>
+	<script defer>if(doEnhancments && useCDN) document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"><\/script>');</script>
   <script defer>if(doEnhancments) try { React } catch (e) { document.write('<script src="assets/js/vendor/react.js"><\/script>') }</script>
 
-	<script defer>if(doEnhancments) document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"><\/script>');</script>
+	<script defer>if(doEnhancments && useCDN) document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"><\/script>');</script>
   <script defer>if(doEnhancments) try { ReactDOM } catch (e) { document.write('<script src="assets/js/vendor/react-dom.js"><\/script>') }</script>
 
-	<script defer>if(doEnhancments) document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/react-redux/4.4.5/react-redux.js"><\/script>');</script>
+	<script defer>if(doEnhancments && useCDN) document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/react-redux/4.4.5/react-redux.js"><\/script>');</script>
 	<script defer>if(doEnhancments)try { ReactRedux } catch (e) { document.write('<script src="assets/js/vendor/react-redux.js"><\/script>') }</script>
 
 	<script defer>if(doEnhancments) document.write('<script src="assets/js/app.js?nc=7"><\/script>');</script>

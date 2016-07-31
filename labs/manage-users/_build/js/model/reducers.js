@@ -169,7 +169,7 @@ var usersReducer = function(state, action) {
     }} })
     break;
 
-    case actions.REMOVE_USER_FROM_GROUP:
+    case actions.REMOVE_USER_FROM_GROUP_SUCCESS:
     //console.log(actions.REMOVE_USER_FROM_GROUP,state[index]);
 
     return update(state, {[index]: {$apply: (user) => {

@@ -352,7 +352,7 @@ var SettingsTableRowForm = React.createClass({
               </div>
 
               <div style={{marginTop:"1em"}}>
-                <button formAction="removefromgroup/user" onClick={(event) => {
+                <button formAction={endpoints.USER_REMOVE_FROM_GROUP} onClick={(event) => {
                   event.preventDefault();
                   store.dispatch(actions.removeUserFromGroup(user.id,userGroup.id));
                 }}>Remove from Group</button>

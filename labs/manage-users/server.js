@@ -246,6 +246,87 @@ app.post(endpoints.USERS_DEACTIVATE, function(req, res) {
   });
 });
 
+console.log(endpoints.USER_REMOVE + ':userid' + '/group/' + ':groupid');
+app.post(endpoints.USER_REMOVE + ':userid' + '/group/' + ':groupid', function(req, res) {
+  //console.log(req.params);
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function(err, fields, files) {
+    //console.log(fields);
+    var user = parseInt(fields.user_id),
+    group = parseInt(req.params.groupid);
+    //console.log(user,group);
+    removeUserFromUserGroup(user,group).then(function(result){
+      console.log(req.params.userid,result.rows[0].name,result.rows[0].username);
+      res.render('userremovedfromgroup.twig', {
+        userid:req.params.userid,
+        user_group:result.rows[0].name,
+        username:result.rows[0].username
+      });
+    },function(err){
+      console.log(err);
+    });
+  });
+
+
+});
+
+app.post(endpoints.API_REMOVE_USER_FROM_GROUP, function(req, res) {
+  console.log(endpoints.API_REMOVE_USER_FROM_GROUP);
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function(err, fields, files) {
+    console.log(fields);
+    var user = fields.user,
+    group = fields.group;
+
+    removeUserFromUserGroup(user,group).then(function(result){
+      console.log(result);
+      res.json(true)
+    },function(){
+      res.json(false)
+    })
+  });
+});
+
+function removeUserFromUserGroup(user, group) {
+  //console.log('deleteUsersById',users);
+  return new Promise(function(resolve, reject) {
+    var client = new pg.Client();
+
+    // connect to our database
+    client.connect(function (err) {
+      if (err) reject(err);
+
+      // IN (1)
+      var query = `
+        WITH "remove_user_from_user_group" AS (
+          DELETE FROM "modx_member_groups" WHERE member = ${user} AND user_group = ${group}
+          RETURNING *
+        )
+        SELECT member,user_group,role,username,modx_membergroup_names.name FROM "remove_user_from_user_group"
+        INNER JOIN modx_users ON modx_users.user_id = remove_user_from_user_group.member
+        INNER JOIN modx_membergroup_names ON modx_membergroup_names.id = remove_user_from_user_group.user_group
+        INNER JOIN modx_user_attributes ON modx_user_attributes.id = remove_user_from_user_group.member;
+      `;
+
+        //console.log(query);
+
+      // execute a query on our database
+      client.query(query, function (err, result) {
+        if (err) reject(err, result);
+
+        // disconnect the client
+        client.end(function (err) {
+          if (err) reject(err, result);
+        });
+
+        resolve(result);
+      });
+    });
+  });
+}
+
 app.post(endpoints.API_USERS_DEACTIVATE,function(req, res) {
   var form = new formidable.IncomingForm();
 
