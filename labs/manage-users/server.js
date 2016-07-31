@@ -264,7 +264,12 @@ app.post(endpoints.USER_REMOVE + ':userid' + '/group/' + ':groupid', function(re
         username:result.rows[0].username
       });
     },function(err){
-      console.log(err);
+      res.render('userremovedfromgroup.twig', {
+        userid:req.params.userid,
+        user_group:result.rows[0].name,
+        username:result.rows[0].username,
+        failed:true
+      });
     });
   });
 

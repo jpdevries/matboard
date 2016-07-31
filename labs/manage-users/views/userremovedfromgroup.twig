@@ -6,7 +6,7 @@
   <div id="fold">
     <div id="manage-user-form__header">
       <header>
-        <p>User {{ username }} ({{ userid }}) was removed from the {{ user_group }} group.</p>
+        <p>User {{ username }} ({{ userid }}) was {% if failed %}unable to be {% endif %}removed from the {{ user_group }} group.</p>
       </header>
     </div>
     <div class="horizontally-padded">
