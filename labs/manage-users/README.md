@@ -5,6 +5,7 @@ A progressively enhanced proof of concept for a Manage Users CMP&nbsp;page.
 
 ![](http://j4p.us/0Q160P2j0E1J/Screen%20Shot%202016-07-25%20at%203.08.32%20AM.png)
 
+## Watch
 [Play the GIF&nbsp;preview](http://j4p.us/180i1B3Z0L11/manageusers_eradme.gif).
 
 [Play the Manage Users screencast](https://vimeo.com/176084699).
