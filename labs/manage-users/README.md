@@ -38,6 +38,12 @@ grunt --version
 To interact with the application you'll need to be running PostgreSQL for the database. [Install Postegres](https://www.postgresql.org/download/) if you haven't already. Create a manageusers table and import our example data.
 
 ```bash
+psql
+CREATE DATABASE manageusers;
+\q #exit psql command line
+```
+
+```bash
 psql manageusers < _build/db/manageusers.sql
 ```
 
