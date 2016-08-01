@@ -81,11 +81,50 @@ A lightweight (11kb) JavaScript driver is used to bring asynchronous enhancement
 [Play the Synchronous Endpoints section of the screencast](https://vimeo.com/176084699#t=6m42s).
 
 ## Isomorphism
-Our code is isomorphic if it is used to render multiple areas of our application such as both the server and client side. We want to keep our code DRY (DON'T-REPEAT-YOURSELF) meaning changes only have to be made in one place. Without isomorphism our HTML&ndash;first synchronous view would be more expensive. Changes would have to be made in multiple places which takes time and introduces more risk for bugs. Luckily for, we've been able to take advantage of ismorphism in several areas. The markup for the `QuickCreateFieldset` component, which renders the create and update user form, is rendered both on the server&ndash;side and client&ndash;side from the same exact React&nbsp;module!
+Our code is isomorphic if it is used to render multiple areas of our application such as both the server and client side. We want to keep our code DRY (DON'T-REPEAT-YOURSELF) meaning changes only have to be made in one place. Without isomorphism our HTML&ndash;first synchronous view would be more expensive. Changes would have to be made in multiple places which takes time and introduces more risk for bugs. Luckily for, we've been able to take advantage of isomorphism in several areas. The markup for the `QuickCreateFieldset` component, which renders the create and update user form, is rendered both on the server&ndash;side and client&ndash;side from the same exact React&nbsp;module!
 
 Our HTML layer itself is isomorphic. As described in the DOM Consumption section below, the data contained in the HTML layer is also consumed by the progressive&nbsp;enhancements.
 
-We also find isomorphism in our Node server which uses the same Promises to interact with the database for both the synchronous and asynchronous&nbsp;endpoints.
+We also find isomorphism in our Node server which uses the same Promises to interact with the database for both the synchronous and asynchronous&nbsp;endpoints. For&nbsp;example:
+
+```js
+/**
+ * Syncronously delete a user
+*/
+app.post(endpoints.USER_DELETE, function(req, res) {
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    deleteUserById(fields.user_id || fields.id).then(function(result){
+      res.render('deletedusers.twig', {
+        deleted:'Deleted',
+        users:result.rows,
+        endpoints:endpoints
+      });
+    },function(){ // error
+      res.render('deletedusers.twig', {
+        deleted:'Delete',
+        endpoints:endpoints
+      });
+    });
+  });
+});
+
+/**
+ * Asyncronously delete a user
+*/
+app.delete(endpoints.API_USERS_DELETE,function(req, res) {
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    deleteUsersById(fields.users).then(function(result){
+      res.json(true);
+    },function(){ // error
+      res.json(false);
+    });
+  });
+});
+```
 
 The synchronous and asynchronous endpoint paths leverage isomorphism by being defined in a single `settings` module that is referenced by both the backend Node server and the front end React code. This allows us to modify the endpoints, such as `/add/users` in one spot. Not only is this convenient it helps reduce the possibility of introducing&nbsp;bugs.
 

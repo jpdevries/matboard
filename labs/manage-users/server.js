@@ -118,12 +118,13 @@ app.post(endpoints.API_USER_UPDATE,function(req, res){
   });
 });
 
+/**
+ * Syncronously delete a user
+*/
 app.post(endpoints.USER_DELETE, function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.parse(req, function (err, fields, files) {
-    //console.log(fields);
-
     deleteUserById(fields.user_id || fields.id).then(function(result){
       res.render('deletedusers.twig', {
         deleted:'Deleted',
@@ -135,6 +136,21 @@ app.post(endpoints.USER_DELETE, function(req, res) {
         deleted:'Delete',
         endpoints:endpoints
       });
+    });
+  });
+});
+
+/**
+ * Asyncronously delete a user
+*/
+app.delete(endpoints.API_USERS_DELETE,function(req, res) {
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    deleteUsersById(fields.users).then(function(result){
+      res.json(true);
+    },function(){ // error
+      res.json(false);
     });
   });
 });
@@ -157,20 +173,6 @@ app.post(endpoints.USERS_DELETE,function(req, res) {
         users:result.rows,
         endpoints:endpoints
       });
-    });
-  });
-});
-
-app.delete(endpoints.API_USERS_DELETE,function(req, res) {
-  var form = new formidable.IncomingForm();
-
-  form.parse(req, function (err, fields, files) {
-    //console.log(fields);
-
-    deleteUsersById(fields.users).then(function(result){
-      res.json(true);
-    },function(){ // error
-      res.json(false);
     });
   });
 });
