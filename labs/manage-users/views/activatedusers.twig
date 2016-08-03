@@ -10,7 +10,7 @@
         <table>
           <caption style="text-align:left">
             <p>
-              The following users have been succesfully&nbsp;{{ activated|default('Activated')|lower }}.
+              The following users have been succesfully&nbsp;{{ activated|default('activated')|lower }}.
             </p>
           </caption>
           <thead>
@@ -24,7 +24,7 @@
             {% for user in users %}
               <tr>
                 <td>{{ user.user_id }}</td>
-                <td>{{ user.username }}</td>
+                <td><a href="/update/user/{{ user.user_id }}">{{ user.username }}</a></td>
                 <td>{{ user.givenname }} {{ user.familyname }}</td>
               </tr>
             {% endfor %}
