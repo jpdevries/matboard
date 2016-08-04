@@ -6,3 +6,4 @@ _build/templates/default/scss/neat
 npm-debug.log
 sample.serve.config.json
 .DS_Store
+npm-debug.log

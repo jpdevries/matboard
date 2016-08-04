@@ -35,7 +35,17 @@ Make sure you have `grunt` installed by testing:
 grunt --version
 ```
 
-To interact with the application you'll need to be running PostgreSQL for the database. [Install Postegres](https://www.postgresql.org/download/) if you haven't already. Create a manageusers table and import our example data.
+To interact with the application you'll need to be running PostgreSQL for the database. [Install Postgres](https://www.postgresql.org/download/) if you haven't already. Mac users can [install Postgres via brew](https://www.moncefbelyamani.com/how-to-install-postgresql-on-a-mac-with-homebrew-and-lunchy/).
+
+Create a manageusers&nbsp;database.
+
+```bash
+psql
+CREATE DATABASE manageuser;
+\q
+```
+
+Next import our example&nbsp;data.
 
 ```bash
 psql
