@@ -15,6 +15,7 @@ QuickCreateFieldset = require('./_build/js/view/quickcreatefieldset'),
 ReactDOM = require('react-dom/server'),
 store = require('./_build/js/model/store'),
 actions = require('./_build/js/model/actions'),
+compression = require('compression'),
 app = express();
 
 var settings = require('./_build/js/model/settings'),
@@ -567,6 +568,7 @@ app.get(endpoints.GROUPS + ':groupid', function(req, res){
   });
 });
 
+app.use(compression());
 app.use(express.static(__dirname));
 
 function getRoles() {
