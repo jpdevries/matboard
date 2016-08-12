@@ -2561,11 +2561,11 @@
 	              { htmlFor: 'username', id: 'username-label' },
 	              'Username'
 	            ),
-	            React.createElement('input', { type: 'text', autoComplete: 'off', value: props.quickCreate.username, disabled: props.quickCreate.updating, onChange: function onChange(event) {
+	            React.createElement('input', { type: 'text', autoComplete: 'off', autoCorrect: 'off', autoCapitalize: 'off', value: props.quickCreate.username, disabled: props.quickCreate.updating, onChange: function onChange(event) {
 	                store.dispatch(actions.updateQuickCreate({
 	                  username: event.target.value
 	                }));
-	              }, ref: 'quickCreateUsername', autoFocus: !props.quickCreate.updating, 'aria-describedby': 'username-label', name: 'username', id: 'username', className: 'nickname', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
+	              }, ref: 'quickCreateUsername', autoFocus: !props.quickCreate.updating, 'aria-describedby': 'username-label', name: 'username', id: 'username', className: 'nickname', 'aria-invalid': 'false', required: true, pattern: '^[a-z0-9_-]{3,16}$' })
 	          ),
 	          React.createElement(
 	            'div',
