@@ -518,7 +518,8 @@ app.get('/', function(req, res){
   getUserRowsAndPrepareData().then(function(data){
     res.render('index.twig', Object.assign({},data,{
       paginateUsers:12,
-      endpoints:endpoints
+      endpoints:endpoints,
+      production:process.env.NODE_ENV == 'production'
     }));
   },function(err){
     //console.log(err);
@@ -540,7 +541,8 @@ app.post('/', function(req, res){
         endpoints:endpoints,
         query:query,
         filteredGroup:filteredGroup,
-        showReturnTo:true
+        showReturnTo:true,
+        production:process.env.NODE_ENV == 'production'
       }));
     },function(err){
       //console.log(err);
@@ -557,7 +559,8 @@ app.get(endpoints.GROUPS + ':groupid', function(req, res){
       showReturnTo:true,
       filteredGroup:req.params.groupid,
       paginateUsers:paginateUsers,
-      endpoints:endpoints
+      endpoints:endpoints,
+      production:process.env.NODE_ENV == 'production'
     }));
   },function(err){
     //console.log(err);

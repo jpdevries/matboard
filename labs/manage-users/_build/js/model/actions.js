@@ -181,7 +181,7 @@ var addUserError = function(user) {
 
 var addUser = (user) => (
   (dispatch) => (
-    fetch('/api/user/add', {
+    fetch(endpoints.API_USER_ADD, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

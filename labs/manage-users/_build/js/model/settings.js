@@ -32,14 +32,14 @@ module.exports = {
     USER_UPDATE:USER_UPDATE,
     API_USER_UPDATE:`${API}${USER_UPDATE}`,
 
-    API_USER_ADD:'${API}/user/add',
+    API_USER_ADD:`${API}/user/add`,
 
-    API_ROLES:'${API}/roles',
+    API_ROLES:`${API}/roles`,
 
     USER_GROUPS:'USER_GROUPS',
     API_USER_GROUPS:`${API}${USER_GROUPS}`,
 
-    API_USERS:'${API}/users',
+    API_USERS:`${API}/users`,
 
     USER_REMOVE:USER_REMOVE,
     USER_REMOVE_FROM_GROUP:USER_REMOVE_FROM_GROUP,

@@ -6,11 +6,11 @@ html.highcontrast {
     color:$white !important;
     border-color:$white !important;
     &:focus {
-      outline-color:$yellow;
-      outline-style:double;
+      outline-color:$yellow !important;
+      outline-style:double !important;
     }
     input[type="checkbox"] { /* change "blue" browser chrome to yellow */
-      filter: invert(100%) hue-rotate(18deg) brightness(1.7);
+      filter: invert(100%) hue-rotate(18deg) brightness(1.7) !important;
     }
   }
 }

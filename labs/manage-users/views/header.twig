@@ -7,6 +7,6 @@
 
     <base href="{{ base|default('/') }}" />
 
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/main{% if production %}.min{% endif %}.css">
     <script type="text/javascript" src="assets/js/vendor/modernizr.js"></script>
   </head>
