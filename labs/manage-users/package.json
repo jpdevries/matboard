@@ -1,12 +1,12 @@
 {
-  "name": "settings-table",
+  "name": "manage-users",
   "version": "0.0.0",
   "description": "",
-  "main": "gruntifle.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "PGDATABASE=manageusers nodemon --watch ./ --watch ./views -e js,twig server.js",
-    "serveprod": "PGDATABASE=manageusers NODE_ENV=production nodemon --watch ./ --watch ./views -e js,twig server.js" 
+    "serveprod": "PGDATABASE=manageusers NODE_ENV=production nodemon --watch ./ --watch ./views -e js,twig server.js"
   },
   "author": "",
   "license": "MIT",
