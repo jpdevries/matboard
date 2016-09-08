@@ -1,7 +1,8 @@
 Manage Users Lab
 ========
 
-A progressively enhanced proof of concept for a Manage Users CMP&nbsp;page.
+A progressively enhanced proof of concept for a Manage Users CMP&nbsp;page.  
+[Take this concept for a test drive at our Heroku dino](https://matboard-manage-users.herokuapp.com).
 
 ![](http://j4p.us/0Q160P2j0E1J/Screen%20Shot%202016-07-25%20at%203.08.32%20AM.png)
 
