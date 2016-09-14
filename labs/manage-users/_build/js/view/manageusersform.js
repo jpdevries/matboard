@@ -14,6 +14,16 @@ var ManageUsersForm = React.createClass({
       filterBy:isNaN(filterBy) ? undefined : filterBy
     })
   },
+  linkUsers:function(users) {
+    let linkedUsers = [];
+    for(let i = 0; i < users.length; i++) {
+      linkedUsers.push(Object.assign({},users[i],{
+        nextUser: i < users.length - 1 && users[i+1] ? users[i+1] : undefined
+      }));
+    }
+
+    return linkedUsers;
+  },
   render:function(){
     var props = this.props,
     expanded = this.state.filterBy !== undefined;
@@ -21,9 +31,9 @@ var ManageUsersForm = React.createClass({
     var sections = props.userGroups.filter((userGroup) => (
       (this.state.filterBy === undefined) ? true : this.state.filterBy == userGroup.id
     )).map((userGroup) => (
-      <SettingsGridSection bulkActions={true} viewProps={props.viewProps} userGroup={userGroup} key={userGroup.id} expanded={expanded} filter={this.state.filter} handleFilterBy={this.handleFilterBy} users={props.users.filter((user) => (
+      <SettingsGridSection bulkActions={true} viewProps={props.viewProps} userGroup={userGroup} key={userGroup.id} expanded={expanded} filter={this.state.filter} handleFilterBy={this.handleFilterBy} users={this.linkUsers(props.users.filter((user) => (
         user.userGroups.includes(userGroup.id)
-      ))} title={userGroup.title} />
+      )))} title={userGroup.title} />
     ));
 
     return (

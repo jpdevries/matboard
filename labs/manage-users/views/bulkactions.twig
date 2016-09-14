@@ -8,7 +8,7 @@
     {% endif %}
   {% endfor %}
   <fieldset>
-    <legend>Bulk Actions</legend>
+    <legend aria-label="Bulk Actions are conditionally enabled options such as activate, suspend, delete or email that can be executed on selected users.">Bulk Actions</legend>
     <button class="danger" type="submit" formaction="{{endpoints.USERS_DEACTIVATE|default('/users/deactivate')}}" formmethod="post">Suspend All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
     <button type="submit" className="go" formaction="{{endpoints.USERS_ACTIVATE|default('/users/activate')}}">Activate All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>
     <button class="delete" formaction="/users/delete" formmethod="post">Delete All<span class="accessibly-hidden"> {{ userGroup.name }} Users</span></button>

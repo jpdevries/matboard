@@ -1,18 +1,23 @@
 {
-  "name": "manage-users",
+  "name": "manageusers",
   "version": "0.0.0",
-  "description": "",
+  "description": "Proof of Concept for MODX Next Manage Users CMP",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "PGDATABASE=manageusers nodemon --watch ./ --watch ./views -e js,twig server.js",
-    "serveprod": "PGDATABASE=manageusers NODE_ENV=production nodemon --watch ./ --watch ./views -e js,twig server.js"
+    "serveprod": "PGDATABASE=manageusers NODE_ENV=production nodemon --watch ./ --watch ./views -e js,twig server.js",
+    "start": "NODE_ENV=production node server.js"
   },
-  "author": "",
+  "engines": {
+    "node": "6.5.0"
+  },
+  "author": "JP de Vries",
   "license": "MIT",
   "dependencies": {
     "babel": "^6.5.2",
     "babel-core": "^6.10.4",
+    "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.11.1",
     "babel-register": "^6.9.0",
@@ -30,14 +35,13 @@
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",
     "serve-static": "^1.11.1",
+    "nodemon": "^1.9.2",
+    "react": "^15.1.0",
+    "react-addons-update": "^15.1.0",
     "twig": "^0.9.5"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.7",
-    "babel-core": "^6.9.0",
-    "babel-loader": "^6.2.4",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-react": "^6.5.0",
     "cssnano": "^3.7.3",
     "grunt-bower-task": "^0.4.0",
     "grunt-contrib-copy": "^1.0.0",
@@ -49,10 +53,7 @@
     "grunt-postcss": "^0.8.0",
     "grunt-sass": "^1.2.0",
     "grunt-webpack": "^1.0.11",
-    "nodemon": "^1.9.2",
     "pixrem": "^3.0.1",
-    "react": "^15.1.0",
-    "react-addons-update": "^15.1.0",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   }

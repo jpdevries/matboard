@@ -1090,7 +1090,7 @@
 	var API = '/api';
 
 	module.exports = {
-	  paginateUsers: 12,
+	  paginateUsers: 15,
 	  endpoints: {
 	    ADD_USER: '/user/add/',
 
@@ -1629,7 +1629,6 @@
 /***/ function(module, exports) {
 
 	// shim for using process in browser
-
 	var process = module.exports = {};
 
 	// cached from whatever global is present so that test runners that stub it
@@ -1640,22 +1639,84 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
-	  try {
-	    cachedSetTimeout = setTimeout;
-	  } catch (e) {
-	    cachedSetTimeout = function () {
-	      throw new Error('setTimeout is not defined');
+	    try {
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
 	    }
-	  }
-	  try {
-	    cachedClearTimeout = clearTimeout;
-	  } catch (e) {
-	    cachedClearTimeout = function () {
-	      throw new Error('clearTimeout is not defined');
+	    try {
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
-	  }
 	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+
+
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+
+
+
+	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -1680,7 +1741,7 @@
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = cachedSetTimeout(cleanUpNextTick);
+	    var timeout = runTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -1697,7 +1758,7 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    cachedClearTimeout(timeout);
+	    runClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -1709,7 +1770,7 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        cachedSetTimeout(drainQueue, 0);
+	        runTimeout(drainQueue);
 	    }
 	};
 
@@ -2002,6 +2063,16 @@
 	      filterBy: isNaN(filterBy) ? undefined : filterBy
 	    });
 	  },
+	  linkUsers: function linkUsers(users) {
+	    var linkedUsers = [];
+	    for (var i = 0; i < users.length; i++) {
+	      linkedUsers.push(Object.assign({}, users[i], {
+	        nextUser: i < users.length - 1 && users[i + 1] ? users[i + 1] : undefined
+	      }));
+	    }
+
+	    return linkedUsers;
+	  },
 	  render: function render() {
 	    var _this = this;
 
@@ -2011,9 +2082,9 @@
 	    var sections = props.userGroups.filter(function (userGroup) {
 	      return _this.state.filterBy === undefined ? true : _this.state.filterBy == userGroup.id;
 	    }).map(function (userGroup) {
-	      return React.createElement(SettingsGridSection, { bulkActions: true, viewProps: props.viewProps, userGroup: userGroup, key: userGroup.id, expanded: expanded, filter: _this.state.filter, handleFilterBy: _this.handleFilterBy, users: props.users.filter(function (user) {
+	      return React.createElement(SettingsGridSection, { bulkActions: true, viewProps: props.viewProps, userGroup: userGroup, key: userGroup.id, expanded: expanded, filter: _this.state.filter, handleFilterBy: _this.handleFilterBy, users: _this.linkUsers(props.users.filter(function (user) {
 	          return user.userGroups.includes(userGroup.id);
-	        }), title: userGroup.title });
+	        })), title: userGroup.title });
 	    });
 
 	    return React.createElement(
@@ -2093,6 +2164,16 @@
 	      'Quick ',
 	      props.quickCreate.updating ? 'Update' : 'Create',
 	      ' User'
+	    );
+
+	    var createUserBtn = this.state.quickCreateOpen ? React.createElement(
+	      'button',
+	      null,
+	      'More Options'
+	    ) : React.createElement(
+	      'a',
+	      { className: 'button', href: endpoints.ADD_USER },
+	      'Create User'
 	    );
 
 	    var quickCreate = this.state.quickCreateOpen ? React.createElement(QuickCreateFieldset, _extends({}, props, { handleDeleteUser: this.handleDeleteUser })) : false;
@@ -2209,11 +2290,7 @@
 	        'div',
 	        { className: 'top-bar' },
 	        quickCreateUserBtn,
-	        React.createElement(
-	          'a',
-	          { className: 'button', href: endpoints.ADD_USER },
-	          'Create User'
-	        )
+	        createUserBtn
 	      ),
 	      quickCreate
 	    );
@@ -2243,25 +2320,13 @@
 
 	    var filterByLabel = props.viewProps.showFilterBy ? React.createElement(
 	      'label',
-	      { htmlFor: 'filter-by' },
-	      'Filter ',
-	      React.createElement(
-	        'span',
-	        { className: 'accessibly-hidden' },
-	        'Users'
-	      ),
-	      ' by',
-	      React.createElement(
-	        'span',
-	        { className: 'accessibly-hidden' },
-	        ' User Group'
-	      ),
-	      ':'
+	      { htmlFor: 'filter-by', 'aria-hidden': true },
+	      'Filter by: '
 	    ) : false;
 
 	    var filterBy = props.viewProps.showFilterBy ? React.createElement(
 	      'select',
-	      { name: 'filter-by', id: 'filter-by', value: props.filterBy, onChange: function onChange(event) {
+	      { 'aria-label': 'Filter Users by User Group', name: 'filter-by', id: 'filter-by', value: props.filterBy, onChange: function onChange(event) {
 	          try {
 	            props.handleFilterBy(parseInt(event.target.value));
 	          } catch (e) {}
@@ -2287,27 +2352,32 @@
 	        { className: 'create-user-module' },
 	        React.createElement(CreateSettingsForm, props)
 	      ),
-	      React.createElement('hr', null),
+	      React.createElement('hr', { 'aria-hidden': true }),
 	      React.createElement(
 	        'div',
-	        null,
+	        { role: 'search' },
 	        React.createElement(
 	          'h3',
-	          { id: 'search-users' },
+	          { id: 'search' },
 	          'Search Users'
+	        ),
+	        React.createElement(
+	          'p',
+	          null,
+	          React.createElement(
+	            'label',
+	            { htmlFor: 'search-users' },
+	            'Search for any User.'
+	          ),
+	          ' We’ll try and find them.'
 	        ),
 	        React.createElement(
 	          'form',
 	          { action: '#', id: 'search', className: 'search-settings' },
 	          React.createElement(
-	            'label',
-	            { 'for': 'search-users' },
-	            React.createElement(
-	              'span',
-	              { className: 'accessibly-hidden' },
-	              'Search: '
-	            ),
-	            React.createElement('input', { name: 'search-users', id: 'search-users', type: 'text', placeholder: 'Search for any User. We\'ll try and find them.', onChange: function onChange(event) {
+	            'div',
+	            { className: 'search-users-wrapper' },
+	            React.createElement('input', { name: 'search-users', id: 'search-users', type: 'text', placeholder: 'carmensandiego', 'aria-labeledby': 'search', onChange: function onChange(event) {
 	                try {
 	                  _this3.props.handleFilter(event.target.value);
 	                } catch (e) {}
@@ -2324,14 +2394,14 @@
 	          ),
 	          filterByLabel,
 	          filterBy
-	        ),
-	        React.createElement(
-	          'p',
-	          null,
-	          'Below you will users who have logged in recently per user group.'
 	        )
 	      ),
-	      React.createElement('hr', null)
+	      React.createElement(
+	        'p',
+	        null,
+	        'Below you will find users who have logged in recently per user group.'
+	      ),
+	      React.createElement('hr', { 'aria-hidden': true })
 	    );
 	  }
 	});
@@ -2455,7 +2525,7 @@
 	  function QuickCreateFieldset() {
 	    _classCallCheck(this, QuickCreateFieldset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(QuickCreateFieldset).apply(this, arguments));
+	    return _possibleConstructorReturn(this, (QuickCreateFieldset.__proto__ || Object.getPrototypeOf(QuickCreateFieldset)).apply(this, arguments));
 	  }
 
 	  _createClass(QuickCreateFieldset, [{
@@ -2537,151 +2607,153 @@
 	        )
 	      ) : false;
 
-	      console.log('props.quickCreate.updating', props.quickCreate.updating);
-
 	      return React.createElement(
-	        'fieldset',
+	        'div',
 	        null,
 	        React.createElement(
-	          'legend',
-	          null,
-	          'Quick ',
-	          props.quickCreate.updating ? 'Update' : 'Create',
-	          ' User'
-	        ),
-	        React.createElement('input', { type: 'hidden', name: 'id', value: props.quickCreate.id }),
-	        React.createElement(
-	          'div',
-	          { className: 'n field-group' },
-	          React.createElement(
-	            'div',
-	            { className: 'field-username' },
-	            React.createElement(
-	              'label',
-	              { htmlFor: 'username', id: 'username-label' },
-	              'Username'
-	            ),
-	            React.createElement('input', { type: 'text', autoComplete: 'off', autoCorrect: 'off', autoCapitalize: 'off', value: props.quickCreate.username, disabled: props.quickCreate.updating, onChange: function onChange(event) {
-	                store.dispatch(actions.updateQuickCreate({
-	                  username: event.target.value
-	                }));
-	              }, ref: 'quickCreateUsername', autoFocus: !props.quickCreate.updating, 'aria-describedby': 'username-label', name: 'username', id: 'username', className: 'nickname', 'aria-invalid': 'false', required: true, pattern: '^[a-z0-9_-]{3,16}$' })
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'field-given-name' },
-	            React.createElement(
-	              'label',
-	              { htmlFor: 'given-name' },
-	              'First Name'
-	            ),
-	            React.createElement('input', { type: 'text', value: props.quickCreate.givenName, onChange: function onChange(event) {
-	                store.dispatch(actions.updateQuickCreate({
-	                  givenName: event.target.value
-	                }));
-	              }, ref: 'quickCreateGivenName', name: 'given-name', id: 'given-name', className: 'given-name' })
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'field-family-name' },
-	            React.createElement(
-	              'label',
-	              { htmlFor: 'family-name' },
-	              'Last Name'
-	            ),
-	            React.createElement('input', { type: 'text', value: props.quickCreate.familyName, onChange: function onChange(event) {
-	                store.dispatch(actions.updateQuickCreate({
-	                  familyName: event.target.value
-	                }));
-	              }, ref: 'quickCreateFamilyName', name: 'family-name', id: 'family-name', className: 'family-name' })
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'field-email' },
-	            React.createElement(
-	              'label',
-	              { htmlFor: 'email' },
-	              'Email'
-	            ),
-	            React.createElement('input', { type: 'email', value: props.quickCreate.email, autoFocus: props.quickCreate.updating, onChange: function onChange(event) {
-	                store.dispatch(actions.updateQuickCreate({
-	                  email: event.target.value
-	                }));
-	              }, ref: 'quickCreateEmail', name: 'email', id: 'email', className: 'email', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'field-group user-group-field user-status-field' },
-	          React.createElement(
-	            'div',
-	            { className: 'field' },
-	            React.createElement('input', { type: 'checkbox', checked: props.quickCreate.active, onChange: function onChange(event) {
-	                store.dispatch(actions.updateQuickCreate({
-	                  active: event.target.checked
-	                }));
-	              }, ref: 'quickCreateUserActive', name: 'user-active', id: 'user-active' }),
-	            React.createElement(
-	              'label',
-	              { htmlFor: 'user-active' },
-	              ' Active'
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'field' },
-	            React.createElement('input', { type: 'checkbox', checked: props.quickCreate.sudo, onChange: function onChange(event) {
-	                store.dispatch(actions.updateQuickCreate({
-	                  sudo: event.target.checked
-	                }));
-	              }, ref: 'quickCreateUserSudo', name: 'user-sudo', id: 'user-sudo' }),
-	            React.createElement(
-	              'label',
-	              { htmlFor: 'user-sudo' },
-	              ' Sudo'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
+	          'fieldset',
 	          null,
 	          React.createElement(
-	            'div',
-	            { className: 'balanced' },
-	            React.createElement(
-	              'button',
-	              { className: 'comfortably', type: 'submit' },
-	              props.quickCreate.updating ? 'Update' : 'Create',
-	              ' User'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'field-group' },
+	            'legend',
+	            null,
+	            'Quick ',
+	            props.quickCreate.updating ? 'Update' : 'Create',
+	            ' User'
+	          ),
+	          React.createElement('input', { type: 'hidden', name: 'id', value: props.quickCreate.id }),
 	          React.createElement(
-	            'fieldset',
-	            { className: 'field' },
+	            'div',
+	            { className: 'n quick-create-fields field-group' },
 	            React.createElement(
-	              'legend',
-	              null,
-	              'User Permissions'
-	            ),
-	            React.createElement(
-	              'p',
-	              null,
-	              'Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can belong to the same User Group with multiple roles.'
+	              'div',
+	              { className: 'field-username' },
+	              React.createElement(
+	                'label',
+	                { htmlFor: 'username', id: 'username-label' },
+	                'Username'
+	              ),
+	              React.createElement('input', { type: 'text', autoComplete: 'off', value: props.quickCreate.username, disabled: props.quickCreate.updating, onChange: function onChange(event) {
+	                  store.dispatch(actions.updateQuickCreate({
+	                    username: event.target.value
+	                  }));
+	                }, ref: 'quickCreateUsername', autoFocus: !props.quickCreate.updating, 'aria-describedby': 'username-label', name: 'username', id: 'username', className: 'nickname', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
 	            ),
 	            React.createElement(
 	              'div',
-	              { className: 'user-group-roles' },
-	              userGroupsMarkup
+	              { className: 'field-given-name' },
+	              React.createElement(
+	                'label',
+	                { htmlFor: 'given-name' },
+	                'First Name'
+	              ),
+	              React.createElement('input', { type: 'text', value: props.quickCreate.givenName, onChange: function onChange(event) {
+	                  store.dispatch(actions.updateQuickCreate({
+	                    givenName: event.target.value
+	                  }));
+	                }, ref: 'quickCreateGivenName', name: 'given-name', id: 'given-name', className: 'given-name' })
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'field-family-name' },
+	              React.createElement(
+	                'label',
+	                { htmlFor: 'family-name' },
+	                'Last Name'
+	              ),
+	              React.createElement('input', { type: 'text', value: props.quickCreate.familyName, onChange: function onChange(event) {
+	                  store.dispatch(actions.updateQuickCreate({
+	                    familyName: event.target.value
+	                  }));
+	                }, ref: 'quickCreateFamilyName', name: 'family-name', id: 'family-name', className: 'family-name' })
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'field-email' },
+	              React.createElement(
+	                'label',
+	                { htmlFor: 'email' },
+	                'Email'
+	              ),
+	              React.createElement('input', { type: 'email', value: props.quickCreate.email, autoFocus: props.quickCreate.updating, onChange: function onChange(event) {
+	                  store.dispatch(actions.updateQuickCreate({
+	                    email: event.target.value
+	                  }));
+	                }, ref: 'quickCreateEmail', name: 'email', id: 'email', className: 'email', 'aria-required': 'true', 'aria-invalid': 'false', required: true })
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'field-group user-group-field user-status-field' },
+	            React.createElement(
+	              'div',
+	              { className: 'field' },
+	              React.createElement('input', { type: 'checkbox', checked: props.quickCreate.active, onChange: function onChange(event) {
+	                  store.dispatch(actions.updateQuickCreate({
+	                    active: event.target.checked
+	                  }));
+	                }, ref: 'quickCreateUserActive', name: 'user-active', id: 'user-active' }),
+	              React.createElement(
+	                'label',
+	                { htmlFor: 'user-active' },
+	                ' Active'
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'field' },
+	              React.createElement('input', { type: 'checkbox', checked: props.quickCreate.sudo, onChange: function onChange(event) {
+	                  store.dispatch(actions.updateQuickCreate({
+	                    sudo: event.target.checked
+	                  }));
+	                }, ref: 'quickCreateUserSudo', name: 'user-sudo', id: 'user-sudo' }),
+	              React.createElement(
+	                'label',
+	                { htmlFor: 'user-sudo' },
+	                ' Sudo'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'button-bar' },
+	            React.createElement(
+	              'div',
+	              { className: 'balanced' },
+	              React.createElement(
+	                'button',
+	                { className: 'comfortably', type: 'submit' },
+	                props.quickCreate.updating ? 'Update' : 'Create',
+	                ' User'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'field-group' },
+	            React.createElement(
+	              'fieldset',
+	              { className: 'field' },
+	              React.createElement(
+	                'legend',
+	                null,
+	                'User Permissions'
+	              ),
+	              React.createElement(
+	                'p',
+	                null,
+	                'Users can belong to any number of User Groups. User are assigned Roles that define their priveldges as a member of the User Group. A user can belong to the same User Group with multiple roles.'
+	              ),
+	              React.createElement(
+	                'div',
+	                { className: 'user-group-roles' },
+	                userGroupsMarkup
+	              )
 	            )
 	          )
 	        ),
 	        React.createElement(
 	          'footer',
-	          null,
+	          { className: 'balanced' },
 	          React.createElement(
 	            'div',
 	            null,
@@ -2718,6 +2790,8 @@
 
 	'use strict';
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	var update = __webpack_require__(11);
@@ -2727,6 +2801,10 @@
 
 	var settings = __webpack_require__(7),
 	    endpoints = settings.endpoints;
+
+	function cssSafeName(name) {
+	  return name.replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '').trim().replace(/ /g, '').toLowerCase();
+	}
 
 	// can't use this until a future version of React
 	var SettingTableRowGroup = React.createClass({
@@ -2816,32 +2894,32 @@
 	        null,
 	        React.createElement(
 	          'legend',
-	          null,
+	          { 'aria-label': 'Bulk Actions are conditionally enabled options such as activate, suspend, delete or email that can be executed on selected users.' },
 	          'Bulk Actions'
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, className: 'go', formAction: endpoints.API_USERS_ACTIVATE, formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', 'aria-hidden': !props.emails.length, disabled: !props.emails.length, className: 'go', formAction: endpoints.API_USERS_ACTIVATE, formMethod: 'post', onClick: this.handleBulkButtonClick },
 	          'Activate'
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: endpoints.API_USERS_DEACTIVATE, formMethod: 'post', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', 'aria-hidden': !props.emails.length, disabled: !props.emails.length, className: 'danger', formAction: endpoints.API_USERS_DEACTIVATE, formMethod: 'post', onClick: this.handleBulkButtonClick },
 	          'Suspend'
 	        ),
 	        React.createElement(
 	          'button',
-	          { type: 'submit', disabled: !props.emails.length, className: 'danger', formAction: endpoints.API_USERS_DELETE, formMethod: 'delete', onClick: this.handleBulkButtonClick },
+	          { type: 'submit', 'aria-hidden': !props.emails.length, disabled: !props.emails.length, className: 'danger', formAction: endpoints.API_USERS_DELETE, formMethod: 'delete', onClick: this.handleBulkButtonClick },
 	          'Delete'
 	        ),
 	        React.createElement(
 	          'a',
-	          { className: 'button', disabled: !props.emails.length, href: 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body=' },
+	          { className: 'button', 'aria-hidden': !props.emails.length, disabled: !props.emails.length, tabIndex: props.emails.length ? "0" : "-1", href: props.emails.length ? 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body=' : undefined },
 	          'Email'
 	        ),
 	        React.createElement(
 	          'a',
-	          { className: 'button', disabled: !props.emails.length, href: 'https://' + props.slackChannel + '.slack.com/messages/@' + props.slackHandles.join(','), target: '_blank' },
+	          { className: 'button', 'aria-hidden': !props.emails.length, disabled: !props.emails.length, tabIndex: props.emails.length ? "0" : "-1", href: props.emails.length ? 'https://' + props.slackChannel + '.slack.com/messages/@' + props.slackHandles.join(',') : undefined, target: '_blank' },
 	          'Slack DM'
 	        )
 	      )
@@ -2871,16 +2949,24 @@
 	    if (props.bulkActions) bulkTh = React.createElement(
 	      'th',
 	      null,
-	      React.createElement('input', { type: 'checkbox', onChange: function onChange(event) {
+	      React.createElement('input', { type: 'checkbox', id: 'bulk-select-all-' + props.userGroup.id, onChange: function onChange(event) {
 	          try {
 	            _this2.props.handleBulkAllCheck(event.target.checked);
 	          } catch (e) {}
-	        } })
+	        } }),
+	      ' ',
+	      React.createElement(
+	        'label',
+	        { htmlFor: 'bulk-select-all-' + props.userGroup.id, className: 'accessibly-hidden' },
+	        'Select all ',
+	        props.userGroup.title,
+	        ' Members'
+	      )
 	    );
 
 	    var rows = props.users.map(function (user) {
 
-	      return [React.createElement(SettingsTableRow, { user: user, userGroup: props.userGroup, bulkToggle: props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false, bulkActions: props.bulkActions,
+	      return [React.createElement(SettingsTableRow, { user: user, pressed: _this2.state.userFormsToShow[user.id], userGroup: props.userGroup, bulkToggle: props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false, bulkActions: props.bulkActions,
 	        handleFocus: function handleFocus(event) {
 	          return _this2.setState({
 	            userFormsToShow: update({}, _defineProperty({}, user.id, { $set: true }))
@@ -2890,7 +2976,11 @@
 	            props.handleBulkToggle(id, checked);
 	          } catch (e) {}
 	        }
-	      }), _this2.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { slackChannel: props.userGroup.slackChannel, handleQuickEdit: _this2.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : undefined];
+	      }), _this2.state.userFormsToShow[user.id] ? React.createElement(SettingsTableRowForm, { handleNextBtnClicked: function handleNextBtnClicked(event) {
+	          _this2.setState({
+	            userFormsToShow: update({}, _defineProperty({}, user.id, { $set: false }))
+	          });
+	        }, slackChannel: props.userGroup.slackChannel, handleQuickEdit: _this2.handleQuickEdit.bind(null, user), className: 'contextual-setting', user: user, userGroup: props.userGroup, colspan: props.bulkActions ? "3" : "2" }) : false];
 	    });
 
 	    return React.createElement(
@@ -2905,12 +2995,12 @@
 	          bulkTh,
 	          React.createElement(
 	            'th',
-	            { className: 'username' },
+	            { className: 'username', 'aria-label': 'User Column' },
 	            'User'
 	          ),
 	          React.createElement(
 	            'th',
-	            null,
+	            { 'aria-label': 'Active Column' },
 	            'Active'
 	          )
 	        )
@@ -2958,27 +3048,27 @@
 	      });
 	    }
 
-	    var paginationAmount = 12,
+	    var paginationAmount = settings.paginateUsers,
 	        bulkActionsFieldset = users.length >= minimumUsersBulkAction ? React.createElement(SettingsGridSectionBulkActionsFieldset, { bulkToggledUsers: this.state.bulkToggledUsers, emails: emails, slackChannel: props.userGroup.slackChannel, slackHandles: slackHandles }) : false,
 	        viewAll = this.props.expanded || this.props.viewProps.pageType == 'detail' ? false : users.length > paginationAmount ? React.createElement(
-	      'p',
+	      'footer',
 	      null,
 	      React.createElement(
-	        'a',
-	        { onClick: function onClick(event) {
-	            event.preventDefault();
-	            _this3.props.handleFilterBy(props.userGroup.id);
-	          }, href: '' + endpoints.GROUPS + props.userGroup.id + '#fold' },
-	        'View all ',
-	        props.title,
-	        ' users'
+	        'p',
+	        null,
+	        React.createElement(
+	          'a',
+	          { onClick: function onClick(event) {
+	              event.preventDefault();
+	              _this3.props.handleFilterBy(props.userGroup.id);
+	            }, href: '' + endpoints.GROUPS + props.userGroup.id + '#fold' },
+	          'View all ',
+	          props.title,
+	          ' users'
+	        )
 	      )
 	    ) : false,
 	        paginatedUsers = this.props.expanded || this.props.viewProps.pageType == 'detail' ? users : users.slice(0, paginationAmount);
-
-	    function cssSafeName(name) {
-	      return name.replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '').toLowerCase();
-	    }
 
 	    return paginatedUsers.length ? React.createElement(
 	      'section',
@@ -2991,10 +3081,10 @@
 	          null,
 	          React.createElement(
 	            'h2',
-	            { id: cssSafeName(props.title) },
+	            { id: cssSafeName(props.title), 'aria-label': props.title },
 	            React.createElement(
 	              'a',
-	              { className: 'subtle', href: '' + endpoints.GROUPS + props.userGroup.id + '#fold' },
+	              { 'aria-hidden': true, className: 'subtle', href: '#' + cssSafeName(props.title), 'data-view-all-href': '' + endpoints.GROUPS + props.userGroup.id + '#fold' },
 	              props.title
 	            )
 	          )
@@ -3038,31 +3128,30 @@
 	            } }),
 	          bulkActionsFieldset
 	        ),
-	        React.createElement(
-	          'footer',
-	          null,
-	          viewAll
-	        )
+	        viewAll
 	      )
 	    ) : false;
 	  }
 	});
 
 	var SettingsTableRow = function SettingsTableRow(props) {
-	  var user = props.user;
+	  var user = props.user,
+	      userGroup = props.userGroup;
 
 	  var bulkActionsTd;
-	  var bulkName = 'bulk-' + props.userGroup.id + '-' + user.username;
+	  var bulkName = 'bulk-' + userGroup.id + '-' + user.username;
+	  var activeName = 'active-' + userGroup.id + '-' + user.username;
+	  var activeLabel = 'Active status for user ' + user.username;
 	  if (props.bulkActions) bulkActionsTd = React.createElement(
 	    'td',
 	    null,
 	    React.createElement(
 	      'label',
-	      { htmlFor: bulkName, className: 'accessibly-hidden' },
+	      { hidden: true, className: 'accessibly-hidden', htmlFor: bulkName },
 	      'Select ',
 	      user.username
 	    ),
-	    React.createElement('input', { type: 'checkbox', name: bulkName, checked: props.bulkToggle, onChange: function onChange(event) {
+	    React.createElement('input', { 'aria-label': 'Select ' + user.username, type: 'checkbox', id: bulkName, name: bulkName, checked: props.bulkToggle, onChange: function onChange(event) {
 	        event.stopPropagation();
 	        try {
 	          props.handleBulkToggle(user.id, event.target.checked);
@@ -3072,39 +3161,31 @@
 
 	  return React.createElement(
 	    'tr',
-	    { tabIndex: '0', onFocus: function onFocus(event) {
-	        //console.log(event.nativeEvent);
-	        try {
-	          props.handleFocus();
-	        } catch (e) {}
-	      }, onBlur: function onBlur(event) {
-	        try {
-	          props.handleBlur();
-	        } catch (e) {}
-	      } },
+	    null,
 	    bulkActionsTd,
 	    React.createElement(
 	      'td',
-	      { className: 'username' },
+	      { className: 'username', role: 'button', tabIndex: '0', 'aria-expanded': props.pressed, 'aria-pressed': props.pressed, 'aria-haspopup': 'true', 'aria-controls': 'user_popup_' + cssSafeName(userGroup.title) + '_' + user.id, 'aria-flowto': 'user_popup_' + cssSafeName(userGroup.title) + '_' + user.id, onFocus: function onFocus(event) {
+	          try {
+	            props.handleFocus();
+	          } catch (e) {}
+	        }, onBlur: function onBlur(event) {
+	          try {
+	            props.handleBlur();
+	          } catch (e) {}
+	        }, onClick: function onClick(event) {
+	          if (document.activeElement !== event.target) event.target.focus(); // needed for mobile (iOS)
+	        } },
 	      user.username
 	    ),
 	    React.createElement(
 	      'td',
 	      { className: 'shy balanced checkbox' },
-	      React.createElement(
-	        'label',
-	        null,
-	        React.createElement(
-	          'span',
-	          { className: 'accessibly-hidden' },
-	          'Active: '
-	        ),
-	        React.createElement('input', { checked: user.active, type: 'checkbox', onChange: function onChange(event) {
-	            return store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
-	                active: event.target.checked
-	              } })));
-	          } })
-	      )
+	      React.createElement('input', { id: activeName, name: activeName, 'aria-label': activeLabel, checked: user.active, type: 'checkbox', onChange: function onChange(event) {
+	          return store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
+	              active: event.target.checked
+	            } })));
+	        } })
 	    )
 	  );
 	};
@@ -3119,42 +3200,74 @@
 	    };
 	  },
 	  render: function render() {
-	    var props = this.props;
-	    var user = props.user;
-	    var userGroup = props.userGroup;
+	    var props = this.props,
+	        user = props.user,
+	        userGroup = props.userGroup,
+	        nextUserBtn = user.nextUser ? React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'a',
+	        { className: 'button', href: '#bulk-' + userGroup.id + '-' + user.nextUser.username, 'aria-label': 'Escape to Next User ' + user.nextUser.username, onClick: function onClick(event) {
+	            console.log('bulk-' + userGroup.id + '-' + user.username);
+	            props.handleNextBtnClicked();
+	            document.getElementById('bulk-' + userGroup.id + '-' + user.nextUser.username).focus();
+	          } },
+	        'Next User'
+	      )
+	    ) : false;
 
 	    //console.log('SettingsTableRowForm');
 	    //console.log(user);
 
+	    var userSudoCheckboxLabel = 'sudo__' + cssSafeName(userGroup.title) + '-' + userGroup.id + '-' + user.id,
+	        userActiveCheckboxLabel = 'active__' + cssSafeName(userGroup.title) + '-' + userGroup.id + '-' + user.id;
+
 	    return React.createElement(
 	      'tr',
-	      props,
+	      _extends({}, props, { id: 'user_popup_' + cssSafeName(userGroup.title) + '_' + user.id, role: 'dialog', 'aria-labeledby': 'user_popup_label_' + user.id, 'aria-describedby': 'user_popup_' + user.id + '_desc' }),
 	      React.createElement(
 	        'td',
 	        { colSpan: props.colspan },
 	        React.createElement(
 	          'form',
 	          { action: this.state.formAction, method: this.state.formMethod, onChange: this.updateFormData },
+	          React.createElement(
+	            'h3',
+	            { hidden: true, id: 'user_popup_label_' + user.id },
+	            'Edit or Contact ',
+	            user.givenName,
+	            ' ',
+	            user.familyName
+	          ),
 	          React.createElement('input', { name: 'user_id', type: 'hidden', value: user.id }),
 	          React.createElement('input', { name: 'username', type: 'hidden', value: user.username }),
 	          React.createElement(
 	            'div',
 	            { className: 'friendly-labels' },
 	            React.createElement(
-	              'label',
+	              'span',
 	              null,
-	              'Sudo: ',
-	              React.createElement('input', { name: 'sudo', checked: user.sudo, type: 'checkbox', onChange: function onChange(event) {
+	              React.createElement(
+	                'label',
+	                { 'aria-hidden': true, htmlFor: userSudoCheckboxLabel },
+	                'Sudo: '
+	              ),
+	              React.createElement('input', { 'aria-label': 'Sudo', id: userSudoCheckboxLabel, name: userSudoCheckboxLabel, checked: user.sudo, type: 'checkbox', onChange: function onChange(event) {
 	                  store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
 	                      sudo: event.target.checked
 	                    } })));
 	                } })
 	            ),
 	            React.createElement(
-	              'label',
+	              'span',
 	              null,
-	              'Active: ',
-	              React.createElement('input', { name: 'active', checked: user.active, type: 'checkbox', onChange: function onChange(event) {
+	              React.createElement(
+	                'label',
+	                { 'aria-hidden': true, htmlForm: userActiveCheckboxLabel },
+	                'Active: '
+	              ),
+	              React.createElement('input', { 'aria-label': 'Active', id: userActiveCheckboxLabel, name: userActiveCheckboxLabel, checked: user.active, type: 'checkbox', onChange: function onChange(event) {
 	                  store.dispatch(actions.updateUser(user.id, update(user, { $merge: {
 	                      active: event.target.checked
 	                    } })));
@@ -3166,15 +3279,7 @@
 	            { className: 'subtle balanced oblique' },
 	            user.jobTitle
 	          ),
-	          React.createElement(
-	            'div',
-	            null,
-	            React.createElement(
-	              'a',
-	              { className: 'button' },
-	              'Next User'
-	            )
-	          ),
+	          nextUserBtn,
 	          React.createElement(
 	            'div',
 	            null,
@@ -3254,16 +3359,28 @@
 	        ),
 	        React.createElement(
 	          'footer',
-	          { className: 'subtle oblique balanced' },
+	          { id: 'user_popup_' + user.id + '_desc', className: 'subtle oblique balanced' },
 	          React.createElement(
 	            'p',
 	            null,
-	            user.givenName,
-	            ' ',
-	            user.familyName,
-	            '’',
-	            user.familyName.slice(-1) == 's' ? '' : 's',
-	            ' last login was Jan 23, 2016 4:52pm from Planet Earth'
+	            React.createElement(
+	              'span',
+	              null,
+	              React.createElement(
+	                'span',
+	                { className: 'given-name' },
+	                user.givenName
+	              ),
+	              ' ',
+	              React.createElement(
+	                'span',
+	                { className: 'family-name' },
+	                user.familyName
+	              ),
+	              '’',
+	              user.familyName.slice(-1) == 's' ? '' : 's',
+	              ' last login was Jan 23, 2016 4:52pm from Planet Earth'
+	            )
 	          )
 	        )
 	      )

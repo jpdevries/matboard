@@ -62,20 +62,19 @@ export default class QuickCreateFieldset extends React.Component {
       </div>
     ) : false;
 
-    console.log('props.quickCreate.updating',props.quickCreate.updating);
-
     return (
+      <div>
       <fieldset>
             <legend>Quick {props.quickCreate.updating ? 'Update' : 'Create'} User</legend>
             <input type="hidden" name="id" value={props.quickCreate.id} />
-            <div className="n field-group">
+            <div className="n quick-create-fields field-group">
               <div className="field-username">
                 <label htmlFor="username" id="username-label">Username</label>
-                <input type="text" autoComplete="off" autoCorrect="off" autoCapitalize="off" value={props.quickCreate.username} disabled={props.quickCreate.updating} onChange={(event) => {
+                <input type="text" autoComplete="off" value={props.quickCreate.username} disabled={props.quickCreate.updating} onChange={(event) => {
                   store.dispatch(actions.updateQuickCreate({
                     username:event.target.value
                   }))
-                }} ref="quickCreateUsername" autoFocus={!props.quickCreate.updating} aria-describedby="username-label" name="username" id="username" className="nickname" aria-invalid="false" required pattern="^[a-z0-9_-]{3,16}$" />
+                }} ref="quickCreateUsername" autoFocus={!props.quickCreate.updating} aria-describedby="username-label" name="username" id="username" className="nickname" aria-required="true"  aria-invalid="false" required />
               </div>
               <div className="field-given-name">
                 <label htmlFor="given-name">First Name</label>
@@ -120,7 +119,7 @@ export default class QuickCreateFieldset extends React.Component {
               <label htmlFor="user-sudo">&emsp;Sudo</label>
               </div>
             </div>
-            <div>
+            <div className="button-bar">
               <div className="balanced">
                 <button className="comfortably" type="submit">{props.quickCreate.updating ? 'Update' : 'Create'} User</button>
               </div>
@@ -134,13 +133,14 @@ export default class QuickCreateFieldset extends React.Component {
                 </div>
               </fieldset>
             </div>
-            <footer>
-              <div>
-                <button className="comfortably" type="submit">{props.quickCreate.updating ? 'Update' : 'Create'} User</button>
-              </div>
-              {otherButtons}
-            </footer>
           </fieldset>
+          <footer className="balanced">
+            <div>
+              <button className="comfortably" type="submit">{props.quickCreate.updating ? 'Update' : 'Create'} User</button>
+            </div>
+            {otherButtons}
+          </footer>
+        </div>
     );
   }
 }

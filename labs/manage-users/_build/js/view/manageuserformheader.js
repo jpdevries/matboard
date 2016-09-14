@@ -25,16 +25,18 @@ var CreateSettingsForm = React.createClass({
     this.setState({formMethod:'delete'});
   },
   render:function() {
-    var props = this.props;
+    const props = this.props;
     //console.log(props);
-    var quickCreateUserBtn = this.state.quickCreateOpen ? false : (
+    const quickCreateUserBtn = this.state.quickCreateOpen ? false : (
       <a href={endpoints.ADD_USER} className="button" onClick={(event) => {
         event.preventDefault();
         store.dispatch(actions.updateQuickCreate({open:true}));
       }}>Quick {props.quickCreate.updating ? 'Update' : 'Create'} User</a>
     );
 
-    var quickCreate = this.state.quickCreateOpen ? (
+    const createUserBtn = this.state.quickCreateOpen ? <button>More Options</button> : <a className="button" href={endpoints.ADD_USER}>Create User</a>;
+
+    const quickCreate = this.state.quickCreateOpen ? (
       <QuickCreateFieldset  {...props} handleDeleteUser={this.handleDeleteUser} />
     ) : false;
 
@@ -125,7 +127,7 @@ var CreateSettingsForm = React.createClass({
     }}>
       <div className="top-bar">
         {quickCreateUserBtn}
-        <a className="button" href={endpoints.ADD_USER}>Create User</a>
+        {createUserBtn}
       </div>
       {quickCreate}
     </form>
@@ -146,10 +148,10 @@ var ManageUserFormHeader = React.createClass({
       <option key={userGroup.id} value={userGroup.id}>{userGroup.title}</option>
     ));
 
-    var filterByLabel = (props.viewProps.showFilterBy) ? <label htmlFor="filter-by">Filter <span className="accessibly-hidden">Users</span> by<span className="accessibly-hidden"> User Group</span>:</label> : false;
+    var filterByLabel = (props.viewProps.showFilterBy) ? <label htmlFor="filter-by" aria-hidden>Filter by: </label> : false;
 
     var filterBy = (props.viewProps.showFilterBy) ? (
-      <select name="filter-by" id="filter-by" value={props.filterBy} onChange={(event) => {
+      <select aria-label="Filter Users by User Group" name="filter-by" id="filter-by" value={props.filterBy} onChange={(event) => {
         try {
           props.handleFilterBy(parseInt(event.target.value));
         } catch (e) { }
@@ -164,27 +166,27 @@ var ManageUserFormHeader = React.createClass({
         <div className="create-user-module">
           <CreateSettingsForm {...props} />
         </div>
-        <hr />
-        <div>
-          <h3 id="search-users">Search Users</h3>
+        <hr aria-hidden />
+        <div role="search">
+          <h3 id="search">Search Users</h3>
+          <p><label htmlFor="search-users">Search for any User.</label> We&#8217;ll try and find them.</p>
           <form action="#" id="search" className="search-settings">
-            <label for="search-users">
-              <span className="accessibly-hidden">Search: </span>
-              <input name="search-users" id="search-users" type="text" placeholder="Search for any User. We'll try and find them." onChange={(event) => {
+            <div className="search-users-wrapper">
+              <input name="search-users" id="search-users" type="text" placeholder="carmensandiego" aria-labeledby="search" onChange={(event) => {
                 try {
                   this.props.handleFilter(event.target.value);
                 } catch (e) {}
               }} />
-            </label>
+            </div>
             <div>
               <button type="submit">Search</button>
             </div>
             {filterByLabel}
             {filterBy}
           </form>
-          <p>Below you will users who have logged in recently per user group.</p>
         </div>
-        <hr />
+        <p>Below you will find users who have logged in recently per user&nbsp;group.</p>
+        <hr aria-hidden />
       </header>
     );
   }

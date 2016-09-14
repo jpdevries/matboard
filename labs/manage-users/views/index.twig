@@ -12,7 +12,7 @@
               </div>
               <fieldset style="margin-top:1em" js-hidden>
                 <legend>Quick Create User</legend>
-                <div class="n field-group">
+                <div class="n quick-create-fields field-group">
                   <div class="field-username">
                     <label for="username" id="username-label">Username</label>
                     <input type="text" autocomplete="off" aria-describedby="username-label" name="username" id="username" class="nickname" aria-required="true"  aria-invalid="false" required>
@@ -62,23 +62,27 @@
                     </div>
                   </fieldset>
                 </div>
-                <footer style="margin-top:1em">
-                  <button type="submit">Submit</button>
-                </footer>
               </fieldset>
+              <footer style="margin-top:1em">
+                <button type="submit">Submit</button>
+              </footer>
             </form>
           </div>
           <hr>
-          <div>
-            <h3 id="search-users">Search Users</h3>
+          <div role="search">
+            <h3 id="search">Search Users</h3>
+            <p>
+              <label for="search-users">Search for any User.</label>
+                We&#8217;ll try and find them.
+            </p>
             <form action="/#fold" method="post" id="search" class="search-settings">
-              <label for="search" ><span a11y-hidden>Search: </span><input name="search" id="search-users" value="{{ query }}" type="text" placeholder="Search for any User. We'll try and find them."></label>
+              <div class="search-users-wrapper"><input name="search" id="search-users" value="{{ query }}" type="text" placeholder="carmensandiego" aria-labeledby="search"></div>
               <div>
                 <button type="submit">Search</button>
               </div>
               {% if showFilterBy|default(true) %}
-              <label for="filter-by">Filter <span class="accessibly-hidden">Users</span> by<span class="accessibly-hidden"> User Group</span>:</label>
-              <select name="filter-by" id="filter-by">
+              <label aria-hidden for="filter-by">Filter by:</label>
+              <select aria-label="Filter Users by User Group" name="filter-by" id="filter-by">
                 <option {% if filteredGroup is not defined %}selected {% endif %}value="">All</option>
                 {% for userGroup in userGroups %}
                 <option {% if filteredGroup == userGroup.id %}selected {% endif %}value="{{ userGroup.id }}">{{ userGroup.name }}</option>
@@ -86,8 +90,8 @@
               </select>
               {% endif %}
             </form>
-            <p>Below you will find users who have logged in recently per user&nbsp;group.</p>
           </div>
+          <p>Below you will find users who have logged in recently per user&nbsp;group.</p>
           <hr>
         </header>
       </div>
@@ -106,7 +110,7 @@
         <section id="user-group-{{ userGroup.id }}" class="user-group" data-user-group-id="{{ userGroup.id }}" data-slackchannel="{{ userGroup.slackchannel }}">
           <div>
             <header>
-              <h2 id="{{ userGroup.name|escape('css') }}"><a class="subtle" href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}#fold"><span class="name">{{ userGroup.name }}</span></a></h2>
+              <h2 id="{{ userGroup.name|escape('css') }}"><span class="accessibly-hidden">{{ userGroup.name }}</span><a aria-hidden class="subtle" href="#fold" data-view-all-href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}#fold"> <span class="name">{{ userGroup.name }}</span></a></h2>
             </header>
             <div>
               <div class="balanced"><a class="button" href="{{ endpoints.ADD_USER|default('/add/user/') }}?group={{ userGroup.id }}#fold" style="margin-bottom:2em">Create {{ userGroup.name }} User</a></div>
@@ -116,18 +120,17 @@
               <table class="settings-table">
                 <thead>
                   <tr>
-                    <th class="username">User</th>
+                    <th class="username" aria-label="User Column">User</th>
                     <!--th>Active</th-->
                   </tr>
                 </thead>
                 <tbody>
                   {% set shownUsers = 0 %}
                   {% for user in users %}
-                  {% if userGroup.id in user.user_groups and shownUsers >= 0 and shownUsers < paginateUsers|default(12) %}
+                  {% if userGroup.id in user.user_groups and shownUsers >= 0 and shownUsers < paginateUsers|default(15) %}
                   {% if filteredGroup is not defined %}{% set shownUsers = shownUsers + 1 %}{% endif %}
-                  <tr tabindex="0" class="user-row" data-user-id="{{ user.id }}" data-slack="{{ user.slack }}" data-email="{{ user.email }}" data-user-groups="{{ user.user_groups|join(',') }}">
-                    <td class="username">{{ user.username }}</td>
-                    <!--td><label><span a11y-hidden>Active: </span><input {% if user.active == '1' %}checked {% endif %} type="checkbox"></label></td-->
+                  <tr class="user-row" data-user-id="{{ user.id }}" data-slack="{{ user.slack }}" data-email="{{ user.email }}" data-user-groups="{{ user.user_groups|join(',') }}">
+                    <td class="username" tabindex="0">{{ user.username }}</td>
                   </tr>
                   <tr class="contextual-setting" js-hidden>
                     <td colspan="3">
@@ -140,8 +143,14 @@
                           <input name="user_id" type="hidden" value="{{ user.id }}" />
                           <input name="username" type="hidden" value="{{ user.username }}" />
                           <div class="friendly-labels">
-                            <label for="{{ user.username }}-{{ userGroup.id }}-sudo">Sudo: <input class="sudo" name="{{ user.username }}-{{ userGroup.id }}-sudo" {% if user.sudo == '1' %}checked {% endif %}type="checkbox" /></label>
-                            <label for="{{ user.username }}-{{ userGroup.id }}-active">Active: <input class="active" name="{{ user.username }}-{{ userGroup.id }}-active" {% if user.active == '1' %}checked {% endif %}type="checkbox" /></label>
+                            <span>
+                              <label aria-hidden for="{{ user.username }}-{{ userGroup.id }}-sudo">Sudo:</label>
+                              <input aria-label="Sudo" class="sudo" name="{{ user.username }}-{{ userGroup.id }}-sudo" {% if user.sudo == '1' %}checked {% endif %}type="checkbox" />
+                            </span>
+                            <span>
+                              <label aria-hidden for="{{ user.username }}-{{ userGroup.id }}-active">Active:</label>
+                              <input aria-label="Active" class="active" name="{{ user.username }}-{{ userGroup.id }}-active" {% if user.active == '1' %}checked {% endif %}type="checkbox" />
+                            </span>
                           </div>
                           <p class="subtle balanced oblique jobTitle">{{ user.title }}</p>
                           <div>
@@ -165,7 +174,7 @@
                           </div>
                         </form>
                         <footer class="subtle oblique balanced">
-                          <p style="margin-bottom:0"><span class="givenName">{{ user.givenname }}</span> <span class="familyName">{{ user.familyname }}</span>&#8217;{% if user.familyname|last != 's' %}s{% endif %} last login was Jan 23, 2016 4:52pm from probably Planet Earth</p>
+                          <p style="margin-bottom:0"><span class="givenName">{{ user.givenname }}</span> <span class="familyName">{{ user.familyname }}</span>&#8217;{% if user.familyname|last != 's' %}s{% endif %} last login was Jan&nbsp;23, 2016 4:52pm from probably Planet Earth</p>
                         </footer>
                     </td>
                   </tr>
@@ -178,7 +187,7 @@
               {% endif %}
             </div>
             <footer>
-              {% if pageType != 'detail' and usersInGroup > paginateUsers|default(12) %}<p><a href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}#fold">View all {{ userGroup.name }} Users</a></p>{% endif %}
+              {% if pageType != 'detail' and usersInGroup > paginateUsers|default(15) %}<p><a href="{{ endpoints.GROUPS|default('/groups/') }}{{ userGroup.id }}#fold">View all {{ userGroup.name }} Users</a></p>{% endif %}
             </footer>
           </div>
         </section>

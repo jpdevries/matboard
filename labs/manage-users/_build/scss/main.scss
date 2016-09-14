@@ -14,13 +14,26 @@ $borderColor:rgb(200,200,200);
 
 %bright-padded-module {
   background:$white;
-  padding:1rem;
-  margin-bottom:1em;
+  padding:.5rem;
+  margin-bottom:.5em;
   border:1px solid rgb(200,200,200);
+
+  @include media($gtMobile) {
+    margin-bottom:1em;
+    padding:1rem;
+  }
 }
 
 .accessibly-hidden {
   @extend %accessibly-hidden;
+}
+
+legend {
+  position:relative;
+}
+
+.button-bar {
+  margin:1em 0;
 }
 
 .shy.checkbox {
@@ -134,7 +147,7 @@ button, .button {
     margin-right:.5rem;
     margin-bottom:.5rem;
     &:last-of-type {
-      //margin-right:0;
+      margin-bottom:0;
     }
   }
 }
@@ -152,6 +165,7 @@ button, .button {
 
 fieldset {
   border:1px solid $borderColor;
+  padding:1em;
 }
 
 hr {
@@ -174,16 +188,34 @@ html {
 
 body {
   background:rgb(240,240,240);
-  padding-top:1rem;
   color:rgb(8,8,8);
+  padding-top:.5rem;
+  @include media($gtMobile) {
+    padding-top:1rem;
+  }
 }
 
 .top-bar {
   //padding-left:1rem;
   //padding-right:1rem;
   margin-bottom:1rem;
+
+  @include media($mobile) {
+    display:flex;
+    > * {
+      flex-grow:1;
+      margin-left:0;
+      &:last-child {
+        margin-right:0;
+      }
+    }
+  }
+
   a,button {
-    margin-right:1rem;
+    margin-right:.5rem;
+    @include media($gtMobile) {
+      margin-right:1rem;
+    }
   }
 }
 
@@ -210,8 +242,19 @@ body {
 header, aside, .padded {
   > h1 {
     &:first-of-type {
-      margin-top:0;
+      margin-top:0.5rem;
+      @include media($gtMobile) {
+        margin-top:0;
+      }
     }
+  }
+}
+
+$headers:h1,h2,h3,h4,h5,h6;
+
+.settings-grid {
+  #{$headers} {
+    position:relative;
   }
 }
 
@@ -266,14 +309,17 @@ h1 {
 
 %settings-table {
     //background:rgb(242,242,242);
+    margin-bottom:1em;
     label {
       //display:block;
     }
     td,th {
         padding:0.2em 0.4em;
+        position:relative;
     }
     thead {
       font-weight:bold;
+      font-size:.9em;
         //background:rgb(224,224,224);
         > tr {
             > th {
@@ -346,12 +392,17 @@ h1 {
   padding-right:2em;
 }
 
+.quick-create-fields {
+  margin-bottom:1em;
+}
+
 .create-setting-form, .create-user-form {
   input[type="text"], input[type="email"], input[type="password"], textarea {
     @extend %very-greedy;
   }
   footer {
     text-align:center;
+    margin-top:1em;
     > div {
       //text-align:left;
       //margin:1em 0;
@@ -445,8 +496,12 @@ table { // .settings-table
       margin-right:auto;
     }
   }
+  footer {
+    padding-top:1em;
+  }
   footer p {
     text-align:center;
+    margin-bottom:0;
   }
 }
 
@@ -459,18 +514,18 @@ form.search-settings, form.search-users {
   //max-width:36rem;
 
   font-size:1.1em;
-  > label {
+  > label, > .search-users-wrapper {
     flex-grow:1;
-    max-width:50vw;
-    //padding-left:1em;
-    margin-right:.5em;
-  }
-  > label, > button {
 
+
+    @include media($gtMobile) {
+      max-width:50vw;
+      margin-right:.5em;
+    }
   }
   > label[for="filter-by"], #filter-by {
     text-align:right;
-    margin-top:1.6rem;
+    margin-top:.8rem;
   }
   > div {
     //padding-top:1em;
@@ -478,7 +533,9 @@ form.search-settings, form.search-users {
   button {
     @include media($mobile) {
       display:block;
-      margin-bottom:0.5em;
+      width:100%;
+      margin:0 0 1em 0;
+      line-height:1.5;
     }
   }
   input,button {
@@ -493,11 +550,17 @@ form.search-settings, form.search-users {
 input[name*="search"] {
   @extend %very-greedy;
   //margin-bottom:1em;
-  line-height:1.6rem;
+  line-height:1.5;
+  @include media($gtMobile) {
+    line-height:1.6rem;
+  }
 }
 
-#search-users {
-  margin-bottom:0.2em;
+#search, #search-users {
+  margin-bottom:1em;
+  @include media($gtMobile) {
+    margin-bottom:0.2em;
+  }
 }
 
 label[for="filter-by"] {

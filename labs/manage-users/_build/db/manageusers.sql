@@ -185,6 +185,23 @@ WITH "new_user" AS (
 )
 SELECT user_id FROM "new_user";
 
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'sepiariver', 1,1,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalkey, givenname, familyname, email, phone, title, slack)
+  SELECT new_user.user_id,new_user.user_id,'YJ','Tso','yj@modx.com','','MODX Systems', 'yj' FROM new_user
+  RETURNING *
+), "modx_member_group" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 1, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 3, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
 
 WITH "new_user" AS (
   INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
@@ -556,12 +573,30 @@ WITH "new_user" AS (
   INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
   VALUES (nextval('user_id_sequence'),'chrischerrett', 1,6,0) RETURNING *
 ), "new_user_attributes" AS (
-  INSERT INTO "modx_user_attributes" (id, internalkey, givenname, familyname, email, phone, title)
-  SELECT new_user.user_id,new_user.user_id,'Chris','Cherrett','chrischerrett@modxambassador.com','','MODX Ambassador' FROM new_user
+  INSERT INTO "modx_user_attributes" (id, internalkey, givenname, familyname, email, phone, title, slack)
+  SELECT new_user.user_id,new_user.user_id,'Chris','Cherrett','chrischerrett@modxambassador.com','','MODX Ambassador', 'chrischerrett' FROM new_user
   RETURNING *
 ), "modx_member_groups" AS (
   INSERT INTO "modx_member_groups" (user_group, member, role, rank)
   SELECT 5, new_user.user_id, 1, 0 FROM new_user
+  UNION
+  SELECT 7,new_user.user_id,5,0 FROM new_user
+  RETURNING *
+)
+SELECT user_id FROM "new_user";
+
+WITH "new_user" AS (
+  INSERT INTO "modx_users" (user_id,username, active, primary_group, sudo)
+  VALUES (nextval('user_id_sequence'),'thomasjakobi', 1,7,0) RETURNING *
+), "new_user_attributes" AS (
+  INSERT INTO "modx_user_attributes" (id, internalkey, givenname, familyname, email, phone, title, slack)
+  SELECT new_user.user_id,new_user.user_id,'Thomas','Jakobi','thomas.jakobi@partout.info','','MODX Ambassador', 'jako' FROM new_user
+  RETURNING *
+), "modx_member_groups" AS (
+  INSERT INTO "modx_member_groups" (user_group, member, role, rank)
+  SELECT 3, new_user.user_id, 5, 0 FROM new_user
+  UNION
+  SELECT 5, new_user.user_id, 5, 0 FROM new_user
   UNION
   SELECT 7,new_user.user_id,5,0 FROM new_user
   RETURNING *

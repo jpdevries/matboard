@@ -22,6 +22,8 @@ var settings = require('./_build/js/model/settings'),
 paginateUsers = settings.paginateUsers,
 endpoints = settings.endpoints;
 
+pg.defaults.ssl = true;
+
 // This section is optional and used to configure twig.
 app.set("twig options", {
     strict_variables: false
@@ -300,7 +302,7 @@ app.post(endpoints.API_REMOVE_USER_FROM_GROUP, function(req, res) {
 function removeUserFromUserGroup(user, group) {
   //console.log('deleteUsersById',users);
   return new Promise(function(resolve, reject) {
-    var client = new pg.Client();
+    var client = new pg.Client(process.env.DATABASE_URL);
 
     // connect to our database
     client.connect(function (err) {
@@ -518,7 +520,7 @@ function getUserRowsAndPrepareData(where = '',userGroupsWhere = '') {
 app.get('/', function(req, res){
   getUserRowsAndPrepareData().then(function(data){
     res.render('index.twig', Object.assign({},data,{
-      paginateUsers:12,
+      paginateUsers:paginateUsers,
       endpoints:endpoints,
       production:process.env.NODE_ENV == 'production'
     }));
@@ -538,7 +540,7 @@ app.post('/', function(req, res){
     console.log(fields,query,where,filteredGroup);
     getUserRowsAndPrepareData(where).then(function(data){
       res.render('index.twig', Object.assign({},data,{
-        paginateUsers:12,
+        paginateUsers:paginateUsers,
         endpoints:endpoints,
         query:query,
         filteredGroup:filteredGroup,
@@ -576,7 +578,7 @@ function getRoles() {
     // instantiate a new client
     // the client will read connection information from
     // the same environment varaibles used by postgres cli tools
-    var client = new pg.Client();
+    var client = new pg.Client(process.env.DATABASE_URL);
 
     // connect to our database
     client.connect(function (err) {
@@ -610,7 +612,7 @@ function activateUsersById(users,active = true) {
     // instantiate a new client
     // the client will read connection information from
     // the same environment varaibles used by postgres cli tools
-    var client = new pg.Client();
+    var client = new pg.Client(process.env.DATABASE_URL);
 
     usersList = users.join(', ');
     //console.log('usersList',usersList);
@@ -656,7 +658,7 @@ function deleteUsersById(users) {
     // instantiate a new client
     // the client will read connection information from
     // the same environment varaibles used by postgres cli tools
-    var client = new pg.Client();
+    var client = new pg.Client(process.env.DATABASE_URL);
 
     usersList = users.join(', ');
     //console.log('usersList',usersList);
@@ -701,7 +703,7 @@ function quicklyUpdateUser(fields) {
     // instantiate a new client
     // the client will read connection information from
     // the same environment varaibles used by postgres cli tools
-    var client = new pg.Client(),
+    var client = new pg.Client(process.env.DATABASE_URL),
     user_id = fields.id,
     username = fields.username,
     givenname = fields.givenName || fields['given-name'], // #janky
@@ -734,7 +736,7 @@ function quicklyUpdateUser(fields) {
         RETURNING *
       ), "modx_user_attributes" AS (
         UPDATE "modx_user_attributes"
-          SET givenname, familyname, ='${givenname} ${familyname}', email = '${email}' WHERE "internalkey" = ${user_id}
+          SET givenname ='${givenname}', familyname = '${familyname}', email = '${email}' WHERE "internalkey" = ${user_id}
           RETURNING *
       ) ${updateUserGroups}
       SELECT * FROM "update_user";`;
@@ -761,7 +763,7 @@ function quicklyUpdateUser(fields) {
 
 function getUserGroups(where = '') {
   return new Promise(function(resolve, reject){
-    var client = new pg.Client();
+    var client = new pg.Client(process.env.DATABASE_URL);
 
     client.connect(function (err) {
       if (err) throw err;
@@ -789,7 +791,7 @@ function getUserRows(where = '') {
     // instantiate a new client
     // the client will read connection information from
     // the same environment varaibles used by postgres cli tools
-    var client = new pg.Client();
+    var client = new pg.Client(process.env.DATABASE_URL);
 
     // connect to our database
     client.connect(function (err) {
@@ -960,7 +962,7 @@ function addUserQuickly(fields) {
     // instantiate a new client
     // the client will read connection information from
     // the same environment varaibles used by postgres cli tools
-    var client = new pg.Client();
+    var client = new pg.Client(process.env.DATABASE_URL);
 
     // connect to our database
     client.connect(function (err) {

@@ -223,5 +223,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-postcss');
 
+  grunt.registerTask('default', ['growl:watch', 'watch']);
   grunt.registerTask('build',['bower','copy','modernizr','webpack','uglify','sass','postcss','cssmin','growl:build']);
 };

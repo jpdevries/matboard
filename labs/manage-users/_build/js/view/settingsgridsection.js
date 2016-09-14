@@ -6,6 +6,10 @@ var ReactFormData = require('react-form-data');
 var settings = require('./../model/settings'),
 endpoints = settings.endpoints;
 
+function cssSafeName(name) {
+  return name.replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '').trim().replace(/ /g,'').toLowerCase()
+}
+
 // can't use this until a future version of React
 var SettingTableRowGroup = React.createClass({
   getInitialState:function(){
@@ -88,12 +92,12 @@ var SettingsGridSectionBulkActionsFieldset = React.createClass({
       }}>
         {hiddenBulkToggleInputs}
         <fieldset>
-          <legend>Bulk Actions</legend>
-          <button type="submit" disabled={!props.emails.length} className="go" formAction={endpoints.API_USERS_ACTIVATE} formMethod="post" onClick={this.handleBulkButtonClick}>Activate</button>
-          <button type="submit" disabled={!props.emails.length} className="danger" formAction={endpoints.API_USERS_DEACTIVATE} formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
-          <button type="submit" disabled={!props.emails.length} className="danger" formAction={endpoints.API_USERS_DELETE} formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
-          <a className="button" disabled={!props.emails.length} href={'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body='}>Email</a>
-          <a className="button" disabled={!props.emails.length} href={'https://' + props.slackChannel + '.slack.com/messages/@' + props.slackHandles.join(',')} target="_blank">Slack DM</a>
+          <legend aria-label="Bulk Actions are conditionally enabled options such as activate, suspend, delete or email that can be executed on selected users.">Bulk Actions</legend>
+          <button type="submit" aria-hidden={!props.emails.length} disabled={!props.emails.length} className="go" formAction={endpoints.API_USERS_ACTIVATE} formMethod="post" onClick={this.handleBulkButtonClick}>Activate</button>
+          <button type="submit" aria-hidden={!props.emails.length} disabled={!props.emails.length} className="danger" formAction={endpoints.API_USERS_DEACTIVATE} formMethod="post" onClick={this.handleBulkButtonClick}>Suspend</button>
+          <button type="submit" aria-hidden={!props.emails.length} disabled={!props.emails.length} className="danger" formAction={endpoints.API_USERS_DELETE} formMethod="delete" onClick={this.handleBulkButtonClick}>Delete</button>
+          <a className="button" aria-hidden={!props.emails.length} disabled={!props.emails.length} tabIndex={props.emails.length ? "0" : "-1"} href={props.emails.length ? 'mailto:' + props.emails.join(',') + '?subject=MODX%20Next&body=' : undefined}>Email</a>
+          <a className="button" aria-hidden={!props.emails.length} disabled={!props.emails.length} tabIndex={props.emails.length ? "0" : "-1"} href={props.emails.length ? 'https://' + props.slackChannel + '.slack.com/messages/@' + props.slackHandles.join(',') : undefined} target="_blank">Slack DM</a>
         </fieldset>
       </form>
     );
@@ -113,16 +117,16 @@ var SettingsTable = React.createClass({
     var props = this.props;
 
     var bulkTh;
-    if(props.bulkActions) bulkTh = <th><input type="checkbox" onChange={(event) => {
+    if(props.bulkActions) bulkTh = <th><input type="checkbox" id={`bulk-select-all-${props.userGroup.id}`} onChange={(event) => {
       try {
         this.props.handleBulkAllCheck(event.target.checked)
       } catch(e) {}
-    }} /></th>;
+    }} /> <label htmlFor={`bulk-select-all-${props.userGroup.id}`} className='accessibly-hidden'>Select all {props.userGroup.title} Members</label></th>;
 
     var rows = props.users.map((user) => {
 
       return([
-        <SettingsTableRow user={user} userGroup={props.userGroup} bulkToggle={props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false} bulkActions={props.bulkActions}
+        <SettingsTableRow user={user} pressed={(this.state.userFormsToShow[user.id])} userGroup={props.userGroup} bulkToggle={props.bulkToggledUsers[user.id] !== undefined ? props.bulkToggledUsers[user.id] : false} bulkActions={props.bulkActions}
           handleFocus={(event) => (
             this.setState({
               userFormsToShow:update({}, {[user.id]: {$set:true}})
@@ -133,7 +137,11 @@ var SettingsTable = React.createClass({
             } catch(e) {}
           }}
         />,
-        (this.state.userFormsToShow[user.id]) ? <SettingsTableRowForm slackChannel={props.userGroup.slackChannel} handleQuickEdit={this.handleQuickEdit.bind(null, user)} className="contextual-setting"  user={user} userGroup={props.userGroup} colspan={props.bulkActions ? "3" : "2"} /> : undefined
+        (this.state.userFormsToShow[user.id]) ? <SettingsTableRowForm handleNextBtnClicked={(event) => {
+          this.setState({
+            userFormsToShow:update({}, {[user.id]: {$set:false}})
+          })
+        }} slackChannel={props.userGroup.slackChannel} handleQuickEdit={this.handleQuickEdit.bind(null, user)} className="contextual-setting"  user={user} userGroup={props.userGroup} colspan={props.bulkActions ? "3" : "2"} /> : false
       ]);
 
     });
@@ -143,8 +151,8 @@ var SettingsTable = React.createClass({
         <thead>
           <tr>
             {bulkTh}
-            <th className="username">User</th>
-            <th>Active</th>
+            <th className="username" aria-label="User Column">User</th>
+            <th aria-label="Active Column">Active</th>
           </tr>
         </thead>
         <tbody>
@@ -181,23 +189,19 @@ var SettingsGridSection = React.createClass({
       });
     }
 
-    var paginationAmount = 12,
+    var paginationAmount = settings.paginateUsers,
     bulkActionsFieldset = users.length >= minimumUsersBulkAction ? <SettingsGridSectionBulkActionsFieldset bulkToggledUsers={this.state.bulkToggledUsers} emails={emails} slackChannel={props.userGroup.slackChannel} slackHandles={slackHandles} /> : false,
-    viewAll = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? false : (users.length > paginationAmount) ? (<p><a onClick={(event) => {
+    viewAll = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? false : (users.length > paginationAmount) ? (<footer><p><a onClick={(event) => {
       event.preventDefault();
       this.props.handleFilterBy(props.userGroup.id);
-    }} href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>View all {props.title} users</a></p>) : false,
+    }} href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>View all {props.title} users</a></p></footer>) : false,
     paginatedUsers = (this.props.expanded || this.props.viewProps.pageType == 'detail') ? users : users.slice(0, paginationAmount);
-
-    function cssSafeName(name) {
-      return name.replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '').toLowerCase()
-    }
 
     return (paginatedUsers.length) ? (
       <section id={"user-group-" + props.userGroup.id}>
         <div>
           <header>
-            <h2 id={cssSafeName(props.title)}><a className="subtle" href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>{props.title}</a></h2>
+            <h2 id={cssSafeName(props.title)} aria-label={props.title}><a aria-hidden className="subtle" href={`#${cssSafeName(props.title)}`} data-view-all-href={`${ endpoints.GROUPS }${props.userGroup.id}#fold`}>{props.title}</a></h2>
           </header>
           <div className="balanced">
             <a className="button" href={endpoints.ADD_USER + "?group=" + props.userGroup.id + "#fold"} style={{marginBottom:"2em"}} onClick={(event) => {
@@ -232,9 +236,7 @@ var SettingsGridSection = React.createClass({
             }} />
             {bulkActionsFieldset}
           </div>
-          <footer>
-            {viewAll}
-          </footer>
+          {viewAll}
         </div>
       </section>
     ) : false;
@@ -242,11 +244,14 @@ var SettingsGridSection = React.createClass({
 });
 
 var SettingsTableRow = function(props) {
-  var user = props.user;
+  const user = props.user,
+  userGroup = props.userGroup;
 
   var bulkActionsTd;
-  var bulkName = 'bulk-' + props.userGroup.id + '-' + user.username;
-  if(props.bulkActions) bulkActionsTd = <td><label htmlFor={bulkName} className="accessibly-hidden">Select {user.username}</label><input type="checkbox" name={bulkName} checked={props.bulkToggle} onChange={(event) => {
+  const bulkName = `bulk-${userGroup.id}-${user.username}`;
+  const activeName = `active-${userGroup.id}-${user.username}`;
+  const activeLabel = `Active status for user ${user.username}`;
+  if(props.bulkActions) bulkActionsTd = <td><label hidden className="accessibly-hidden" htmlFor={bulkName}>Select {user.username}</label><input aria-label={`Select ${user.username}`} type="checkbox" id={bulkName} name={bulkName} checked={props.bulkToggle} onChange={(event) => {
     event.stopPropagation();
     try {
       props.handleBulkToggle(user.id,event.target.checked)
@@ -254,27 +259,25 @@ var SettingsTableRow = function(props) {
   }} /></td>;
 
   return (
-    <tr tabIndex="0" onFocus={(event) => {
-        //console.log(event.nativeEvent);
-          try {
-            props.handleFocus();
-          } catch(e) {}
-    }} onBlur={(event) => {
-          try {
-            props.handleBlur();
-          } catch(e) {}
-    }}>
+    <tr>
       {bulkActionsTd}
-      <td className="username">{user.username}</td>
+      <td className="username" role="button" tabIndex="0" aria-expanded={props.pressed} aria-pressed={props.pressed} aria-haspopup="true" aria-controls={`user_popup_${cssSafeName(userGroup.title)}_${user.id}`} aria-flowto={`user_popup_${cssSafeName(userGroup.title)}_${user.id}`} onFocus={(event) => {
+            try {
+              props.handleFocus();
+            } catch(e) {}
+      }} onBlur={(event) => {
+            try {
+              props.handleBlur();
+            } catch(e) {}
+      }} onClick={(event) => {
+        if(document.activeElement !== event.target) event.target.focus(); // needed for mobile (iOS)
+      }}>{user.username}</td>
       <td className="shy balanced checkbox">
-        <label>
-          <span className="accessibly-hidden">Active: </span>
-          <input checked={user.active} type="checkbox" onChange={(event) => (
-            store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
-              active:event.target.checked
-            }})))
-          )} />
-        </label>
+        <input id={activeName} name={activeName} aria-label={activeLabel} checked={user.active} type="checkbox" onChange={(event) => (
+          store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
+            active:event.target.checked
+          }})))
+        )} />
       </td>
     </tr>
   );
@@ -286,34 +289,52 @@ var SettingsTableRowForm = React.createClass({
     asyncAction:undefined
   }),
   render:function(){
-    var props = this.props;
-    var user = props.user;
-    var userGroup = props.userGroup;
+    const props = this.props,
+    user = props.user,
+    userGroup = props.userGroup,
+    nextUserBtn = (user.nextUser) ?
+      <div><a className="button" href={`#bulk-${userGroup.id}-${user.nextUser.username}`} aria-label={`Escape to Next User ${user.nextUser.username}`} onClick={(event) => {
+        console.log(`bulk-${userGroup.id}-${user.username}`);
+        props.handleNextBtnClicked();
+        document.getElementById(`bulk-${userGroup.id}-${user.nextUser.username}`).focus();
+      }}>Next User</a></div>
+    : false;
 
     //console.log('SettingsTableRowForm');
     //console.log(user);
 
+    const userSudoCheckboxLabel = `sudo__${cssSafeName(userGroup.title)}-${userGroup.id}-${user.id}`,
+    userActiveCheckboxLabel = `active__${cssSafeName(userGroup.title)}-${userGroup.id}-${user.id}`;
+
     return (
-      <tr {...props}>
+      <tr {...props} id={`user_popup_${cssSafeName(userGroup.title)}_${user.id}`} role="dialog" aria-labeledby={`user_popup_label_${user.id}`} aria-describedby={`user_popup_${user.id}_desc`}>
         <td colSpan={props.colspan}>
             <form action={this.state.formAction} method={this.state.formMethod} onChange={this.updateFormData}>
+              <h3 hidden id={`user_popup_label_${user.id}`}>Edit or Contact {user.givenName} {user.familyName}</h3>
               <input name="user_id" type="hidden" value={user.id} />
               <input name="username" type="hidden" value={user.username} />
               <div className="friendly-labels">
-                <label>Sudo: <input name="sudo" checked={user.sudo} type="checkbox" onChange={(event) => {
-                  store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
-                    sudo:event.target.checked
-                  }})))
-                }} /></label>
-                <label>Active: <input name="active" checked={user.active} type="checkbox" onChange={(event) => {
-                  store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
-                    active:event.target.checked
-                  }})))
-                }} /></label>
+                <span>
+                  <label aria-hidden htmlFor={userSudoCheckboxLabel}>Sudo: </label>
+                  <input aria-label="Sudo" id={userSudoCheckboxLabel} name={userSudoCheckboxLabel} checked={user.sudo} type="checkbox" onChange={(event) => {
+                    store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
+                      sudo:event.target.checked
+                    }})))
+                  }} />
+                </span>
+                <span>
+                  <label aria-hidden htmlForm={userActiveCheckboxLabel}>Active: </label>
+                  <input aria-label="Active" id={userActiveCheckboxLabel} name={userActiveCheckboxLabel} checked={user.active} type="checkbox" onChange={(event) => {
+                    store.dispatch(actions.updateUser(user.id,update(user,{$merge:{
+                      active:event.target.checked
+                    }})))
+                  }} />
+                </span>
               </div>
               <p className="subtle balanced oblique">{user.jobTitle}</p>
 
-              <div><a className="button">Next User</a></div>
+              {nextUserBtn}
+
               <div>
                 <a className="button" href={endpoints.UPDATE_USER + user.id} onClick={(event) => {
                   event.preventDefault();
@@ -358,8 +379,10 @@ var SettingsTableRowForm = React.createClass({
                 }}>Remove from Group</button>
               </div>
             </form>
-            <footer className="subtle oblique balanced">
-              <p>{user.givenName} {user.familyName}’{user.familyName.slice(-1) == 's' ? '' : 's'} last login was Jan 23, 2016 4:52pm from Planet&nbsp;Earth</p>
+            <footer id={`user_popup_${user.id}_desc`} className="subtle oblique balanced">
+            <p>
+              <span><span className="given-name">{user.givenName}</span> <span className="family-name">{user.familyName}</span>&#8217;{user.familyName.slice(-1) == 's' ? '' : 's'} last login was Jan&nbsp;23, 2016 4:52pm from Planet&nbsp;Earth</span>
+            </p>
             </footer>
         </td>
       </tr>
