@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Deets</title>
+  <style>
+
+    .deets a {
+      color:currentColor;
+      text-decoration: none;
+    }
+
+    .deets details details {
+      padding-left:.5em;
+    }
+    .deets details ul {
+      list-style-type:none;
+      padding-left:1.5em;
+      margin:0;
+    }
+
+    svg.icon {
+      width:1em;
+      height:1em;
+    }
+
+    .deets summary a {
+      display:inline-block;
+      transform:translateX(-.25em);
+    }
+
+    .deets .icon {
+      transform:translateY(.125em);
+    }
+
+    .deets details .folder-open {
+      display:none;
+    }
+
+    .deets details[open] > summary > a .folder {
+      display:none;
+    }
+
+    .deets details[open] > summary > a .folder-open {
+      display:inline-block;
+    }
+
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="deets">
+      <details>
+        <summary>
+          <a href="#">
+            <svg role="img" class="folder icon">
+              <use xlink:href="assets/img/icons.svg#icon-folder"></use>
+            </svg>
+            <svg hidden role="img" class="folder-open icon">
+              <use xlink:href="assets/img/icons.svg#icon-folder-open"></use>
+            </svg>
+            Blog
+          </a>
+        </summary>
+        <details>
+          <summary>
+            <a href="#">
+              <svg role="img" class="folder icon">
+                <use xlink:href="assets/img/icons.svg#icon-folder"></use>
+              </svg>
+              <svg hidden role="img" class="folder-open icon">
+                <use xlink:href="assets/img/icons.svg#icon-folder-open"></use>
+              </svg>
+              MODX
+            </a>
+          </summary>
+          <ul>
+            <li><a href="#">RTFM</a></li>
+            <li><a href="#">Forums</a></li>
+            <li><a href="#">MAB</a></li>
+            <li><a href="#">MODX Cloud</a></li>
+          </ul>
+        </details>
+        <details>
+          <summary>
+            <a href="#">
+              <svg role="img" class="folder icon">
+                <use xlink:href="assets/img/icons.svg#icon-folder"></use>
+              </svg>
+              <svg hidden role="img" class="folder-open icon">
+                <use xlink:href="assets/img/icons.svg#icon-folder-open"></use>
+              </svg>
+              HTML5
+            </a>
+          </summary>
+          <ul>
+            <li><a href="#">caniuse</a></li>
+            <li><a href="#">W3C</a></li>
+          </ul>
+        </details>
+      </details>
+    </nav>
+  </main>
+</body>
+</html>
