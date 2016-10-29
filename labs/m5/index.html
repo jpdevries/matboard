@@ -7,11 +7,249 @@
   </head>
   <body>
     <link rel="stylesheet" href="assets/css/main.css" media="screen" title="Revolution Manager Theme">
-    <div class="">
-      <header id="mainnav">
-        <div class="page">
-        <h1>MODX Advisory Board</h1>
-        <h2 class="version">
+    <div class="page-wrapper">
+      <aside class="sidenav">
+        <header id="mainnav">
+          <div class="page">
+          <h1>MODX Advisory Board</h1>
+          <h2 class="version">
+            <a href="#">
+              <svg class="logo">
+                <title>Dashboard</title>
+                <use xlink:href="#modx"></use>
+                <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
+              </svg>
+            </a>
+            <span>MODX <code>4.0.0-pl</code></span>
+          </h2>
+          </div>
+          <form id="uberform">
+            <div>
+              <input placeholder="context:web blog" type="text" id="ubersearch" name="q" required />
+              <label for="ubersearch">Search<span mobile-hidden> for anything&hellip;</span></label>
+            </div>
+            <div class="radio-bar">
+              <fieldset>
+                <legend>Hide Unmatched Elements</legend>
+                <div>
+                  <input type="radio" id="hide_unmatched_elements__yes" name="hide_unmatched_elements" value="1" />
+                  <label for="hide_unmatched_elements__yes" checked>Yes</label>
+
+                  <input type="radio" id="hide_unmatched_elements__no" name="hide_unmatched_elements" value="0" checked />
+                  <label for="hide_unmatched_elements__no">No</label>
+                </div>
+              </fieldset>
+            </div>
+          </form>
+          <!--div class="button-row">
+            <div><a href="#">New Resource</a></div>
+            <div><a href="#">New WebLink</a></div>
+            <div><a href="#">New Symlink</a></div>
+            <div><a href="#">New Static Resource</a></div>
+            <div><a href="#">Remove Deleted Resources</a></div>
+          </div-->
+          <nav id="mainnav__nav">
+            <details>
+              <summary><h2>📇&nbsp;Content</h2></summary>
+              <nav>
+                <ul>
+                <li data-tags="new resources">
+                <h3><a href="#">📝&nbsp;New Resource</a></h3>
+                  <p>Create a new Resource &mdash; usually a web page</p>
+                </li>
+
+                <li>
+                <h3><a href="#">👀&nbsp;Preview Site</a></h3>
+                <p>View your website in a new window</p>
+                </li>
+                <li>
+                <h3><a href="#">📄&nbsp;Import HTML</a></h3>
+                <p>Import HTML files to Resources</p>
+                </li>
+                <li>
+                <h3><a href="#">🔗&nbsp;Import Static Resources</a></h3>
+                <p>Import any Content Type based on file extensions to Static Resources</p>
+                </li>
+                <li>
+                <h3><a href="#">📑&nbsp;Resource Groups</a></h3>
+                <p>Assign Resources to Group</p>
+                </li>
+                <li>
+                <h3><a href="#">📦&nbsp;Content Types</a></h3>
+                <p>Add content types for resources, such as .html, js, etc.</p>
+                </li>
+                </ul>
+              </nav>
+            </details>
+            <details>
+              <summary>
+                <h2>🎑&nbsp;Media</h2>
+
+              </summary>
+              <nav>
+                  <ul>
+                    <li>
+                      <h3><a href="#">📡&nbsp;Media Sources</a></h3>
+                      <p>Media sources for use of media from remote servers or services</p>
+                    </li>
+                    <li>
+                      <h3><a href="#">👀&nbsp;Media Browser</a></h3>
+                      <p>View, upload, and manage media</p>
+                    </li>
+                    <li>
+                      <h3><a href="#">🌲&nbsp;Eureka</a></h3>
+                      <p>Browse your Media Sources with the Eureka Media Browser by mod<strong>more</strong></p>
+                    </li>
+                  </ul>
+                </nav>
+            </details>
+            <details>
+              <summary><h2>🚀&nbsp;Extras</h2></summary>
+              <nav>
+                <ul>
+                  <li>
+                    <h3><a href="#">💥&nbsp;Installer</a></h3>
+                    <p>Manage Add&ndash;ons and Distributions</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">📑&nbsp;Collection views</a></h3>
+                    <p>Define views for collection's children grid</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🔳&nbsp;Content Blocks</a></h3>
+                    <p>Manage the Content Blocks fields and layouts</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">↪&nbsp;Redirector</a></h3>
+                    <p>Manage your redirects</p>
+                  </li>
+                </ul>
+              </nav>
+            </details>
+            <details>
+              <summary>
+                <h2>💼&nbsp;Manage</h2>
+              </summary>
+              <nav>
+                <ul>
+                  <li>
+                    <h3><a href="#">👥&nbsp;Users</a></h3>
+                    <p>Manage Users and their Permissions</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🚫&nbsp;Clear Cache</a></h3>
+                    <p>Delete Cache files in all Contexts</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🔓&nbsp;Remove Locks</a></h3>
+                    <p>Remove all locks on Manager pages</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🚽&nbsp;Flush Your Permissions</a></h3>
+                    <p>Reload this session's Permissions</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">⛔&nbsp;Lougout All Users</a></h3>
+                    <p>Immediately destroy all sessions</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">📈&nbsp;Reports</a></h3>
+                    <p>Admin reports for your MODX install</p>
+                  </li>
+                </ul>
+              </nav>
+            </details>
+            <details>
+              <summary>
+                <h2>👾&nbsp;Account</h2>
+              </summary>
+              <nav>
+                <ul>
+                  <li>
+                    <h3><a href="#">😎&nbsp;Edit Account</a></h3>
+                    <p>Update account email, password or info</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">📫&nbsp;Messages</a></h3>
+                    <p>View and send messages</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">⛔&nbsp;Logout</a></h3>
+                    <p>Log out of the Manager</p>
+                  </li>
+                </ul>
+              </nav>
+            </details>
+            <details>
+              <summary>
+                <h2>📐&nbsp;Settings</h2>
+              </summary>
+              <nav>
+                <ul>
+                  <li>
+                    <h3><a href="#">💼&nbsp;System Settings</a></h3>
+                    <p>Configure all system settings</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🔧&nbsp;Manage Customization</a></h3>
+                    <p>Manage bespoke MODX Managers</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">📥&nbsp;Dashboards</a></h3>
+                    <p>Manage custom login Dashboards</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">📂&nbsp;Contexts</a></h3>
+                    <p>Manage Contexts and their settings</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🔗&nbsp;Menus</a></h3>
+                    <p>Manage the top Manager menu</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🔏&nbsp;Access Control Lists</a></h3>
+                    <p>Manage Permissions through Groups, Roles, and Access Policies</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🔐&nbsp;Property Sets</a></h3>
+                    <p>Manage ELement property sets</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">💬&nbsp;Lexicons</a></h3>
+                    <p>Edit Manager language strings</p>
+                  </li>
+                  <li>
+                    <h3><a href="#">🔖&nbsp;Namespaces</a></h3>
+                    <p>Distinguish between Add-on settings</p>
+                  </li>
+                </ul>
+              </nav>
+            </details>
+            <details>
+              <summary>
+                <h2>👋&nbsp;Support</h2>
+              </summary>
+              <nav>
+                <ul>
+                  <li>
+                    <h3><a href="#">🙌&nbsp;Help &amp; Support</a></h3>
+                  </li>
+                  <li>
+                    <h3><a href="#">💬&nbsp;Forums</a></h3>
+                  </li>
+                  <li>
+                    <h3><a href="#">📠&nbsp;Slack</a></h3>
+                  </li>
+                  <li>
+                    <h3><a href="#">🚒&nbsp;Emergency</a></h3>
+                  </li>
+                </ul>
+              </nav>
+            </details>
+          </nav>
+        </header>
+
+        <aside id="stickybar">
           <a href="#">
             <svg class="logo">
               <title>Dashboard</title>
@@ -19,319 +257,34 @@
               <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
             </svg>
           </a>
-          <span>MODX <code>4.0.0-pl</code></span>
-        </h2>
-        </div>
-        <form id="uberform">
           <div>
-            <input placeholder="context:web blog" type="text" id="ubersearch" name="q" required />
-            <label for="ubersearch">Search<span mobile-hidden> for anything&hellip;</span></label>
+            <a href="#ubersearch">Search</a>
+            <a href="#content">Content</a>
+            <button>Save</button>
           </div>
-          <div class="radio-bar">
-            <fieldset>
-              <legend>Hide Unmatched Elements</legend>
-              <div>
-                <input type="radio" id="hide_unmatched_elements__yes" name="hide_unmatched_elements" value="1" />
-                <label for="hide_unmatched_elements__yes" checked>Yes</label>
+        </aside>
 
-                <input type="radio" id="hide_unmatched_elements__no" name="hide_unmatched_elements" value="0" checked />
-                <label for="hide_unmatched_elements__no">No</label>
-              </div>
-            </fieldset>
-          </div>
-        </form>
-        <!--div class="button-row">
-          <div><a href="#">New Resource</a></div>
-          <div><a href="#">New WebLink</a></div>
-          <div><a href="#">New Symlink</a></div>
-          <div><a href="#">New Static Resource</a></div>
-          <div><a href="#">Remove Deleted Resources</a></div>
-        </div-->
-        <nav id="mainnav__nav">
-          <details>
-            <summary><h2>📇&nbsp;Content</h2></summary>
-            <nav>
-              <ul>
-              <li data-tags="new resources">
-              <h3><a href="#">📝&nbsp;New Resource</a></h3>
-                <p>Create a new Resource &mdash; usually a web page</p>
-              </li>
-
-              <li>
-              <h3><a href="#">👀&nbsp;Preview Site</a></h3>
-              <p>View your website in a new window</p>
-              </li>
-              <li>
-              <h3><a href="#">📄&nbsp;Import HTML</a></h3>
-              <p>Import HTML files to Resources</p>
-              </li>
-              <li>
-              <h3><a href="#">🔗&nbsp;Import Static Resources</a></h3>
-              <p>Import any Content Type based on file extensions to Static Resources</p>
-              </li>
-              <li>
-              <h3><a href="#">📑&nbsp;Resource Groups</a></h3>
-              <p>Assign Resources to Group</p>
-              </li>
-              <li>
-              <h3><a href="#">📦&nbsp;Content Types</a></h3>
-              <p>Add content types for resources, such as .html, js, etc.</p>
-              </li>
-              </ul>
-            </nav>
-          </details>
-          <details>
-            <summary>
-              <h2>🎑&nbsp;Media</h2>
-
-            </summary>
-            <nav>
-                <ul>
-                  <li>
-                    <h3><a href="#">👀&nbsp;Media Browser</a></h3>
-                    <p>View, upload, and manage media</p>
-                  </li>
-                  <li>
-                    <h3><a href="#">📡&nbsp;Media Sources</a></h3>
-                    <p>Media sources for use of media from remote servers or services</p>
-                  </li>
-                </ul>
+        <div id="tree">
+          <nav>
+            <details id="resources">
+              <summary><h2>📃&nbsp;Resources</h2></summary>
+              <nav class="quick-links">
+                <header>
+                  <h4>Quick<span visually-hidden> Resource</span> Links</h4>
+                  <ul>
+                    <li><a href="#">📝&nbsp;New Resource</a></li>
+                    <li><a href="#">🔗&nbsp;New Weblink</a></li>
+                    <li><a href="#">🎭&nbsp;New Symlink</a></li>
+                    <li><a href="#">📎&nbsp;New Static Resource</a></li>
+                    <li><a href="#">🚫&nbsp;Delete Trashed Resources (5)</a></li>
+                  </ul>
+                </header>
               </nav>
-          </details>
-          <details>
-            <summary><h2>🚀&nbsp;Extras</h2></summary>
-            <nav>
-              <ul>
-                <li>
-                  <h3><a href="#">💥&nbsp;Installer</a></h3>
-                  <p>Manage Add&ndash;ons and Distributions</p>
-                </li>
-                <li>
-                  <h3><a href="#">📑&nbsp;Collection views</a></h3>
-                  <p>Define views for collection's children grid</p>
-                </li>
-                <li>
-                  <h3><a href="#">🔳&nbsp;Content Blocks</a></h3>
-                  <p>Manage the Content Blocks fields and layouts</p>
-                </li>
-                <li>
-                  <h3><a href="#">↪&nbsp;Redirector</a></h3>
-                  <p>Manage your redirects</p>
-                </li>
-              </ul>
-            </nav>
-          </details>
-          <details>
-            <summary>
-              <h2>💼&nbsp;Manage</h2>
-            </summary>
-            <nav>
-              <ul>
-                <li>
-                  <h3><a href="#">👥&nbsp;Users</a></h3>
-                  <p>Manage Users and their Permissions</p>
-                </li>
-                <li>
-                  <h3><a href="#">🚫&nbsp;Clear Cache</a></h3>
-                  <p>Delete Cache files in all Contexts</p>
-                </li>
-                <li>
-                  <h3><a href="#">🔓&nbsp;Remove Locks</a></h3>
-                  <p>Remove all locks on Manager pages</p>
-                </li>
-                <li>
-                  <h3><a href="#">🚽&nbsp;Flush Your Permissions</a></h3>
-                  <p>Reload this session's Permissions</p>
-                </li>
-                <li>
-                  <h3><a href="#">⛔&nbsp;Lougout All Users</a></h3>
-                  <p>Immediately destroy all sessions</p>
-                </li>
-                <li>
-                  <h3><a href="#">📈&nbsp;Reports</a></h3>
-                  <p>Admin reports for your MODX install</p>
-                </li>
-              </ul>
-            </nav>
-          </details>
-          <details>
-            <summary>
-              <h2>👾&nbsp;Account</h2>
-            </summary>
-            <nav>
-              <ul>
-                <li>
-                  <h3><a href="#">😎&nbsp;Edit Account</a></h3>
-                  <p>Update account email, password or info</p>
-                </li>
-                <li>
-                  <h3><a href="#">📫&nbsp;Messages</a></h3>
-                  <p>View and send messages</p>
-                </li>
-                <li>
-                  <h3><a href="#">⛔&nbsp;Logout</a></h3>
-                  <p>Log out of the Manager</p>
-                </li>
-              </ul>
-            </nav>
-          </details>
-          <details>
-            <summary>
-              <h2>📐&nbsp;Settings</h2>
-            </summary>
-            <nav>
-              <ul>
-                <li>
-                  <h3><a href="#">💼&nbsp;System Settings</a></h3>
-                  <p>Configure all system settings</p>
-                </li>
-                <li>
-                  <h3><a href="#">🔧&nbsp;Manage Customization</a></h3>
-                  <p>Manage bespoke MODX Managers</p>
-                </li>
-                <li>
-                  <h3><a href="#">📥&nbsp;Dashboards</a></h3>
-                  <p>Manage custom login Dashboards</p>
-                </li>
-                <li>
-                  <h3><a href="#">📂&nbsp;Contexts</a></h3>
-                  <p>Manage Contexts and their settings</p>
-                </li>
-                <li>
-                  <h3><a href="#">🔗&nbsp;Menus</a></h3>
-                  <p>Manage the top Manager menu</p>
-                </li>
-                <li>
-                  <h3><a href="#">🔏&nbsp;Access Control Lists</a></h3>
-                  <p>Manage Permissions through Groups, Roles, and Access Policies</p>
-                </li>
-                <li>
-                  <h3><a href="#">🔐&nbsp;Property Sets</a></h3>
-                  <p>Manage ELement property sets</p>
-                </li>
-                <li>
-                  <h3><a href="#">💬&nbsp;Lexicons</a></h3>
-                  <p>Edit Manager language strings</p>
-                </li>
-                <li>
-                  <h3><a href="#">🔖&nbsp;Namespaces</a></h3>
-                  <p>Distinguish between Add-on settings</p>
-                </li>
-              </ul>
-            </nav>
-          </details>
-          <details>
-            <summary>
-              <h2>👋&nbsp;Support</h2>
-            </summary>
-            <nav>
-              <ul>
-                <li>
-                  <h3><a href="#">🙌&nbsp;Help &amp; Support</a></h3>
-                </li>
-                <li>
-                  <h3><a href="#">💬&nbsp;Forums</a></h3>
-                </li>
-                <li>
-                  <h3><a href="#">📠&nbsp;Slack</a></h3>
-                </li>
-                <li>
-                  <h3><a href="#">🚒&nbsp;Emergency</a></h3>
-                </li>
-              </ul>
-            </nav>
-          </details>
-        </nav>
-      </header>
-
-      <aside id="stickybar">
-        <a href="#">
-          <svg class="logo">
-            <title>Dashboard</title>
-            <use xlink:href="#modx"></use>
-            <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
-          </svg>
-        </a>
-        <div>
-          <a href="#ubersearch">Search</a>
-          <a href="#content">Content</a>
-          <button>Save</button>
-        </div>
-      </aside>
-
-      <aside id="tree">
-        <nav>
-          <details id="resources">
-            <summary><h2>📃&nbsp;Resources</h2></summary>
-            <nav class="quick-links">
-              <header>
-                <h4>Quick<span visually-hidden> Resource</span> Links</h4>
-                <ul>
-                  <li><a href="#">New Resource</a></li>
-                  <li><a href="#">New Weblink</a></li>
-                  <li><a href="#">New Symlink</a></li>
-                  <li><a href="#">New Static Resource</a></li>
-                  <li><a href="#">Delete Trashed Resources (5)</a></li>
-                </ul>
-              </header>
-            </nav>
-            <details class="context">
-              <summary>
-
-                <div>
-                  <h3>Website</h3>
-                  <div>
-                    <button>
-                      ➕
-                      <span visually-hidden>
-                        Add Resource to Website Context
-                      </span>
-                    </button>
-                  </div>
-                  <div>
-                    <button>
-                      🔃
-                      <span visually-hidden>Refresh Context</span>
-                    </button>
-                  </div>
-                </div>
-              </summary>
-              <nav>
-                <ul>
-                  <li><a href="#">📄&nbsp;Home</a></li>
-                  <li>
-                    <details>
-                      <summary><a href="#">📂&nbsp;Blog</a></summary>
-                      <ul>
-                        <li><a href="#">📄&nbsp;Post 1</a></li>
-                        <li><a href="#">📄&nbsp;Post 2</a></li>
-                        <li><a href="#">📄&nbsp;Post 3</a></li>
-                      </ul>
-                    </details>
-                  </li>
-                  <li><a href="#">Tips</a></li>
-                </ul>
-              </nav>
-            </details>
-          </details>
-          <details>
-            <summary><h2>🔧&nbsp;Elements</h2></summary>
-            <nav class="quick-links">
-              <header>
-                <h4>Quick<span visually-hidden> Elements</span> Links</h4>
-                <ul>
-                  <li><a href="#">New Template</a></li>
-                  <li><a href="#">New Template Variable</a></li>
-                  <li><a href="#">New Chunk</a></li>
-                  <li><a href="#">New Snippet</a></li>
-                  <li><a href="#">New Plugin</a></li>
-                  <li><a href="#">New Folder</a></li>
-                </ul>
-              </header>
-              <details class="context templates">
+              <details class="context">
                 <summary>
-                  <div class="flexible">
-                    <h3>Templates</h3>
+
+                  <div>
+                    <h3>Website</h3>
                     <div>
                       <button>
                         ➕
@@ -339,6 +292,8 @@
                           Add Resource to Website Context
                         </span>
                       </button>
+                    </div>
+                    <div>
                       <button>
                         🔃
                         <span visually-hidden>Refresh Context</span>
@@ -348,17 +303,68 @@
                 </summary>
                 <nav>
                   <ul>
-                    <li><a href="#">📝&nbsp;Base Template</a></li>
-                    <li><a href="#">📢&nbsp;Simple Post</a></li>
-                    <li><a href="#">ℹ&nbsp;About Us</a></li>
+                    <li><a href="#">📄&nbsp;Home</a></li>
+                    <li>
+                      <details>
+                        <summary><a href="#">📂&nbsp;Blog</a></summary>
+                        <ul>
+                          <li><a href="#">📄&nbsp;Post 1</a></li>
+                          <li><a href="#">📄&nbsp;Post 2</a></li>
+                          <li><a href="#">📄&nbsp;Post 3</a></li>
+                        </ul>
+                      </details>
+                    </li>
+                    <li><a href="#">Tips</a></li>
                   </ul>
                 </nav>
               </details>
-            </nav>
-          </details>
-        </nav>
-      </aside>
+            </details>
+            <details>
+              <summary><h2>🔧&nbsp;Elements</h2></summary>
+              <nav class="quick-links">
+                <header>
+                  <h4>Quick<span visually-hidden> Elements</span> Links</h4>
+                  <ul>
+                    <li><a href="#">📝&nbsp;New Template</a></li>
+                    <li><a href="#">📺&nbsp;New Template Variable</a></li>
+                    <li><a href="#">📃&nbsp;New Chunk</a></li>
+                    <li><a href="#">🔨&nbsp;New Snippet</a></li>
+                    <li><a href="#">🚀&nbsp;New Plugin</a></li>
+                    <li><a href="#">📁&nbsp;New Folder</a></li>
+                  </ul>
+                </header>
+                <details class="context templates">
+                  <summary>
+                    <div class="flexible">
+                      <h3>Templates</h3>
+                      <div>
+                        <button>
+                          ➕
+                          <span visually-hidden>
+                            Add Resource to Website Context
+                          </span>
+                        </button>
+                        <button>
+                          🔃
+                          <span visually-hidden>Refresh Context</span>
+                        </button>
+                      </div>
+                    </div>
+                  </summary>
+                  <nav>
+                    <ul>
+                      <li><a href="#">📝&nbsp;Base Template</a></li>
+                      <li><a href="#">📢&nbsp;Simple Post</a></li>
+                      <li><a href="#">ℹ&nbsp;About Us</a></li>
+                    </ul>
+                  </nav>
+                </details>
+              </nav>
+            </details>
+          </nav>
+        </div>
 
+      </aside>
       <main>
         <header>
           <h1>Announcing the MODX Advisory Board</h1>

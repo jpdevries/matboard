@@ -278,6 +278,32 @@ details nav {
   }
 }
 
+header {
+  .actionnav {
+    @include media($gtMobile) {
+      display:none;
+    }
+  }
+}
+
+/*.page-wrapper {
+  @include media($gtMobile) {
+    @include outer-container;
+    .sidenav {
+      @include span-columns(3);
+    }
+    main {
+      @include span-columns(9);
+    }
+    > .actionnav {
+      position:fixed;
+      bottom:0;
+      left:0;
+      right:0;
+    }
+  }
+}*/
+
 details {
   > nav {
     header {
