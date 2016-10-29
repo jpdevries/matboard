@@ -1,0 +1,317 @@
+html {
+  box-sizing: border-box; }
+
+*, *::after, *::before {
+  box-sizing: inherit; }
+
+[visually-hidden] {
+  /*https://developer.yahoo.com/blogs/ydn/clip-hidden-content-better-accessibility-53456.html*/
+  position: absolute !important;
+  clip: rect(1px 1px 1px 1px);
+  /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0 !important;
+  border: 0 !important;
+  height: 1px !important;
+  width: 1px !important;
+  overflow: hidden; }
+  body:hover [visually-hidden] a {
+    display: none !important; }
+
+textarea, input[type="text"] {
+  box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #efefef;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; }
+
+#mainnav, #stickybar {
+  background-image: linear-gradient(to right, #3f4850 0%, #365462 46%, #3e5554 60%, #42554d 68%, #573d4e 100%); }
+
+#mainnav {
+  color: white; }
+
+.logo {
+  height: 2rem;
+  width: 2rem; }
+
+#mainnav {
+  padding: 0.5em 0 0 0; }
+  #mainnav > * {
+    padding: 0 1em; }
+  #mainnav h1, #mainnav .version {
+    margin: 0 auto; }
+    #mainnav h1 code, #mainnav .version code {
+      font-weight: 400;
+      font-size: 0.8em;
+      padding-left: .2em; }
+  #mainnav .version {
+    font-size: 1.1em;
+    font-style: italic;
+    font-weight: 400;
+    color: #f8f8f8;
+    display: flex; }
+    #mainnav .version span {
+      line-height: 2rem;
+      padding-left: .4em; }
+  #mainnav a {
+    color: currentColor; }
+
+html:not(.hide-unmatched-elements) #mainnav__nav li[hidden] {
+  display: block;
+  opacity: 0.5; }
+
+#stickybar {
+  display: flex;
+  justify-content: flex-end;
+  color: white;
+  align-content: center;
+  position: sticky;
+  position: -webkit-sticky;
+  padding: .5rem;
+  top: 0;
+  z-index: 99999;
+  border-bottom: 1px solid #1a2b3d; }
+  #stickybar > div > * {
+    margin-right: 0.5rem; }
+    #stickybar > div > *:last-child {
+      margin-right: 0; }
+  #stickybar > *:first-child {
+    margin-right: auto; }
+  #stickybar a, #stickybar button {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid #343436;
+    margin-right: .5rem;
+    color: black;
+    background: white;
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    padding-top: 2px;
+    padding-right: 6px;
+    padding-bottom: 3px;
+    padding-left: 6px; }
+  #stickybar > div {
+    display: flex;
+    align-items: center; }
+  #stickybar h2 {
+    margin: 0; }
+
+#uberform {
+  position: relative;
+  min-height: 2em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size: 1.2em; }
+  #uberform > div {
+    position: relative; }
+  #uberform label[for="ubersearch"] {
+    position: absolute;
+    color: #2F363D;
+    bottom: 0.25em;
+    z-index: 1; }
+  #uberform #ubersearch {
+    min-width: 16rem;
+    font-size: 1em;
+    line-height: 4rem;
+    padding: 0 1rem;
+    width: 100%;
+    border-radius: 0.25em;
+    border: 1px solid grey;
+    margin-bottom: 1rem;
+    /*&:not(.dirty) {
+
+    }
+    &:placeholder-shown {
+
+    }*/
+    /*&:invalid {
+    }*/
+    /*+ label[for="ubersearch"] {
+    }*/ }
+    html.js #uberform #ubersearch + label[for="ubersearch"] {
+      color: grey;
+      text-transform: uppercase;
+      font-size: .8em;
+      font-weight: 500;
+      transition: all 0 ease;
+      transition-delay: 200ms;
+      position: absolute;
+      left: 1rem;
+      bottom: 2rem;
+      font-size: 1.2em; }
+    #uberform #ubersearch::-webkit-input-placeholder {
+      opacity: 0;
+      transition: opacity 240ms ease;
+      transition-delay: 120ms; }
+    #uberform #ubersearch:focus, #uberform #ubersearch.dirty {
+      padding-top: .5rem;
+      transition: padding 240ms ease; }
+      #uberform #ubersearch:focus::-webkit-input-placeholder, #uberform #ubersearch.dirty::-webkit-input-placeholder {
+        opacity: 1;
+        transition-delay: 240ms; }
+      #uberform #ubersearch:focus + label[for="ubersearch"], #uberform #ubersearch.dirty + label[for="ubersearch"] {
+        font-size: .8rem !important;
+        font-weight: bold !important;
+        bottom: 4rem !important;
+        color: #343436 !important;
+        text-transform: uppercase !important;
+        font-style: normal !important; }
+
+summary {
+  padding: 1rem .5rem; }
+  summary h1, summary h2, summary h3, summary h4, summary h5, summary h6 {
+    display: inline; }
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; }
+
+details > nav header {
+  padding: 0 0.5rem; }
+
+details.context .flexible {
+  display: flex; }
+  details.context .flexible h3 {
+    flex-grow: 10;
+    margin: 0; }
+
+#mainnav__nav {
+  padding: 0; }
+  #mainnav__nav h1, #mainnav__nav h2, #mainnav__nav h3, #mainnav__nav h4, #mainnav__nav h5, #mainnav__nav h6 {
+    margin-bottom: 0; }
+  #mainnav__nav p {
+    margin-top: 0.5em; }
+  #mainnav__nav ul {
+    padding-left: 0;
+    border-bottom: 1px solid #1a2b3d;
+    margin: 0; }
+  #mainnav__nav details {
+    border-bottom: 1px solid #1a2b3d; }
+    #mainnav__nav details[open] {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border: none; }
+    #mainnav__nav details nav {
+      background: #2c3a48; }
+    #mainnav__nav details p {
+      margin-bottom: 0; }
+    #mainnav__nav details li {
+      padding-bottom: 1em; }
+  #mainnav__nav li {
+    border-top: 1px solid #1a2b3d;
+    padding: 0 1em;
+    color: #C9D4E1; }
+    #mainnav__nav li p {
+      color: #5ABCE5; }
+
+.radio-bar fieldset {
+  border-color: white; }
+
+.radio-bar fieldset > div {
+  display: flex; }
+  .radio-bar fieldset > div > * {
+    margin-right: .5em; }
+  .radio-bar fieldset > div input[type="radio"] {
+    font-size: 1.4em; }
+
+#tree {
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1); }
+
+.document, .resource-groups, .settings, .content {
+  background: white; }
+  .document > div, .resource-groups > div, .settings > div, .content > div {
+    padding: 0 .5rem; }
+  .document input, .document textarea, .document select, .document option, .resource-groups input, .resource-groups textarea, .resource-groups select, .resource-groups option, .settings input, .settings textarea, .settings select, .settings option, .content input, .content textarea, .content select, .content option {
+    font-size: 1.4em; }
+
+main h1 {
+  padding: 0 0.5rem; }
+
+table {
+  width: 100%; }
+  table th {
+    text-align: left; }
+
+ul.discrete {
+  margin: 0;
+  padding: 1rem 0;
+  list-style-type: none; }
+  ul.discrete li {
+    padding-bottom: 0.5rem; }
+    ul.discrete li:last-of-type {
+      padding-bottom: 0; }
+
+main > *:last-child {
+  padding-bottom: .5rem; }
+
+input[type="text"], textarea {
+  width: 100%; }
+
+#tree {
+  background: white;
+  color: #566d87;
+  padding-bottom: 1rem; }
+  #tree summary summary {
+    padding: 0; }
+
+main > header > details label {
+  display: block; }
+
+main > header > details > div > div > *:last-child {
+  padding-bottom: 0; }
+
+main > header > details > div > div > div {
+  margin-bottom: 0.5rem; }
+  main > header > details > div > div > div:last-of-type {
+    margin-bottom: 0; }
+
+main > header > details.settings fieldset label {
+  display: inline-block; }
+
+label[for="hidemenu"], label[for="published"] {
+  display: inline; }
+
+#contentarea {
+  width: 100%; }
+
+#content > details > div {
+  padding: 0 0.5rem; }
+
+.actionnav {
+  font-size: 1em;
+  color: #555555;
+  padding: 0.5rem;
+  background: #e4e4e4; }
+  .actionnav nav {
+    display: flex;
+    flex-wrap: wrap; }
+    .actionnav nav button, .actionnav nav a {
+      line-height: 3rem;
+      font-size: inherit;
+      background: white;
+      text-align: center;
+      color: currentColor;
+      text-decoration: none;
+      display: block; }
+    .actionnav nav > * {
+      margin: 0;
+      padding: 0;
+      flex-grow: 1;
+      border-radius: .25rem;
+      border: none;
+      margin-right: .4rem; }
+      .actionnav nav > *:first-child {
+        flex-basis: 100%;
+        margin-right: 0;
+        margin-bottom: .4rem;
+        background-color: #2b9385;
+        background-image: linear-gradient(#2b9385, #007571);
+        color: white; }
+      .actionnav nav > *:last-child {
+        margin-right: 0; }

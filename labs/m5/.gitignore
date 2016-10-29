@@ -1,0 +1,8 @@
+node_modules
+bower_components
+
+lib/
+
+_build/lib
+_build/scss/bourbon
+_build/scss/neat
