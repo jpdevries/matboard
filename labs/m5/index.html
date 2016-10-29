@@ -12,11 +12,13 @@
         <div class="page">
         <h1>MODX Advisory Board</h1>
         <h2 class="version">
-          <svg class="logo" aria-hidden>
-            <title>MODX CMS</title>
-            <use xlink:href="#modx"></use>
-            <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
-          </svg>
+          <a href="#">
+            <svg class="logo">
+              <title>Dashboard</title>
+              <use xlink:href="#modx"></use>
+              <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
+            </svg>
+          </a>
           <span>MODX <code>4.0.0-pl</code></span>
         </h2>
         </div>
@@ -243,20 +245,23 @@
       </header>
 
       <aside id="stickybar">
-        <svg class="logo" aria-hidden>
-          <title>MODX CMS</title>
-          <use xlink:href="#modx"></use>
-          <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
-        </svg>
+        <a href="#">
+          <svg class="logo">
+            <title>Dashboard</title>
+            <use xlink:href="#modx"></use>
+            <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
+          </svg>
+        </a>
         <div>
           <a href="#ubersearch">Search</a>
+          <a href="#content">Content</a>
           <button>Save</button>
         </div>
       </aside>
 
       <aside id="tree">
         <nav>
-          <details>
+          <details id="resources">
             <summary><h2>Resources</h2></summary>
             <nav>
               <header>
@@ -546,8 +551,8 @@
           </details>
         </header>
 
-        <section id="content" class="content"><!-- maybe this should be <main> instead? -->
-          <details>
+        <section><!-- maybe this should be <main> instead? -->
+          <details  id="content"  class="content">
             <summary>
               <h2><label for="contentarea">Content</label></h2>
             </summary>
@@ -556,6 +561,22 @@
               <textarea name="contentarea" id="contentarea" placeholder="&lt;h1&gt;Hello World!&lt;/h1&gt;" rows="8" cols="40"></textarea>
             </div>
           </details>
+        </section>
+
+        <section>
+          <div>
+            <details id="template-variables" class="light">
+              <summary>
+                <h2>Template Variables</h2>
+              </summary>
+              <details class="light">
+                <summary><h3>Icons</h3></summary>
+                <div>
+                  <label for="tv-1">SKU</label><input type="text" name="tv-1" id="tv-1">
+                </div>
+              </details>
+            </details>
+          </div>
         </section>
 
       </main>

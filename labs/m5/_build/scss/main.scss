@@ -107,22 +107,24 @@ html:not(.hide-unmatched-elements) {
       margin-right:auto;
     }
   }
-  a, button {
-    appearance:none;
-    -webkit-appearance:none;
-    border:1px solid $dark;
-    margin-right:.5rem;
-    color:black;
-    background:white;
-    display:inline-block;
-    text-decoration:none;
-    border-radius:4px;
-    font-size:1rem;
-    font-family:inherit;
-    padding-top: 2px;
-    padding-right: 6px;
-    padding-bottom: 3px;
-    padding-left: 6px;
+  div {
+    a, button {
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid $dark;
+      margin-right:.5rem;
+      color:black;
+      background:white;
+      display:inline-block;
+      text-decoration:none;
+      border-radius:4px;
+      font-size:.8rem;
+      font-family:inherit;
+      padding-top: 2px;
+      padding-right: 6px;
+      padding-bottom: 3px;
+      padding-left: 6px;
+    }
   }
   > div {
     display:flex;
@@ -223,6 +225,22 @@ summary {
   }
 }
 
+* {
+  &:target {
+    //box-shadow: 0 0 5px #51cbee;
+    //border: 1px solid #51cbee; // opera mini doesn't support outline or @supports :(
+    /*::-webkit-details-marker {
+      color:#EB6436;
+    }*/
+
+  > summary {
+    background:#EB6436;
+    color:white;
+  }
+
+  }
+}
+
 .button-row {
   display:flex;
   justify-content:space-between;
@@ -306,8 +324,16 @@ details {
   box-shadow:0 0 5px 0 rgba(0, 0, 0, 0.1);
 }
 
-.document, .resource-groups, .settings, .content {
+h1 {
+  color:$dark;
+  #mainnav & {
+    color:currentColor;
+  }
+}
+
+.document, .resource-groups, .settings, .content, .light {
   background:white;
+  color:$dark;
   > div {
     padding:0 .5rem;
   }
@@ -316,9 +342,26 @@ details {
   }
 }
 
+.resource-groups {
+  table {
+    th,td {
+      &:first-of-type {
+        width:90%;
+      }
+    }
+  }
+}
+
 main {
   h1 {
     padding:0 0.5rem;
+  }
+  > section {
+    &:last-of-type {
+      > div > details {
+        padding-bottom:0.5rem;
+      }
+    }
   }
 }
 
@@ -341,11 +384,11 @@ ul.discrete {
   }
 }
 
-main {
+/*main {
   >*:last-child {
     padding-bottom:.5rem;
   }
-}
+}*/
 
 input[type="text"], textarea {
   width:100%;

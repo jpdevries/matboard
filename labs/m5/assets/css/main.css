@@ -79,7 +79,7 @@ html:not(.hide-unmatched-elements) #mainnav__nav li[hidden] {
       margin-right: 0; }
   #stickybar > *:first-child {
     margin-right: auto; }
-  #stickybar a, #stickybar button {
+  #stickybar div a, #stickybar div button {
     appearance: none;
     -webkit-appearance: none;
     border: 1px solid #343436;
@@ -89,7 +89,7 @@ html:not(.hide-unmatched-elements) #mainnav__nav li[hidden] {
     display: inline-block;
     text-decoration: none;
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: .8rem;
     font-family: inherit;
     padding-top: 2px;
     padding-right: 6px;
@@ -167,6 +167,14 @@ summary {
   summary h1, summary h2, summary h3, summary h4, summary h5, summary h6 {
     display: inline; }
 
+*:target {
+  /*::-webkit-details-marker {
+      color:#EB6436;
+    }*/ }
+  *:target > summary {
+    background: #EB6436;
+    color: white; }
+
 .button-row {
   display: flex;
   justify-content: space-between;
@@ -223,15 +231,27 @@ details.context .flexible {
 #tree {
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1); }
 
-.document, .resource-groups, .settings, .content {
-  background: white; }
-  .document > div, .resource-groups > div, .settings > div, .content > div {
+h1 {
+  color: #343436; }
+  #mainnav h1 {
+    color: currentColor; }
+
+.document, .resource-groups, .settings, .content, .light {
+  background: white;
+  color: #343436; }
+  .document > div, .resource-groups > div, .settings > div, .content > div, .light > div {
     padding: 0 .5rem; }
-  .document input, .document textarea, .document select, .document option, .resource-groups input, .resource-groups textarea, .resource-groups select, .resource-groups option, .settings input, .settings textarea, .settings select, .settings option, .content input, .content textarea, .content select, .content option {
+  .document input, .document textarea, .document select, .document option, .resource-groups input, .resource-groups textarea, .resource-groups select, .resource-groups option, .settings input, .settings textarea, .settings select, .settings option, .content input, .content textarea, .content select, .content option, .light input, .light textarea, .light select, .light option {
     font-size: 1.4em; }
+
+.resource-groups table th:first-of-type, .resource-groups table td:first-of-type {
+  width: 90%; }
 
 main h1 {
   padding: 0 0.5rem; }
+
+main > section:last-of-type > div > details {
+  padding-bottom: 0.5rem; }
 
 table {
   width: 100%; }
@@ -247,9 +267,11 @@ ul.discrete {
     ul.discrete li:last-of-type {
       padding-bottom: 0; }
 
-main > *:last-child {
-  padding-bottom: .5rem; }
-
+/*main {
+  >*:last-child {
+    padding-bottom:.5rem;
+  }
+}*/
 input[type="text"], textarea {
   width: 100%; }
 
