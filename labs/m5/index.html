@@ -249,42 +249,98 @@
           </nav>
         </header>
 
-        <aside id="stickybar">
-          <a href="#">
-            <svg class="logo">
-              <title>Dashboard</title>
-              <use xlink:href="#modx"></use>
-              <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
-            </svg>
-          </a>
-          <div>
-            <a href="#ubersearch">Search</a>
-            <a href="#content">Content</a>
-            <button>Save</button>
-          </div>
-        </aside>
 
-        <div id="tree">
-          <nav>
-            <details id="resources">
-              <summary><h2>📃&nbsp;Resources</h2></summary>
-              <nav class="quick-links">
-                <header>
-                  <h4>Quick<span visually-hidden> Resource</span> Links</h4>
-                  <ul>
-                    <li><a href="#">📝&nbsp;New Resource</a></li>
-                    <li><a href="#">🔗&nbsp;New Weblink</a></li>
-                    <li><a href="#">🎭&nbsp;New Symlink</a></li>
-                    <li><a href="#">📎&nbsp;New Static Resource</a></li>
-                    <li><a href="#">🚫&nbsp;Delete Trashed Resources (5)</a></li>
-                  </ul>
-                </header>
-              </nav>
-              <details class="context">
-                <summary>
 
+
+
+      </aside>
+      <aside id="stickybar">
+        <a href="#">
+          <svg class="logo">
+            <title>Dashboard</title>
+            <use xlink:href="#modx"></use>
+            <!--use xlink:href="assets/img/icons.svg#modx"></use--> <!-- http://stackoverflow.com/a/27752594/4671250 -->
+          </svg>
+        </a>
+        <div>
+          <a href="#ubersearch">Search</a>
+          <a href="#content">Content</a>
+          <button>Save</button>
+        </div>
+      </aside>
+      <div id="tree">
+        <nav>
+          <details id="resources">
+            <summary><h2>📃&nbsp;Resources</h2></summary>
+            <nav class="quick-links">
+              <header>
+                <h4>Quick<span visually-hidden> Resource</span> Links</h4>
+                <ul>
+                  <li><a href="#">📝&nbsp;New Resource</a></li>
+                  <li><a href="#">🔗&nbsp;New Weblink</a></li>
+                  <li><a href="#">🎭&nbsp;New Symlink</a></li>
+                  <li><a href="#">📎&nbsp;New Static Resource</a></li>
+                  <li><a href="#">🚫&nbsp;Delete Trashed Resources (5)</a></li>
+                </ul>
+              </header>
+            </nav>
+            <details class="context">
+              <summary>
+
+                <div>
+                  <h3>Website</h3>
                   <div>
-                    <h3>Website</h3>
+                    <button>
+                      ➕
+                      <span visually-hidden>
+                        Add Resource to Website Context
+                      </span>
+                    </button>
+                  </div>
+                  <div>
+                    <button>
+                      🔃
+                      <span visually-hidden>Refresh Context</span>
+                    </button>
+                  </div>
+                </div>
+              </summary>
+              <nav>
+                <ul>
+                  <li><a href="#">📄&nbsp;Home</a></li>
+                  <li>
+                    <details>
+                      <summary><a href="#">📂&nbsp;Blog</a></summary>
+                      <ul>
+                        <li><a href="#">📄&nbsp;Post 1</a></li>
+                        <li><a href="#">📄&nbsp;Post 2</a></li>
+                        <li><a href="#">📄&nbsp;Post 3</a></li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li><a href="#">Tips</a></li>
+                </ul>
+              </nav>
+            </details>
+          </details>
+          <details>
+            <summary><h2>🔧&nbsp;Elements</h2></summary>
+            <nav class="quick-links">
+              <header>
+                <h4>Quick<span visually-hidden> Elements</span> Links</h4>
+                <ul>
+                  <li><a href="#">📝&nbsp;New Template</a></li>
+                  <li><a href="#">📺&nbsp;New Template Variable</a></li>
+                  <li><a href="#">📃&nbsp;New Chunk</a></li>
+                  <li><a href="#">🔨&nbsp;New Snippet</a></li>
+                  <li><a href="#">🚀&nbsp;New Plugin</a></li>
+                  <li><a href="#">📁&nbsp;New Folder</a></li>
+                </ul>
+              </header>
+              <details class="context templates">
+                <summary>
+                  <div class="flexible">
+                    <h3>Templates</h3>
                     <div>
                       <button>
                         ➕
@@ -292,8 +348,6 @@
                           Add Resource to Website Context
                         </span>
                       </button>
-                    </div>
-                    <div>
                       <button>
                         🔃
                         <span visually-hidden>Refresh Context</span>
@@ -303,68 +357,16 @@
                 </summary>
                 <nav>
                   <ul>
-                    <li><a href="#">📄&nbsp;Home</a></li>
-                    <li>
-                      <details>
-                        <summary><a href="#">📂&nbsp;Blog</a></summary>
-                        <ul>
-                          <li><a href="#">📄&nbsp;Post 1</a></li>
-                          <li><a href="#">📄&nbsp;Post 2</a></li>
-                          <li><a href="#">📄&nbsp;Post 3</a></li>
-                        </ul>
-                      </details>
-                    </li>
-                    <li><a href="#">Tips</a></li>
+                    <li><a href="#">📝&nbsp;Base Template</a></li>
+                    <li><a href="#">📢&nbsp;Simple Post</a></li>
+                    <li><a href="#">ℹ&nbsp;About Us</a></li>
                   </ul>
                 </nav>
               </details>
-            </details>
-            <details>
-              <summary><h2>🔧&nbsp;Elements</h2></summary>
-              <nav class="quick-links">
-                <header>
-                  <h4>Quick<span visually-hidden> Elements</span> Links</h4>
-                  <ul>
-                    <li><a href="#">📝&nbsp;New Template</a></li>
-                    <li><a href="#">📺&nbsp;New Template Variable</a></li>
-                    <li><a href="#">📃&nbsp;New Chunk</a></li>
-                    <li><a href="#">🔨&nbsp;New Snippet</a></li>
-                    <li><a href="#">🚀&nbsp;New Plugin</a></li>
-                    <li><a href="#">📁&nbsp;New Folder</a></li>
-                  </ul>
-                </header>
-                <details class="context templates">
-                  <summary>
-                    <div class="flexible">
-                      <h3>Templates</h3>
-                      <div>
-                        <button>
-                          ➕
-                          <span visually-hidden>
-                            Add Resource to Website Context
-                          </span>
-                        </button>
-                        <button>
-                          🔃
-                          <span visually-hidden>Refresh Context</span>
-                        </button>
-                      </div>
-                    </div>
-                  </summary>
-                  <nav>
-                    <ul>
-                      <li><a href="#">📝&nbsp;Base Template</a></li>
-                      <li><a href="#">📢&nbsp;Simple Post</a></li>
-                      <li><a href="#">ℹ&nbsp;About Us</a></li>
-                    </ul>
-                  </nav>
-                </details>
-              </nav>
-            </details>
-          </nav>
-        </div>
-
-      </aside>
+            </nav>
+          </details>
+        </nav>
+      </div>
       <main>
         <header>
           <h1>Announcing the MODX Advisory Board</h1>
