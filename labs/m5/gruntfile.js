@@ -108,6 +108,11 @@ module.exports = function(grunt) {
             cwd: '<%= dirs.lib %>',
             dest: '<%= dirs.scss %>',
             expand: true
+        }, {
+            src: 'spec/**/*',
+            cwd: '<%= dirs.lib %>spectacular/',
+            dest: '<%= dirs.scss %>',
+            expand: true
         },{
             src: 'JSONarea/**/*',
             cwd: '<%= dirs.lib %>',

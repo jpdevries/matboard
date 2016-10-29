@@ -19,7 +19,8 @@
   ],
   "devDependencies": {
     "bourbon": "~4.2.7",
-    "neat": "~1.7.4"
+    "neat": "~1.7.4",
+    "spectacular": "~0.0.0"
   },
   "exportsOverride": {
     "bourbon": {
@@ -28,8 +29,11 @@
     "neat": {
       "": "app/assets/stylesheets/"
     },
+    "spectacular": {
+      "": "app/assets/stylesheets/"
+    },
     "JSONarea": {
-      "":"dist"
+      "": "dist"
     }
   }
 }

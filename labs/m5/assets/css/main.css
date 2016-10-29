@@ -4,6 +4,9 @@ html {
 *, *::after, *::before {
   box-sizing: inherit; }
 
+/*
+http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
+*/
 [visually-hidden] {
   /*https://developer.yahoo.com/blogs/ydn/clip-hidden-content-better-accessibility-53456.html*/
   position: absolute !important;
@@ -62,17 +65,33 @@ html:not(.hide-unmatched-elements) #mainnav__nav li[hidden] {
   display: block;
   opacity: 0.5; }
 
+@media screen and (max-width: 480px) {
+  [mobile-hidden] {
+    position: absolute !important;
+    clip: rect(1px 1px 1px 1px);
+    /* IE6, IE7 */
+    clip: rect(1px, 1px, 1px, 1px);
+    padding: 0 !important;
+    border: 0 !important;
+    height: 1px !important;
+    width: 1px !important;
+    overflow: hidden; }
+    body:hover [mobile-hidden] a {
+      display: none !important; } }
+
 #stickybar {
   display: flex;
   justify-content: flex-end;
   color: white;
   align-content: center;
-  position: sticky;
-  position: -webkit-sticky;
   padding: .5rem;
-  top: 0;
-  z-index: 99999;
   border-bottom: 1px solid #1a2b3d; }
+  @media screen and (min-height: 320px) {
+    #stickybar {
+      position: sticky;
+      position: -webkit-sticky;
+      top: 0;
+      z-index: 99999; } }
   #stickybar > div > * {
     margin-right: 0.5rem; }
     #stickybar > div > *:last-child {
@@ -180,8 +199,40 @@ summary {
   justify-content: space-between;
   flex-wrap: wrap; }
 
+html.js details nav a {
+  color: currentColor;
+  text-decoration: none; }
+
+details nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0 0 0 0.5rem; }
+  details nav ul li {
+    margin-bottom: 0.5em; }
+    details nav ul li:last-of-type {
+      margin: 0; }
+
 details > nav header {
   padding: 0 0.5rem; }
+
+details.context > nav {
+  padding: 0 0.5rem; }
+
+details.context > summary::-webkit-details-marker {
+  transform: translateY(1.2em); }
+
+details.context > summary > div {
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 1em; }
+  details.context > summary > div h3 {
+    margin: 0;
+    margin-right: auto; }
+
+details.context ul {
+  margin: 0;
+  padding: 0 0.5rem;
+  list-style-type: none; }
 
 details.context .flexible {
   display: flex; }
@@ -195,6 +246,8 @@ details.context .flexible {
     margin-bottom: 0; }
   #mainnav__nav p {
     margin-top: 0.5em; }
+  html.js #mainnav__nav a {
+    text-decoration: none; }
   #mainnav__nav ul {
     padding-left: 0;
     border-bottom: 1px solid #1a2b3d;

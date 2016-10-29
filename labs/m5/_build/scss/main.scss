@@ -1,6 +1,8 @@
 @import "bourbon/bourbon";
 @import "neat/neat";
 
+@import "spec/tacular";
+
 @import "globals/globals";
 
 $white:white;
@@ -84,18 +86,27 @@ html:not(.hide-unmatched-elements) {
   }
 }
 
+[mobile-hidden] {
+  @include media($iphoneP) {
+    @include accessibly-hidden;
+  }
+}
+
 #stickybar {
   @extend %painted;
   display:flex;
   justify-content: flex-end;
   color:white;
   align-content:center;
-  position:sticky;
-  position:-webkit-sticky;
   padding:.5rem;
-  top:0;
-  z-index:99999;
   border-bottom: 1px solid #1a2b3d;
+
+  @include media(min-height 320px 4) {
+    position:sticky;
+    position:-webkit-sticky;
+    top:0;
+    z-index:99999;
+  }
   > div > * {
     margin-right:0.5rem;
     &:last-child {
@@ -247,6 +258,26 @@ summary {
   flex-wrap:wrap;
 }
 
+details nav {
+  a {
+    html.js & {
+      color:currentColor;
+      text-decoration:none;
+    }
+  }
+  ul {
+    list-style-type: none;
+    margin:0;
+    padding:0 0 0 0.5rem;
+    li {
+      margin-bottom:0.5em;
+      &:last-of-type {
+        margin:0;
+      }
+    }
+  }
+}
+
 details {
   > nav {
     header {
@@ -254,6 +285,34 @@ details {
     }
   }
   &.context {
+    > nav {
+      padding:0 0.5rem;
+
+    }
+
+    > summary {
+      //@include outer-container;
+      &::-webkit-details-marker {
+        transform:translateY(1.2em);
+      }
+      > div {
+        display:flex;
+        justify-content:flex-end;
+        padding-left:1em;
+        h3 {
+          margin:0;
+          margin-right:auto;
+        }
+        > div {
+          //float:right;
+        }
+      }
+    }
+    ul {
+      margin:0;
+      padding:0 0.5rem;
+      list-style-type:none;
+    }
     .flexible {
       display:flex;
       h3 {
@@ -270,6 +329,11 @@ details {
   }
   p {
     margin-top:0.5em;
+  }
+  html.js & {
+    a {
+      text-decoration:none;
+    }
   }
   padding:0;
   ul {
