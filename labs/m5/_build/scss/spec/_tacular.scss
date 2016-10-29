@@ -3,7 +3,7 @@ $cinema: max-width 1400px 12 !default;
 $iphoneP: max-width 480px 4 !default;
 $mobile: max-width 640px 4 !default;
 $tabletP: max-width 768px 12 !default;
-$tabletL: max-width 1024px 12 !default;
+$tabletL: max-width 1024px 12 !default; 
 
 $gtDesktop: min-width 991px 12 !default;
 $gtCinema: min-width 1401px 12 !default;
@@ -116,12 +116,12 @@ $too-wide:em(1200) !default;
     background:$bg;
     min-height:$minHeight;
     border-radius:$borderRadius;
-    border:$border;
+    border:$border;    
 }
 
 @mixin emphatic-link($fontSize:0.82em) {
     @extend %smallcaps;
-    font-size:$fontSize;
+    font-size:$fontSize;  
 }
 
 @mixin tip($fontSize:0.678em) {
@@ -142,7 +142,7 @@ http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
    $map: map-get($map, nth($keys, $i));
    $i: $i + 1;
  }
-
+ 
  @each $property, $value in $map {
    @if type-of($value) != map {
      #{$property}: $value;
@@ -160,11 +160,11 @@ http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
     $overflowY:map-get($props,overflowY);
     $maxWidth:map-get($props,maxWidth);
     $overflowX:map-get($props,overflowX);
-
+    
     @include media($gtMobile) {
         @if $maxHeight != null { max-height:$maxHeight; }
         @if $overflowY != null { overflow-y:$overflowY; }
-
+        
         @if $maxWidth != null { max-width:maxWidth; }
         @if $overflowX != null { overflow-x:overflowX; }
     }
@@ -192,8 +192,8 @@ http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
         border-top:1px solid darken(rgb(240,240,240),12%),
         border-bottom:1px solid darken(rgb(240,240,240),12%)
       )
-    )) {
-
+    )) {        
+        
     $tablePadding:map-get($props,tablePadding);
     $gutter:map-get($props,gutter);
     $paddingTop:map-get($props,paddingTop);
@@ -218,7 +218,7 @@ http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
             td {
                 padding-bottom:$paddingBottom;
             }
-        }
+        }     
     }
     @if $gutter != null {
         > thead tr, > tbody tr {
@@ -228,17 +228,17 @@ http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
                     padding-right:$gutter;
                 }
             }
-        }
+        }   
     }
     @if type-of($trEven) == map {
         > tbody > tr:nth-child(even) {
             @include print-styles($trEven);
-        }
+        }   
     }
     @if type-of($trOdd) == map {
         > tbody > tr:nth-child(odd) {
             @include print-styles($trOdd);
-        }
+        }   
     }
 }
 
@@ -255,24 +255,16 @@ http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
 }
 
 @mixin accessibly-hidden() {
-  position: absolute !important;
-  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-  clip: rect(1px, 1px, 1px, 1px);
-  padding:0 !important;
-  border:0 !important;
-  height: 1px !important;
-  width: 1px !important;
-  overflow: hidden;
-
-  body:hover & {
-    a {
-      display: none !important;
-    }
-  }
+    position: absolute;
+    height: 1px; width: 1px; 
+    overflow: hidden;
+    top:0;
+    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+    clip: rect(1px, 1px, 1px, 1px);
 }
 
-%accessibly-hidden { /*https://developer.yahoo.com/blogs/ydn/clip-hidden-content-better-accessibility-53456.html*/
-  @include accessibly-hidden;
+%accessibly-hidden { 
+    @include accessibly-hidden;
 }
 
 // Clearfix: contain floats
