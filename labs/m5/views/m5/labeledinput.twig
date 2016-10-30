@@ -1,7 +1,7 @@
 {% if not inputFirst|default(false) %}
-<label {% if id %}for="{{id}}"{% endif %}>{{label|default('Input')}} {{placeholder}}</label>
+<label {% if id %}for="{{id}}"{% endif %}>{{label|default('Input')}}</label>
 {% include './input.twig' %}
 {% else %}
 {% include './input.twig' %}
-<label {% if id %}for="{{id}}"{% endif %}>{{label|default('Input')}} {{placeholder}}</label>
+<label {% if id %}for="{{id}}"{% endif %}>{{label|default('Input')}}</label>
 {% endif %}

@@ -21,7 +21,7 @@
         <form id="uberform">
           <div>
             <input placeholder="context:web blog" type="text" id="ubersearch" name="q" required />
-            <label for="ubersearch">Search<span mobile-hidden> for anything&hellip;</span></label>
+            <label for="ubersearch"><h1>Search<span mobile-hidden> for anything&hellip;</span></h1></label>
           </div>
           <div class="radio-bar">
             <fieldset>
@@ -232,15 +232,27 @@
               <ul>
                 <li>
                   <h3><a href="#">🙌&nbsp;Help &amp; Support</a></h3>
+                  <p>
+                    Meet the MODX Community
+                  </p>
                 </li>
                 <li>
                   <h3><a href="#">💬&nbsp;Forums</a></h3>
+                  <p>
+                    Access the Multilingual Community Driven Forums
+                  </p>
                 </li>
                 <li>
                   <h3><a href="#">📠&nbsp;Slack</a></h3>
+                  <p>
+                    Join the discussion and connect in realtime
+                  </p>
                 </li>
                 <li>
                   <h3><a href="#">🚒&nbsp;Emergency</a></h3>
+                  <p>
+                    Emergency support from the source
+                  </p>
                 </li>
               </ul>
             </nav>
@@ -313,7 +325,7 @@
                     <ul>
                       <li><a href="#">📄&nbsp;Post 1</a></li>
                       <li><a href="#">📄&nbsp;Post 2</a></li>
-                      <li><a href="#">📄&nbsp;Post 3</a></li>
+                      <li><a href="#">📄&nbsp;Post 3</a></li> 
                     </ul>
                   </details>
                 </li>
@@ -369,7 +381,10 @@
     <main>
       <header>
         <h1>Announcing the MODX Advisory Board</h1>
-
+        <p class="comfy emoji-bar">
+          <button class="emoji reaction long tooltip" title="Ryan Thrash, Mark Hamstra, and 3 Others with a :+1:">👍<span>12</span></button>
+          <button class="emoji add-reaction right tooltip" title="Add a Reaction">➕</button>
+        </p>
         <aside class="actionnav">
           <nav>
             <button href="#">💾&nbsp;Save</button>
@@ -587,9 +602,9 @@
               <summary>
                 <h3>📞&nbsp;Contact</h3>
               </summary>
-              <div class="">
-                <div class="">
-                  <div class="">
+              <div>
+                <div>
+                  <div>
                     {% include 'm5/email.twig' with {
                     maxLength: undefined,
                     placeholder: 'chuck@norris.com',
@@ -600,7 +615,7 @@
                     }]
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/labeledinput.twig' with {
                       id:'tel',
                       name:'tel',
@@ -609,7 +624,7 @@
                       placeholder:'(555) 555–5555'
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/url.twig' with {
                     placeholder:'https://modx.com',
                       options:[{
@@ -619,12 +634,12 @@
                       }]
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/countrylist.twig' with {
                       placeholder:'NL'
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/richtext.twig' with {
                       label: "Bio",
                       id: "tvcontent",
@@ -639,9 +654,9 @@
               <summary>
                 <h3>📓&nbsp;Info</h3>
               </summary>
-              <div class="">
-                <div class="">
-                  <div class="">
+              <div>
+                <div>
+                  <div>
                     {% include 'm5/number.twig' with {
                       placeholder:4,
                       options:[{
@@ -651,10 +666,10 @@
                       }]
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/listbox-multi.twig' %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/slider.twig' with {
                       min:0,
                       max:200,
@@ -666,10 +681,10 @@
                       }]
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/file.twig' %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/dropdown-list-menu.twig' with {
                       id: 'airports',
                       name: 'airports',
@@ -695,7 +710,7 @@
                       }]
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/dropdown-list-menu.twig' with {
                       options:[{
                         title:'MODX',
@@ -709,8 +724,8 @@
                       }]
                     } %}
                   </div>
-                  <div class="">
-                    {% include 'radios.twig' with {
+                  <div>
+                    {% include './radios.twig' with {
                       legend:'Options',
                       options:[{
                         for: 'option_a',
@@ -779,10 +794,10 @@
                     }]
                   } %}
                 </div>
-                <div class="">
+                <div>
                   {% include 'm5/hidden.twig' %}
                 </div>
-                <div class="">
+                <div>
                   {% include 'm5/file.twig' with {
                     label:"Facebook OG Image",
                     name:"image",
@@ -807,9 +822,9 @@
               <summary>
                 <h3>📅&nbsp;Time</h3>
               </summary>
-              <div class="">
-                <div class="">
-                  <div class="">
+              <div>
+                <div>
+                  <div>
                     {% include 'm5/date.twig' with {
                       type:'month',
                       id: 'month',
@@ -818,7 +833,7 @@
                       placeholder: 'March'
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                     {% include 'm5/date.twig' with {
                       type:'week',
                       id: 'week',
@@ -827,18 +842,20 @@
                       placeholder: 'Week 42, 2016'
                     } %}
                   </div>
-                  <div class="">
+                  <div>
                   {% include 'm5/date.twig' with {
                         id: 'date-2',
                         name: 'date-2',
                         placeholder: 'March 10, 2016'
                   } only %}
-                  {% include 'm5/time.twig' with {
-                        id: 'time-2',
-                        name: 'time-2',
-                        placeholder: '15:32',
-                        type: 'time'
-                  } only %}
+                  </div>
+                  <div>
+                    {% include 'm5/time.twig' with {
+                          id: 'time-2',
+                          name: 'time-2',
+                          placeholder: '15:32',
+                          type: 'time'
+                    } only %}
                   </div>
                 </div>
               </div>

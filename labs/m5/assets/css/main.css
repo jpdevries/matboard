@@ -4,6 +4,9 @@ html {
 *, *::after, *::before {
   box-sizing: inherit; }
 
+button.emoji {
+  cursor: pointer; }
+
 /*
 http://www.phase2technology.com/blog/exploring-maps-in-sass-3-3/
 */
@@ -122,12 +125,61 @@ details div label {
 details .auto-tags label, details .inline-describe label, details .options label {
   display: inline-block; }
 
+.tooltip {
+  position: relative; }
+
+.tooltip:hover:after, .tooltip:focus:after {
+  background: #333;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 0.5em;
+  color: #fff;
+  content: attr(title);
+  padding: 0.5em;
+  position: absolute;
+  z-index: 98;
+  left: 4.5em;
+  bottom: 0em;
+  min-width: 10em;
+  max-width: 100%; }
+
+.tooltip.long:hover:after, .tooltip.long:focus:after {
+  min-width: 20em;
+  text-align: left; }
+
+.tooltip.right:hover:after, .tooltip.right:focus:after {
+  left: auto;
+  right: 2.5em; }
+
+button.emoji {
+  border-radius: 0.25em;
+  border: 1px solid #e6e6e6;
+  background: white;
+  color: #a0a0a0;
+  text-align: center; }
+  button.emoji.reaction {
+    min-width: 3em;
+    text-align: right; }
+  button.emoji.add-reaction {
+    margin-left: auto; }
+  button.emoji span {
+    font-style: monospace;
+    padding-left: 0.5em; }
+
+.emoji-bar {
+  display: flex; }
+
+.comfy {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem; }
+
 #uberform {
   position: relative;
   min-height: 2em;
   margin-top: 1em;
   margin-bottom: 1em;
-  font-size: 1.2em; }
+  font-size: 1.2em;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem; }
   #uberform > div {
     position: relative; }
   #uberform label[for="ubersearch"] {
@@ -135,6 +187,8 @@ details .auto-tags label, details .inline-describe label, details .options label
     color: #2F363D;
     bottom: 0.25em;
     z-index: 1; }
+    #uberform label[for="ubersearch"] h1 {
+      font-size: 1em; }
   #uberform #ubersearch {
     min-width: 16rem;
     font-size: 1em;

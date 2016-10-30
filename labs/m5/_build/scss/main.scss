@@ -163,7 +163,81 @@ details {
   }
 }
 
+.tooltip {
+  position:relative;
+}
 
+.tooltip {
+  &:hover:after, &:focus:after {
+      background: #333;
+      background: rgba(0,0,0,.8);
+      border-radius: 0.5em;
+      color: #fff;
+      content: attr(title);
+      padding: 0.5em;
+      position: absolute;
+      z-index: 98;
+      left:4.5em;
+      bottom:0em;
+      min-width:10em;
+      max-width:100%;
+
+      //width: 220px;
+  }
+  &.long {
+    &:hover:after, &:focus:after {
+      min-width:20em;
+      text-align:left;
+    }
+  }
+  &.right {
+    &:hover:after, &:focus:after {
+      left:auto;
+      right:2.5em;
+    }
+
+  }
+}
+
+button {
+  &.emoji {
+    @extend %clickable;
+    border-radius:em(4px);
+    border:1px solid rgb(230,230,230);
+    background:white;
+    color:rgb(160,160,160);
+    text-align:center;
+
+    &.reaction {
+      min-width:3em;
+      text-align:right;
+    }
+    &.add-reaction {
+      margin-left:auto;
+    }
+    span {
+      font-style:monospace;
+      padding-left:0.5em;
+    }
+  }
+}
+
+.emoji-bar {
+  display:flex;
+}
+
+@mixin comfy() {
+  padding-left:0.5rem;
+  padding-right:0.5rem;
+}
+
+%comfy {
+  @include comfy;
+}
+
+.comfy {
+  @extend %comfy;
+}
 
 #uberform {
   position:relative;
@@ -175,6 +249,8 @@ details {
   margin-top:1em;
   margin-bottom:1em;
   font-size:1.2em;
+  padding-left:0.5rem;
+  padding-right:0.5rem;
   > div {
     position:relative;
   }
@@ -183,6 +259,10 @@ details {
     color:#2F363D;
     bottom:0.25em;
     z-index:1;
+    h1 {
+      font-size:1em;
+      //font-weight:normal;
+    }
   }
   #ubersearch {
     min-width:16rem;

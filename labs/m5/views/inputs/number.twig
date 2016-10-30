@@ -1,0 +1,27 @@
+{% if options.length %}
+  {% set list = 'quantity_list' %}
+{% endif %}
+
+
+{% if not allowBlank|default(true) %}
+  {% set required = false %}
+{% else %}
+  {% set required = true %}
+{% endif %}
+
+<label for="quantity">Quantity</label>
+{% include './../twag/input.twig' with {
+  type:"number",
+  id:"quantity",
+  name:"quantity",
+  min:min,
+  max:max
+} %}
+
+{% if list %}
+  <datalist id="{{list}}">
+  {% for option in options %}
+    <option>{{option.title}}</option>
+  {% endfor %}
+  </datalist>
+{% endif %}

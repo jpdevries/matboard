@@ -3,7 +3,7 @@
   <div class="options container">
     {% for option in options %}
       {% set option = option|merge({'inputFirst': true}) %}
-      <div class="option">{% include 'inputs/labeledinput.twig' with option only %}</div>
+      <div class="option">{% include 'm5/labeledinput.twig' with option only %}</div>
     {% endfor %}
   </div>
 </fieldset>
