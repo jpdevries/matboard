@@ -1,0 +1,2 @@
+<label for="{{name|default('file')}}">{{label|default('Choose a file')}}</label>
+<input type="{{type|default('file')}}" id="{{name|default('file')}}" name="{{name|default('file')}}"{% if accept %} accept="{{accept}}"{% endif %}{% if not allowBlank|default(true) %} required{% endif %}>

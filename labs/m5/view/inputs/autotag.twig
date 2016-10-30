@@ -1,0 +1,19 @@
+<div id="auto-tag">
+  <label for="tags">Tags</label>
+  {% if not allowBlank|default(true) %}{% set required = true %}{% else %}{% set required = false %}{% endif %}
+  {% include 'twag/input.twig' with {
+    id:'tags',
+    name:'tags',
+    required:required,
+    type:'text'
+  } %}
+  {% if options.length %}
+    <div class="auto-tags">
+    {% for tag in options %}
+      <span class="tag">
+        <input type="checkbox" id="tag__{{tag.title|e('css')}}" name="tag__{{tag.title|e('css')}}" value="{{value|default(tag.title|e('css'))}}"> <label for="tag__{{tag.title|e('css')}}">{{tag.title}} </label>
+      </span>
+    {% endfor %}
+    </div>
+  {% endif %}
+</div>

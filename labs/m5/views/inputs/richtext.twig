@@ -1,0 +1,14 @@
+{% if not allowBlank|default(true) %}
+  {% set allowBlank = false %}
+  {% set required = false %}
+{% else %}
+  {% set allowBlank = true %}
+  {% set required = true %}
+{% endif %}
+
+<label for="{{id|default('content')}}">{{label|default('Content')}}</label>
+{% include './../twag/textarea.twig' with {
+  id: id|default('content'),
+  name: name|default('content'),
+  required: required
+} %}

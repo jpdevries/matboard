@@ -1,0 +1,16 @@
+<label for="{{id|default('options')}}">{{label|default('Dropdown List Menu')}}</label>
+<select name="{{name|default('options')}}" id="{{id|default('options')}}"{% if not allowBlank|default(true) %} required{% endif %}>
+  {% if allowBlank|default(true) %}<option value=""></option>{% endif %}
+  {% if options.length %}
+    {% for optgroup in options %}
+      {% if optgroup.options is iterable %}
+        <optgroup label="{{optgroup.label}}">
+          {% for option in optgroup.options %}<option data-iterable="true" {% if option.value %} value="{{option.value}}"{% endif %}>{{option.title}}</option>{% endfor %}
+        </optgroup>
+      {% else %}
+        {% set option = optgroup %}
+        <option data-iterable="false" {% if option.value %} value="{{option.value}}"{% endif %}>{{option.title}}</option>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</select>

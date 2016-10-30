@@ -1,0 +1,6 @@
+<label for="{{id|default('listbox-multi')}}">{{label|default('Listbox (Multi-Select)')}}</label>
+<select name="listbox-multi" id="listbox-multi" multiple{% if not allowBlank|default(true) %} required{% endif %}>
+  <option value="1">option1</option>
+  <option value="2">option2</option>
+  <option value="3">option3</option>
+</select>

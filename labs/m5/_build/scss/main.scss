@@ -7,6 +7,10 @@
 
 $white:white;
 
+* {
+  box-sizing:border-box;
+}
+
 textarea, input[type="text"] {
   box-sizing:border-box;
 }
@@ -148,6 +152,19 @@ html:not(.hide-unmatched-elements) {
   }
 }
 
+details {
+  div label {
+    display:block;
+  }
+  .auto-tags, .inline-describe, .options {
+    label {
+      display:inline-block;
+    }
+  }
+}
+
+
+
 #uberform {
   position:relative;
   //position:sticky;
@@ -280,7 +297,7 @@ details nav {
 
 header {
   .actionnav {
-    @include media($gtMobile) {
+    @include media(max-height 640px 4) {
       display:none;
     }
   }
@@ -427,8 +444,19 @@ h1 {
   > div {
     padding:0 .5rem;
   }
-  input, textarea, select, option {
-    font-size:1.4em;
+  details {
+    padding-left:1rem;
+  }
+  input, textarea {
+    font-size:1.2rem;
+  }
+  input {
+    &[type="file"], &[type="image"] {
+      font-size:1.1rem;
+    }
+  }
+  select {
+    font-size:.9rem;
   }
 }
 
@@ -480,7 +508,7 @@ ul.discrete {
   }
 }*/
 
-input[type="text"], textarea {
+input[type="text"], input[type="url"], input[type="password"], textarea {
   width:100%;
 }
 
@@ -494,6 +522,15 @@ input[type="text"], textarea {
   }
 }
 
+details {
+  > div > div > div {
+    margin-bottom:0.5rem;
+    &:last-of-type {
+      margin-bottom:0;
+    }
+  }
+}
+
 main > header > details {
   label {
     display:block;
@@ -503,12 +540,12 @@ main > header > details {
       padding-bottom:0;
     }
   }
-  > div > div > div {
+  /*> div > div > div {
     margin-bottom:0.5rem;
     &:last-of-type {
       margin-bottom:0;
     }
-  }
+  }*/
   &.settings {
     fieldset {
       label {
@@ -541,7 +578,7 @@ label {
     display:flex;
     flex-wrap:wrap;
     button,a {
-
+      min-height:em(48px); /* safari bug need to report this to flexbugs */
       line-height:3rem;
       font-size:inherit;
       background:$white;

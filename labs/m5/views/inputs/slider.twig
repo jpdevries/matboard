@@ -1,0 +1,10 @@
+<label for="donation">Donation Amount (USD):</label><br>
+<input type="range" name="donation" id="donation"{% if options.length %} list="donation_list"{% endif %}
+  {% if step %} step="{{step}}"{% endif %}{% if min %} min="{{min}}"{% endif %}{% if max %} max="{{max}}"{% endif %}>
+{% if options.length %}
+  <datalist id="donation_list">
+  {% for option in options %}
+    <option>{{option.title}}</option>
+  {% endfor %}
+  </datalist>
+{% endif %}
