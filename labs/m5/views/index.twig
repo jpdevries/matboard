@@ -590,7 +590,7 @@
               <div class="">
                 <div class="">
                   <div class="">
-                    {% include 'inputs/email.twig' with {
+                    {% include 'm5/email.twig' with {
                     maxLength: undefined,
                     placeholder: 'chuck@norris.com',
                     options:[{
@@ -601,7 +601,7 @@
                     } %}
                   </div>
                   <div class="">
-                    {% include 'inputs/labeledinput.twig' with {
+                    {% include 'm5/labeledinput.twig' with {
                       id:'tel',
                       name:'tel',
                       type:'tel',
@@ -610,7 +610,7 @@
                     } %}
                   </div>
                   <div class="">
-                    {% include 'inputs/url.twig' with {
+                    {% include 'm5/url.twig' with {
                     placeholder:'https://modx.com',
                       options:[{
                         title:'http://google.com'
@@ -620,12 +620,12 @@
                     } %}
                   </div>
                   <div class="">
-                    {% include 'inputs/countrylist.twig' with {
+                    {% include 'm5/countrylist.twig' with {
                       placeholder:'NL'
                     } %}
                   </div>
                   <div class="">
-                    {% include 'inputs/richtext.twig' with {
+                    {% include 'm5/richtext.twig' with {
                       label: "Bio",
                       id: "tvcontent",
                       name: "tvcontent",
@@ -642,7 +642,7 @@
               <div class="">
                 <div class="">
                   <div class="">
-                    {% include 'inputs/number.twig' with {
+                    {% include 'm5/number.twig' with {
                       placeholder:4,
                       options:[{
                         title:4
@@ -652,10 +652,10 @@
                     } %}
                   </div>
                   <div class="">
-                    {% include 'inputs/listbox-multi.twig' %}
+                    {% include 'm5/listbox-multi.twig' %}
                   </div>
                   <div class="">
-                    {% include 'inputs/slider.twig' with {
+                    {% include 'm5/slider.twig' with {
                       min:0,
                       max:200,
                       step:1,
@@ -667,10 +667,10 @@
                     } %}
                   </div>
                   <div class="">
-                    {% include 'inputs/file.twig' %}
+                    {% include 'm5/file.twig' %}
                   </div>
                   <div class="">
-                    {% include 'inputs/dropdown-list-menu.twig' with {
+                    {% include 'm5/dropdown-list-menu.twig' with {
                       id: 'airports',
                       name: 'airports',
                       label: 'Airports',
@@ -696,7 +696,7 @@
                     } %}
                   </div>
                   <div class="">
-                    {% include 'inputs/dropdown-list-menu.twig' with {
+                    {% include 'm5/dropdown-list-menu.twig' with {
                       options:[{
                         title:'MODX',
                         value:'modx'
@@ -767,7 +767,7 @@
               <div>
               <div>
                 <div>
-                  {% include 'inputs/autotag.twig' with {
+                  {% include 'm5/autotag.twig' with {
                     allowBlank:true,
                     placeholder:'Buter, Cheese',
                     options:[{
@@ -780,10 +780,10 @@
                   } %}
                 </div>
                 <div class="">
-                  {% include 'inputs/hidden.twig' %}
+                  {% include 'm5/hidden.twig' %}
                 </div>
                 <div class="">
-                  {% include 'inputs/file.twig' with {
+                  {% include 'm5/file.twig' with {
                     label:"Facebook OG Image",
                     name:"image",
                     accept:"image/*"
@@ -796,7 +796,7 @@
               <summary><h3>💰&nbsp;Product</h3></summary>
               <div>
                 <label for="tv-1">SKU</label>
-                {% include 'inputs/input.twig' with {
+                {% include 'm5/input.twig' with {
                   name:"tv-1",
                   id:"tv-1",
                   placeholder:"#4327"
@@ -810,7 +810,7 @@
               <div class="">
                 <div class="">
                   <div class="">
-                    {% include 'inputs/date.twig' with {
+                    {% include 'm5/date.twig' with {
                       type:'month',
                       id: 'month',
                       name: 'month',
@@ -819,7 +819,7 @@
                     } %}
                   </div>
                   <div class="">
-                    {% include 'inputs/date.twig' with {
+                    {% include 'm5/date.twig' with {
                       type:'week',
                       id: 'week',
                       name: 'week',
@@ -828,12 +828,12 @@
                     } %}
                   </div>
                   <div class="">
-                  {% include 'inputs/date.twig' with {
+                  {% include 'm5/date.twig' with {
                         id: 'date-2',
                         name: 'date-2',
                         placeholder: 'March 10, 2016'
                   } only %}
-                  {% include 'inputs/time.twig' with {
+                  {% include 'm5/time.twig' with {
                         id: 'time-2',
                         name: 'time-2',
                         placeholder: '15:32',
